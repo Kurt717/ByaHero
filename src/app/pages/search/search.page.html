@@ -1,0 +1,139 @@
+<ion-content fullscreen class="search-content">
+  <div class="header-bg-block"></div>
+
+  <div class="search-wrap">
+
+    <!-- 1. HEADER -->
+    <div class="page-header">
+      <button class="icon-btn" (click)="goBack()" aria-label="Go back">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </button>
+      <h1 class="hero-title">Search Routes</h1>
+      <button class="icon-btn" (click)="goBack()" aria-label="Close search">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+
+    <!-- 2. SEARCH INPUT -->
+    <div class="search-pill">
+      <ion-icon name="search-outline"></ion-icon>
+      <input
+        type="text"
+        placeholder="Where are you going?"
+        [(ngModel)]="query"
+        name="query" />
+      <button class="pill-action" *ngIf="query" (click)="clearQuery()" aria-label="Clear search">
+        <ion-icon name="close-circle-outline"></ion-icon>
+      </button>
+      <button class="pill-action" *ngIf="!query" aria-label="Voice search">
+        <ion-icon name="mic-outline"></ion-icon>
+      </button>
+    </div>
+
+    <!-- 3. CATEGORY FILTERS -->
+    <div class="categories-grid">
+      <div
+        class="cat-item"
+        *ngFor="let cat of categories"
+        [class.active]="activeCategory === cat.id"
+        (click)="selectCategory(cat.id)">
+        <div class="squircle"><ion-icon [name]="cat.icon"></ion-icon></div>
+        <span class="cat-label">{{ cat.label }}</span>
+      </div>
+    </div>
+
+    <!-- 4. RECENT SEARCHES -->
+    <div class="section" *ngIf="recentSearches.length">
+      <div class="section-header">
+        <p class="section-title">Recent Searches</p>
+      </div>
+      <div class="recent-list">
+        <button
+          class="recent-item"
+          *ngFor="let item of recentSearches"
+          (click)="useRecentSearch(item)">
+          <div class="recent-icon"><ion-icon name="time-outline"></ion-icon></div>
+          <span class="recent-text">{{ item.from }} → {{ item.to }}</span>
+          <ion-icon name="chevron-forward-outline" class="chevron"></ion-icon>
+        </button>
+      </div>
+      <button class="clear-link" (click)="clearRecentSearches()">Clear recent searches</button>
+    </div>
+
+    <!-- 5. MOST VISITED -->
+    <div class="section">
+      <div class="section-header">
+        <p class="section-title">Most Visited</p>
+        <span class="view-all-pill">View All</span>
+      </div>
+      <div class="destination-scroll">
+        <div
+          class="destination-card"
+          *ngFor="let dest of mostVisited"
+          (click)="selectDestination(dest)">
+          <div class="destination-thumb">
+            <ion-icon name="location-outline"></ion-icon>
+          </div>
+          <h4>{{ dest.name }}</h4>
+          <p>{{ dest.tag }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. POPULAR ROUTES -->
+    <div class="section">
+      <div class="section-header">
+        <p class="section-title">Popular Routes</p>
+        <div class="sort-control" (click)="toggleSortMenu()">
+          <span>{{ sortBy }}</span>
+          <ion-icon name="chevron-down-outline" [class.flipped]="showSortMenu"></ion-icon>
+          <div class="sort-menu" *ngIf="showSortMenu">
+            <button *ngFor="let opt of sortOptions" (click)="setSort(opt)" [class.selected]="sortBy === opt">
+              {{ opt }}
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="route-list">
+        <div class="trip-card" *ngFor="let route of popularRoutes">
+          <div class="card-top">
+            <div class="operator-info">
+              <div class="op-logo"><ion-icon name="bus"></ion-icon></div>
+              <div class="op-text">
+                <h4>{{ route.operator }}</h4>
+                <p>{{ route.duration }}</p>
+              </div>
+            </div>
+            <span class="fare">{{ route.fare }}</span>
+          </div>
+          <div class="card-middle">
+            <div class="route-line-vertical">
+              <span class="dot origin"></span>
+              <span class="line"></span>
+              <span class="dot dest"></span>
+            </div>
+            <div class="route-text">
+              <p><strong>{{ route.from }}</strong></p>
+              <p class="dest-text"><strong>{{ route.to }}</strong></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. NEARBY TERMINALS -->
+    <div class="section">
+      <div class="section-header">
+        <p class="section-title">Nearby Terminals</p>
+      </div>
+      <div class="terminal-grid">
+        <div class="terminal-card" *ngFor="let terminal of nearbyTerminals">
+          <div class="terminal-map"><ion-icon name="map-outline"></ion-icon></div>
+          <h4>{{ terminal.name }}</h4>
+          <p>{{ terminal.distance }}</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</ion-content>

@@ -1,0 +1,350 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
+
+:host {
+  --primary-navy: #1E3A8A;
+  --accent-red: #DC2626;
+  --bg-white: #FFFFFF;
+  --bg-gray: #F8FAFC;
+  --text-black: #1F1F1F;
+  --text-muted: #64748b;
+  
+  --font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+}
+
+ion-content.auth-content {
+  --background: var(--bg-white);
+  font-family: var(--font-family);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+/* --- TOP SECTION --- */
+.top-section {
+  position: relative;
+  height: 120px;
+  background: var(--bg-white);
+  padding: env(safe-area-inset-top, 16px) 16px 0;
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+.back-btn {
+  --color: var(--text-black);
+  margin: 0;
+  --padding-start: 8px;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
+
+  &:active {
+    transform: scale(0.9);
+    opacity: 0.7;
+  }
+}
+
+/* --- BOTTOM SHEET (GRAY CARD) WITH SLIDE-UP ANIMATION --- */
+.bottom-sheet {
+  position: relative;
+  background: var(--bg-gray);
+  border-radius: 40px 40px 0 0;
+  padding: 0 24px 40px;
+  min-height: calc(100% - 120px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  //box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.04);
+  
+  animation: slideUpSheet 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideUpSheet {
+  from {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Overlapping Logo */
+.logo-circle {
+  position: absolute;
+  top: -40px;
+  width: 80px;
+  height: 80px;
+  background: var(--bg-white);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 12px;
+  //box-shadow: 0 10px 25px rgba(30, 58, 138, 0.12);
+  animation: scaleIn 0.5s 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  
+  .logo-svg {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.drag-handle {
+  width: 40px;
+  height: 4px;
+  background: #cbd5e1;
+  border-radius: 4px;
+  margin-top: 52px;
+  margin-bottom: 24px;
+}
+
+/* --- TYPOGRAPHY --- */
+.header-text {
+  text-align: center;
+  margin-bottom: 28px;
+  animation: fadeIn 0.5s 0.2s ease-out both;
+
+  h1 {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--primary-navy);
+    margin: 0 0 8px 0;
+    letter-spacing: -0.03em;
+  }
+
+  p {
+    font-size: 15px;
+    color: var(--text-muted);
+    margin: 0;
+    line-height: 1.5;
+  }
+}
+
+/* --- FORM ELEMENTS WITH STAGGERED FADE-IN --- */
+.auth-form {
+  width: 100%;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+  opacity: 0;
+  animation: fadeUpStagger 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+
+  &:nth-child(1) { animation-delay: 0.1s; }
+  &:nth-child(2) { animation-delay: 0.15s; }
+  
+  label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-black);
+    margin-bottom: 6px;
+    margin-left: 16px;
+  }
+}
+
+@keyframes fadeUpStagger {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Pill Shaped Inputs */
+.pill-input {
+  display: flex;
+  align-items: center;
+  background: var(--bg-white);
+  border-radius: 999px;
+  height: 54px;
+  padding: 0 20px;
+  //box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+  border: 1.5px solid #e2e8f0;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &:focus-within {
+    border-color: var(--primary-navy);
+    //box-shadow: 0 4px 14px rgba(30, 58, 138, 0.08);
+    transform: scale(1.01);
+  }
+
+  ion-icon {
+    font-size: 20px;
+    color: var(--text-muted);
+    margin-right: 12px;
+    transition: color 0.2s ease;
+  }
+
+  &:focus-within ion-icon {
+    color: var(--primary-navy);
+  }
+
+  ion-input {
+    --padding-start: 0;
+    --background: transparent;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-black);
+    width: 100%;
+  }
+  
+  .toggle-icon {
+    margin-right: 0;
+    margin-left: 12px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+
+    &:active {
+      transform: scale(0.85);
+    }
+  }
+}
+
+/* --- FORGOT PASSWORD ROW --- */
+.forgot-row {
+  display: flex;
+  justify-content: flex-end;
+  margin: 4px 0 24px 0;
+  opacity: 0;
+  animation: fadeUpStagger 0.5s 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+
+  a {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent-red);
+    text-decoration: none;
+    cursor: pointer;
+    transition: opacity 0.2s;
+
+    &:hover { opacity: 0.8; }
+  }
+}
+
+/* --- PRIMARY BUTTON WITH EASE & PRESS ANIMATION --- */
+.primary-cta {
+  width: 100%;
+  height: 56px;
+  background: var(--primary-navy);
+  color: var(--bg-white);
+  border: none;
+  border-radius: 999px;
+  font-family: var(--font-family);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  //box-shadow: 0 6px 18px rgba(30, 58, 138, 0.22);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  opacity: 0;
+  animation: fadeUpStagger 0.5s 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+
+  &:hover {
+    background-color: #172c69;
+    //box-shadow: 0 8px 22px rgba(30, 58, 138, 0.3);
+  }
+
+  &:active {
+    transform: scale(0.97);
+    //box-shadow: 0 3px 10px rgba(30, 58, 138, 0.2);
+  }
+}
+
+/* --- SOCIAL LOGIN DIVIDER --- */
+.divider {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin: 28px 0 20px;
+  opacity: 0;
+  animation: fadeIn 0.5s 0.35s ease-out forwards;
+
+  .line {
+    flex: 1;
+    height: 1px;
+    background: #e2e8f0;
+  }
+
+  span {
+    padding: 0 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+  }
+}
+
+/* --- SOCIAL CIRCLES --- */
+.social-row {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 28px;
+  opacity: 0;
+  animation: fadeIn 0.5s 0.4s ease-out forwards;
+
+  .social-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: var(--bg-white);
+    border: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+
+    ion-icon {
+      font-size: 22px;
+      color: var(--text-black);
+    }
+
+    &:hover {
+      border-color: var(--primary-navy);
+      transform: translateY(-2px);
+      //box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    &:active {
+      transform: scale(0.93);
+    }
+  }
+}
+
+/* --- SWITCH AUTH LINK --- */
+.switch-auth {
+  font-size: 15px;
+  color: var(--text-black);
+  margin: 0;
+  opacity: 0;
+  animation: fadeIn 0.5s 0.45s ease-out forwards;
+  
+  a {
+    color: var(--accent-red);
+    font-weight: 600;
+    text-decoration: none;
+    padding: 8px 4px;
+    transition: opacity 0.2s;
+
+    &:active {
+      opacity: 0.6;
+    }
+  }
+}

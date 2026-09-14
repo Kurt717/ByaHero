@@ -1,0 +1,21 @@
+<ion-router-outlet></ion-router-outlet>
+
+<div class="floating-nav-container">
+  <div class="glass-nav">
+    <button class="nav-item" routerLink="/home" routerLinkActive="active" #rlaHome="routerLinkActive">
+      <div class="icon-bg"><ion-icon [name]="rlaHome.isActive ? 'home' : 'home-outline'"></ion-icon></div>
+    </button>
+    <button class="nav-item" routerLink="/bookings" routerLinkActive="active">
+      <div class="icon-bg"><ion-icon name="ticket-outline"></ion-icon></div>
+    </button>
+    <button class="nav-item center-fab" routerLink="/search" routerLinkActive="active">
+      <div class="fab-inner"><ion-icon name="search"></ion-icon></div>
+    </button>
+    <button class="nav-item" routerLink="/alerts" routerLinkActive="active">
+      <div class="icon-bg"><ion-icon name="notifications-outline"></ion-icon></div>
+    </button>
+    <button class="nav-item" routerLink="/profile" routerLinkActive="active" #rlaProfile="routerLinkActive">
+      <div class="icon-bg"><ion-icon [name]="rlaProfile.isActive ? 'person' : 'person-outline'"></ion-icon></div>
+    </button>
+  </div>
+</div>

@@ -1,0 +1,92 @@
+<ion-content fullscreen class="profile-content">
+  <!-- Deep Blue Header Background matching the Home page -->
+  <div class="header-bg-block"></div>
+
+  <div class="profile-wrap">
+
+    <!-- 1. HEADER BAR -->
+    <div class="page-header">
+      <button class="icon-btn" (click)="goBack()" aria-label="Go back">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </button>
+      <h1 class="hero-title">Profile</h1>
+      <button class="icon-btn" (click)="editProfile()" aria-label="Edit profile">
+        <ion-icon name="create-outline"></ion-icon>
+      </button>
+    </div>
+
+    <!-- 2. IDENTITY CARD -->
+    <div class="identity-card">
+      <div class="avatar-wrap">
+        <ion-avatar class="profile-avatar">
+          <img [src]="user.avatar" alt="{{ user.name }}'s profile photo" />
+        </ion-avatar>
+        <button class="avatar-edit-btn" (click)="changePhoto()" aria-label="Change profile photo">
+          <ion-icon name="camera-outline"></ion-icon>
+        </button>
+      </div>
+      <h2 class="user-name">{{ user.name }}</h2>
+      <span class="member-tag" *ngIf="user.tier">
+        <ion-icon name="star"></ion-icon>{{ user.tier }}
+      </span>
+      <div class="contact-row">
+        <span class="contact-chip">
+          <ion-icon name="call-outline"></ion-icon>{{ user.phone }}
+        </span>
+        <span class="contact-chip">
+          <ion-icon name="mail-outline"></ion-icon>{{ user.email }}
+        </span>
+      </div>
+    </div>
+
+    <!-- 3. QUICK STATS + WALLET ROW -->
+    <div class="stats-row">
+      <div class="stat-chip tint-navy" (click)="viewTrips()">
+        <ion-icon name="bus-outline"></ion-icon>
+        <strong>{{ stats.trips }}</strong>
+        <span>Trips</span>
+      </div>
+      <div class="stat-chip tint-red" (click)="viewRewards()">
+        <ion-icon name="star-outline"></ion-icon>
+        <strong>{{ stats.points }}</strong>
+        <span>Points</span>
+      </div>
+      <div class="stat-chip wallet-chip" (click)="openWallet()">
+        <div class="wallet-top">
+          <ion-icon name="card-outline"></ion-icon>
+          <span class="wallet-mask">··· {{ wallet.last4 }}</span>
+        </div>
+        <strong>₱ {{ wallet.balance }}</strong>
+        <span>Wallet</span>
+      </div>
+    </div>
+
+    <!-- 4. SETTINGS GROUPS -->
+    <div class="menu-group" *ngFor="let group of menuGroups">
+      <p class="group-title">{{ group.title }}</p>
+      <div class="menu-list">
+        <button
+          class="menu-item"
+          *ngFor="let item of group.items"
+          (click)="item.action && item.action()">
+          <div class="menu-icon" [class.tint-red]="item.danger">
+            <ion-icon [name]="item.icon"></ion-icon>
+          </div>
+          <span class="menu-label">{{ item.label }}</span>
+          <span class="menu-value" *ngIf="item.value">{{ item.value }}</span>
+          <ion-icon name="chevron-forward-outline" class="chevron"></ion-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- 5. LOG OUT BUTTON -->
+    <button class="logout-btn" (click)="logout()">
+      <ion-icon name="log-out-outline"></ion-icon>
+      Log Out
+    </button>
+    <p class="app-version">byaHERO v1.0.0</p>
+
+  </div>
+
+  <!-- 6. FLOATING BOTTOM NAVIGATION (Consistent across app) -->
+</ion-content>

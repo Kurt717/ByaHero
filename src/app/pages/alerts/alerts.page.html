@@ -1,0 +1,122 @@
+<ion-content fullscreen class="alerts-content">
+  <div class="alerts-wrap">
+
+    <!-- HEADER: signal beacon, not a gradient banner -->
+    <div class="page-header">
+      <div class="beacon">
+        <span class="beacon-ring"></span>
+        <ion-icon name="notifications-outline" *ngIf="topTab === 'alerts'"></ion-icon>
+        <ion-icon name="chatbubble-ellipses-outline" *ngIf="topTab === 'chats'"></ion-icon>
+      </div>
+      <div class="header-text">
+        <h1>Alerts &amp; Chats</h1>
+        <p *ngIf="topTab === 'alerts'">
+          {{ unreadAlertsCount ? unreadAlertsCount + ' new update' + (unreadAlertsCount > 1 ? 's' : '') : "You're all caught up" }}
+        </p>
+        <p *ngIf="topTab === 'chats'">
+          {{ unreadChatsCount ? unreadChatsCount + ' unread message' + (unreadChatsCount > 1 ? 's' : '') : 'No new messages' }}
+        </p>
+      </div>
+      <button
+        class="mark-read-btn"
+        *ngIf="(topTab === 'alerts' && unreadAlertsCount) || (topTab === 'chats' && unreadChatsCount)"
+        (click)="markAllRead()"
+        aria-label="Mark all as read">
+        <ion-icon name="checkmark-done-outline"></ion-icon>
+      </button>
+    </div>
+
+    <!-- TOP TOGGLE -->
+    <div class="top-toggle">
+      <button class="toggle-btn" [class.active]="topTab === 'alerts'" (click)="setTopTab('alerts')">
+        <ion-icon name="notifications-outline"></ion-icon>
+        Alerts
+        <span class="mini-badge" *ngIf="unreadAlertsCount">{{ unreadAlertsCount }}</span>
+      </button>
+      <button class="toggle-btn" [class.active]="topTab === 'chats'" (click)="setTopTab('chats')">
+        <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
+        Chats
+        <span class="mini-badge" *ngIf="unreadChatsCount">{{ unreadChatsCount }}</span>
+      </button>
+    </div>
+
+    <!-- ===== ALERTS TAB ===== -->
+    <ng-container *ngIf="topTab === 'alerts'">
+      <div class="filter-row">
+        <button class="filter-chip" [class.active]="activeFilter === 'all'" (click)="setFilter('all')">All</button>
+        <button class="filter-chip" [class.active]="activeFilter === 'trip'" (click)="setFilter('trip')">Trip Updates</button>
+        <button class="filter-chip" [class.active]="activeFilter === 'promo'" (click)="setFilter('promo')">Offers</button>
+      </div>
+
+      <div class="alert-groups" *ngIf="groupedAlerts.length; else emptyAlerts">
+        <div class="alert-group" *ngFor="let group of groupedAlerts">
+          <p class="day-label">{{ group.day }}</p>
+          <div
+            class="alert-card"
+            *ngFor="let alert of group.items"
+            [class.unread]="alert.unread"
+            (click)="markAlertRead(alert)">
+            <span class="unread-dot" *ngIf="alert.unread"></span>
+            <div class="alert-icon" [ngClass]="alert.type">
+              <ion-icon [name]="iconFor(alert.type)"></ion-icon>
+            </div>
+            <div class="alert-body">
+              <div class="alert-top">
+                <h4>{{ alert.title }}</h4>
+                <span class="alert-time">{{ alert.time }}</span>
+              </div>
+              <p>{{ alert.body }}</p>
+            </div>
+          </div>
+        </div>
+        <p class="list-end-note">You're up to date — no more alerts to show.</p>
+      </div>
+
+      <ng-template #emptyAlerts>
+        <div class="empty-state">
+          <div class="empty-beacon">
+            <ion-icon name="notifications-outline"></ion-icon>
+          </div>
+          <h3>No alerts to show</h3>
+          <p>Trip updates, boarding calls, and fare drops will show up here.</p>
+        </div>
+      </ng-template>
+    </ng-container>
+
+    <!-- ===== CHATS TAB ===== -->
+    <ng-container *ngIf="topTab === 'chats'">
+      <div class="chat-list" *ngIf="chats.length; else emptyChats">
+        <div
+          class="chat-item"
+          *ngFor="let chat of chats"
+          [class.unread]="chat.unread > 0"
+          (click)="openChat(chat)">
+          <div class="chat-avatar" [ngClass]="chat.avatarType">
+            <ion-icon [name]="avatarIconFor(chat.avatarType)"></ion-icon>
+          </div>
+          <div class="chat-body">
+            <div class="chat-top">
+              <h4>{{ chat.name }}</h4>
+              <span class="chat-time">{{ chat.time }}</span>
+            </div>
+            <p>{{ chat.lastMessage }}</p>
+          </div>
+          <span class="chat-badge" *ngIf="chat.unread">{{ chat.unread }}</span>
+          <ion-icon name="chevron-forward-outline" class="chat-chevron" *ngIf="!chat.unread"></ion-icon>
+        </div>
+        <p class="list-end-note">That's every conversation you have.</p>
+      </div>
+
+      <ng-template #emptyChats>
+        <div class="empty-state">
+          <div class="empty-beacon">
+            <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
+          </div>
+          <h3>No conversations yet</h3>
+          <p>Messages from support or your driver will show up here.</p>
+        </div>
+      </ng-template>
+    </ng-container>
+
+  </div>
+</ion-content>

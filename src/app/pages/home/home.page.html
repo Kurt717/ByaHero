@@ -1,0 +1,150 @@
+<ion-content fullscreen class="home-content">
+  <!-- Deep Blue Header Background (Image 2 Color Scheme) -->
+  <div class="header-bg-block"></div>
+
+  <div class="home-wrap">
+
+    <!-- 1. HEADER -->
+    <div class="page-header">
+      <div class="user-profile">
+        <ion-avatar class="avatar">
+          <img src="https://ionicframework.com/docs/img/demos/avatar.svg" alt="User" />
+        </ion-avatar>
+        <div class="greeting">
+          <span class="greeting-sub">Good morning,</span>
+          <h2 class="greeting-name">{{ userName }}</h2>
+        </div>
+      </div>
+      <button class="notif-btn" aria-label="Notifications">
+        <div class="notif-icon-wrap">
+          <ion-icon name="notifications-outline"></ion-icon>
+          <span class="badge"></span>
+        </div>
+      </button>
+    </div>
+
+    <!-- 2. ROUTE SELECTORS (Flat, Bordered Pills) -->
+    <div class="route-selectors">
+      <!-- Primary Route Pill -->
+      <div class="pill-card primary-route">
+        <div class="input-half">
+          <div class="route-dot origin-dot"></div>
+          <input type="text" [(ngModel)]="origin" placeholder="Origin" />
+        </div>
+        <div class="separator-icon">
+          <ion-icon name="chevron-forward-outline"></ion-icon>
+        </div>
+        <div class="input-half">
+          <div class="route-dot dest-dot"></div>
+          <input type="text" [(ngModel)]="destination" placeholder="Destination" />
+        </div>
+      </div>
+
+      <!-- Secondary Info Pill (Solid Red) -->
+      <div class="pill-card secondary-info" (click)="viewLiveTrip()">
+        <div class="info-left">
+          <div class="status-indicator"></div>
+          <span>View Active Trip</span>
+        </div>
+        <ion-icon name="chevron-forward-outline" class="forward-icon"></ion-icon>
+      </div>
+    </div>
+
+    <!-- 3. CATEGORIES -->
+    <div class="categories-grid">
+      <div class="cat-item active">
+        <div class="squircle"><ion-icon name="bus-outline"></ion-icon></div>
+        <span class="cat-label">Bus</span>
+      </div>
+      <div class="cat-item">
+        <div class="squircle"><ion-icon name="car-sport-outline"></ion-icon></div>
+        <span class="cat-label">UV Exp</span>
+      </div>
+      <div class="cat-item">
+        <div class="squircle"><ion-icon name="people-outline"></ion-icon></div>
+        <span class="cat-label">Shared</span>
+      </div>
+      <div class="cat-item">
+        <div class="squircle"><ion-icon name="compass-outline"></ion-icon></div>
+        <span class="cat-label">All</span>
+      </div>
+    </div>
+
+    <!-- 4. SEGMENTED TOGGLE & FILTERS -->
+    <div class="view-toggle-wrapper">
+      <div class="segmented-control">
+        <button 
+          class="seg-btn" 
+          [class.active]="selectedView === 'list'" 
+          (click)="selectedView = 'list'">
+          <ion-icon name="list-outline"></ion-icon>
+          <span>List View</span>
+        </button>
+        <button 
+          class="seg-btn" 
+          [class.active]="selectedView === 'map'" 
+          (click)="selectedView = 'map'">
+          <ion-icon name="map-outline"></ion-icon>
+          <span>Map View</span>
+        </button>
+      </div>
+      
+      <div class="filter-row">
+        <span class="filter-pill active">Fastest</span>
+        <span class="filter-pill">Cheapest</span>
+        <span class="filter-pill">Rated</span>
+      </div>
+    </div>
+
+    <!-- 5A. LIST VIEW -->
+    <div class="content-viewport list-viewport" *ngIf="selectedView === 'list'">
+      <div class="trip-card" *ngFor="let route of nearbyRoutes; let i = index">
+        <div class="fastest-tag" *ngIf="i === 0">
+          <ion-icon name="star-sharp"></ion-icon>
+          <span>Fastest pick</span>
+        </div>
+        <div class="card-top">
+          <div class="operator-info">
+            <div class="op-logo"><ion-icon name="bus"></ion-icon></div>
+            <div class="op-text">
+              <h4>{{ route.operator }}</h4>
+              <p>{{ route.eta }} • {{ route.status }}</p>
+            </div>
+          </div>
+          <span class="fare">{{ route.fare }}</span>
+        </div>
+        <div class="card-middle">
+          <div class="route-line-vertical">
+            <span class="dot origin"></span>
+            <span class="line"></span>
+            <span class="dot dest"></span>
+          </div>
+          <div class="route-text">
+            <p><strong>{{ route.from }}</strong></p>
+            <p class="dest-text"><strong>{{ route.to }}</strong></p>
+          </div>
+        </div>
+        <div class="card-bottom">
+          <span class="seats">{{ route.seats }}</span>
+          <button class="book-btn">Select</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5B. MAP VIEW -->
+    <div class="content-viewport map-viewport" *ngIf="selectedView === 'map'">
+      <div class="map-ui-layer">
+        <div class="map-bg"></div>
+        <div class="center-map-marker">
+          <ion-icon name="map-outline"></ion-icon>
+        </div>
+        <button class="fab-locate">
+          <ion-icon name="locate-outline"></ion-icon>
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  
+</ion-content>

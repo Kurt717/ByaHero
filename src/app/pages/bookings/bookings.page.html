@@ -1,0 +1,105 @@
+<ion-content fullscreen class="bookings-content">
+  <div class="bookings-wrap">
+
+    <!-- HEADER — no gradient block, a stamp mark instead -->
+    <div class="page-header">
+      <div class="header-mark">
+        <ion-icon name="bus"></ion-icon>
+      </div>
+      <div class="header-text">
+        <h1>My Bookings</h1>
+        <p *ngIf="upcomingBookings.length; else noneUpcoming">
+          {{ upcomingBookings.length }} upcoming trip{{ upcomingBookings.length > 1 ? 's' : '' }}
+        </p>
+        <ng-template #noneUpcoming><p>No trips booked yet</p></ng-template>
+      </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tab-bar">
+      <button class="tab" [class.active]="activeTab === 'upcoming'" (click)="setTab('upcoming')">
+        Upcoming
+      </button>
+      <button class="tab" [class.active]="activeTab === 'past'" (click)="setTab('past')">
+        Past
+      </button>
+      <div class="tab-indicator" [class.shift]="activeTab === 'past'"></div>
+    </div>
+
+    <!-- TICKETS -->
+    <div class="ticket-list" *ngIf="visibleBookings.length; else emptyState">
+      <div class="ticket" *ngFor="let booking of visibleBookings" [class.dimmed]="booking.status === 'completed' || booking.status === 'cancelled'">
+
+        <div class="ticket-main">
+          <div class="ticket-top">
+            <div class="operator">
+              <span class="operator-icon"><ion-icon name="bus"></ion-icon></span>
+              <span class="operator-name">{{ booking.operator }}</span>
+            </div>
+            <span class="status-chip" [ngClass]="booking.status">{{ statusLabel(booking.status) }}</span>
+          </div>
+
+          <div class="route-row">
+            <span class="place">{{ booking.from }}</span>
+            <span class="route-path">
+              <span class="node"></span>
+              <span class="dash-line"></span>
+              <ion-icon name="bus" class="riding-bus"></ion-icon>
+              <span class="dash-line"></span>
+              <span class="node dest"></span>
+            </span>
+            <span class="place">{{ booking.to }}</span>
+          </div>
+
+          <div class="meta-row">
+            <span class="meta"><ion-icon name="calendar-outline"></ion-icon>{{ booking.date }}</span>
+            <span class="meta"><ion-icon name="time-outline"></ion-icon>{{ booking.time }}</span>
+            <span class="meta seat">{{ booking.seat }}</span>
+          </div>
+        </div>
+
+        <div class="ticket-stub">
+          <span class="stamp" *ngIf="booking.status === 'completed'">USED</span>
+          <span class="stamp cancelled" *ngIf="booking.status === 'cancelled'">CANCELLED</span>
+
+          <ion-icon name="qr-code-outline" class="qr-icon" *ngIf="booking.status !== 'cancelled'"></ion-icon>
+          <span class="fare">{{ booking.fare }}</span>
+          <span class="ref">{{ booking.bookingRef }}</span>
+
+          <button
+            class="stub-action"
+            *ngIf="booking.status === 'confirmed' || booking.status === 'boarding'"
+            (click)="viewTicket(booking)">
+            View
+          </button>
+          <button
+            class="stub-action outline"
+            *ngIf="booking.status === 'completed'"
+            (click)="bookAgain(booking)">
+            <ion-icon name="refresh-outline"></ion-icon>
+          </button>
+        </div>
+
+      </div>
+
+      <p class="list-end-note">
+        {{ activeTab === 'upcoming' ? "That's all your upcoming trips." : "That's your full trip history." }}
+      </p>
+    </div>
+
+    <ng-template #emptyState>
+      <div class="empty-state">
+        <div class="empty-ticket-outline">
+          <ion-icon name="file-tray-outline"></ion-icon>
+        </div>
+        <h3>No trips here yet</h3>
+        <p>Once you book a route, your ticket will show up on this screen.</p>
+        <button class="empty-cta" (click)="goToSearch()">
+          Find a Route
+          <ion-icon name="arrow-forward-outline"></ion-icon>
+        </button>
+      </div>
+    </ng-template>
+
+  </div>
+</ion-content>

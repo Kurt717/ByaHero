@@ -1,0 +1,86 @@
+<ion-content fullscreen class="onboarding-screen">
+  <div class="screen-wrapper">
+    
+    <!-- Top Bar -->
+    <div class="top-bar">
+      <button class="skip-btn" (click)="skip()">Skip</button>
+    </div>
+
+    <!-- Main Carousel -->
+    <div class="carousel-container" [class.dir-next]="direction === 'next'" [class.dir-prev]="direction === 'prev'">
+      
+      <!-- Angular Loop: Applies 'active' class based on your component's activeIndex -->
+      <div class="slide" *ngFor="let slide of slides; let i = index" [class.active]="i === activeIndex">
+        
+        <!-- Original Minimalist Illustration: Bus/UV in North Luzon -->
+        <div class="illustration-container">
+          <svg viewBox="0 0 240 200" xmlns="http://www.w3.org/2000/svg">
+            <!-- Background Mountains (North Luzon Vibe) -->
+            <path d="M 10 150 L 70 70 L 130 150 Z" fill="#f1f5f9" />
+            <path d="M 80 150 L 150 40 L 230 150 Z" fill="#e2e8f0" />
+            
+            <!-- Minimalist Sun/Accent -->
+            <circle cx="150" cy="40" r="14" fill="#da291c" opacity="0.1" />
+            <circle cx="150" cy="40" r="8" fill="#da291c" />
+
+            <!-- The Winding Route / Road -->
+            <path d="M 10 160 Q 120 130 230 160" fill="none" stroke="#15224f" stroke-width="6" stroke-linecap="round" />
+            <path d="M 10 170 Q 120 140 230 170" fill="none" stroke="#da291c" stroke-width="2" stroke-dasharray="8 6" stroke-linecap="round" />
+
+            <!-- Main Vehicle (Modern Bus / UV Express) -->
+            <rect x="70" y="95" width="100" height="45" rx="8" fill="#15224f" />
+            
+            <!-- Vehicle Windows -->
+            <rect x="75" y="103" width="22" height="16" rx="3" fill="#ffffff" />
+            <rect x="102" y="103" width="22" height="16" rx="3" fill="#ffffff" />
+            <rect x="129" y="103" width="35" height="16" rx="3" fill="#ffffff" />
+            
+            <!-- Brand Stripe on Vehicle -->
+            <rect x="70" y="128" width="100" height="3" fill="#da291c" />
+            
+            <!-- Wheels -->
+            <circle cx="95" cy="142" r="9" fill="#1e293b" />
+            <circle cx="95" cy="142" r="4" fill="#ffffff" />
+            <circle cx="155" cy="142" r="9" fill="#1e293b" />
+            <circle cx="155" cy="142" r="4" fill="#ffffff" />
+
+            <!-- Location Pin Drop -->
+            <path d="M 50 110 C 42 110, 36 104, 36 96 C 36 85, 50 70, 50 70 C 50 70, 64 85, 64 96 C 64 104, 58 110, 50 110 Z" fill="#da291c" />
+            <circle cx="50" cy="94" r="3" fill="#ffffff" />
+          </svg>
+        </div>
+
+        <h2 class="slide-title">{{ slide.title || 'Safe journeys across the North.' }}</h2>
+        <p class="slide-description">
+          {{ slide.body || 'Book your UV Express and Bus tickets instantly. Fixed fares, guaranteed seats, zero hassle.' }}
+        </p>
+      </div>
+
+    </div>
+
+    <!-- Functional Pagination Dots -->
+    <div class="pagination-dots">
+      <button 
+        *ngFor="let slide of slides; let i = index" 
+        class="dot" 
+        [class.active]="i === activeIndex"
+        (click)="goToDot(i)"
+        aria-label="Change slide">
+      </button>
+    </div>
+
+    <!-- Bottom Actions -->
+    <div class="bottom-actions">
+      <!-- Minimalist Button (No border, solid Navy, Red Arrow) -->
+      <button class="primary-btn" (click)="onPrimaryAction()">
+        <span class="btn-text">{{ isLastSlide ? 'Get Started' : 'Next' }}</span>
+        <ion-icon name="arrow-forward" class="btn-arrow"></ion-icon>
+      </button>
+      
+      <p class="login-text">
+        Already have an account? <a routerLink="/login">Log in</a>
+      </p>
+    </div>
+    
+  </div>
+</ion-content>
