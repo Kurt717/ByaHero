@@ -1,6 +1,35 @@
 <ion-content fullscreen class="home-content">
   <!-- Deep Blue Header Background (Image 2 Color Scheme) -->
-  <div class="header-bg-block"></div>
+  <div class="header-bg-block">
+    <svg class="visor-arc" viewBox="0 0 150 150" aria-hidden="true">
+      <defs>
+        <linearGradient id="visorWash" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#5B7CFF" stop-opacity="0.45"/>
+          <stop offset="100%" stop-color="#5B7CFF" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <!-- Manga-style focus lines, kept faint -->
+      <g stroke="#8FA3FF" stroke-width="1.5" opacity="0.28">
+        <line x1="75" y1="75" x2="8" y2="140"/>
+        <line x1="75" y1="75" x2="140" y2="132"/>
+        <line x1="75" y1="75" x2="142" y2="18"/>
+        <line x1="75" y1="75" x2="26" y2="4"/>
+      </g>
+      <!-- The logo's route-line curve, zoomed in and layered like a visor/windshield glint -->
+      <rect x="8" y="8" width="134" height="134" rx="38" fill="url(#visorWash)"/>
+      <path d="M18 58 Q75 18 132 58 Q75 96 18 58 Z" fill="#02040F" opacity="0.45"/>
+      <path d="M27 52 Q75 27 123 52 Q75 70 27 52 Z" fill="#8FA3FF" opacity="0.55"/>
+      <path d="M40 46 Q75 34 110 46 Q75 55 40 46 Z" fill="#FFFFFF" opacity="0.32"/>
+    </svg>
+    <svg class="header-seam" viewBox="0 0 340 60" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0,42 Q42.5,14 85,42 Q127.5,14 170,42 Q212.5,14 255,42 Q297.5,14 340,42 L340,60 L0,60 Z" fill="var(--bg-page)"/>
+      <g fill="#AFC0FF" opacity="0.9">
+        <polygon points="6,0 7.32,4.2 12,6 7.32,7.8 6,12 4.68,7.8 0,6 4.68,4.2" transform="translate(80,16) scale(0.9)"/>
+        <polygon points="6,0 7.32,4.2 12,6 7.32,7.8 6,12 4.68,7.8 0,6 4.68,4.2" transform="translate(165,14) scale(0.7)"/>
+        <polygon points="6,0 7.32,4.2 12,6 7.32,7.8 6,12 4.68,7.8 0,6 4.68,4.2" transform="translate(250,16) scale(0.9)"/>
+      </g>
+    </svg>
+  </div>
 
   <div class="home-wrap">
 
@@ -73,22 +102,22 @@
     <!-- 4. SEGMENTED TOGGLE & FILTERS -->
     <div class="view-toggle-wrapper">
       <div class="segmented-control">
-        <button 
-          class="seg-btn" 
-          [class.active]="selectedView === 'list'" 
-          (click)="selectedView = 'list'">
+        <button
+          class="seg-btn"
+          [class.active]="selectedView === 'list'"
+          (click)="toggleMapView('list')">
           <ion-icon name="list-outline"></ion-icon>
           <span>List View</span>
         </button>
-        <button 
-          class="seg-btn" 
-          [class.active]="selectedView === 'map'" 
-          (click)="selectedView = 'map'">
+        <button
+          class="seg-btn"
+          [class.active]="selectedView === 'map'"
+          (click)="toggleMapView('map')">
           <ion-icon name="map-outline"></ion-icon>
           <span>Map View</span>
         </button>
       </div>
-      
+
       <div class="filter-row">
         <span class="filter-pill active">Fastest</span>
         <span class="filter-pill">Cheapest</span>
@@ -126,25 +155,28 @@
         </div>
         <div class="card-bottom">
           <span class="seats">{{ route.seats }}</span>
-          <button class="book-btn">Select</button>
+          <button class="book-btn" (click)="bookTrip(route)">Select</button>
         </div>
       </div>
     </div>
 
-    <!-- 5B. MAP VIEW -->
-    <div class="content-viewport map-viewport" *ngIf="selectedView === 'map'">
-      <div class="map-ui-layer">
-        <div class="map-bg"></div>
-        <div class="center-map-marker">
-          <ion-icon name="map-outline"></ion-icon>
+    <!-- 5B. MAP VIEW (real Leaflet + OpenStreetMap) -->
+    <div class="content-viewport map-viewport" [hidden]="selectedView !== 'map'">
+      <div class="map-shell">
+        <div #mapEl class="leaflet-host"></div>
+
+        <div class="map-legend">
+          <span class="legend-dot navy"></span>On-time
+          <span class="legend-dot red"></span>Delayed
         </div>
-        <button class="fab-locate">
+
+        <button class="fab-locate" [class.loading]="locating" (click)="locateMe()" aria-label="Find my location">
           <ion-icon name="locate-outline"></ion-icon>
         </button>
+
+        <span class="locate-toast" *ngIf="locateMessage">{{ locateMessage }}</span>
       </div>
     </div>
 
   </div>
-
-  
 </ion-content>

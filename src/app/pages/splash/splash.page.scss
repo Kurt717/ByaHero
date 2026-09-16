@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
 
 :host {
-  --primary-navy: #1E3A8A;
+  --primary-navy: #151D48;
   --accent-red: #DC2626;
   --bg-color: #F8FAFC;
   --text-muted: #64748B;
@@ -21,10 +21,13 @@ ion-content.splash-content {
   justify-content: center;
   height: 100%;
   padding: 0 24px;
+  background-image: radial-gradient(rgba(30, 58, 138, 0.04) 1px, transparent 1.3px);
+  background-size: 12px 12px;
 }
 
 /* --- LOGO WITH SPRING ENTRY & CONTINUOUS FLOAT --- */
 .logo-wrapper {
+  position: relative;
   width: 150px;
   height: 150px;
   margin-bottom: 28px;
@@ -32,6 +35,25 @@ ion-content.splash-content {
   animation: 
     springIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
     floatLogo 3s ease-in-out infinite alternate 0.8s;
+
+  .logo-burst {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 210px; height: 210px;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    animation: burstSlowSpin 12s linear infinite;
+  }
+
+  .logo-svg-main {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+@keyframes burstSlowSpin {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to   { transform: translate(-50%, -50%) rotate(360deg); }
 }
 
 /* --- TYPOGRAPHY --- */

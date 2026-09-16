@@ -1,0 +1,123 @@
+<ion-content fullscreen class="flow-content">
+  <div class="flow-wrap" *ngIf="booking.trip as trip">
+
+    <div class="flow-header">
+      <button class="icon-btn" (click)="goBack()" aria-label="Go back">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </button>
+      <div class="flow-progress-track">
+        <div class="flow-progress-fill" style="width: 75%"></div>
+      </div>
+      <span class="step-count">3/4</span>
+    </div>
+
+    <h1 class="flow-title">Payment</h1>
+    <p class="flow-sub">Review your fare and choose how to pay</p>
+
+    <!-- FARE BREAKDOWN -->
+    <div class="receipt-card">
+      <div class="receipt-row heading">
+        <span>{{ trip.operator }}</span>
+        <span>{{ trip.from }} → {{ trip.to }}</span>
+      </div>
+
+      <div class="passenger-fare-row" *ngFor="let p of booking.passengers; let i = index">
+        <span>
+          Passenger {{ i + 1 }} · {{ typeLabel(p.type) }}
+          <span class="seat-tag" *ngIf="booking.selectedSeats[i]">{{ booking.selectedSeats[i] }}</span>
+        </span>
+        <span class="fare-amount">
+          <s *ngIf="p.type !== 'regular'">{{ booking.formatCurrency(booking.seatFare) }}</s>
+          {{ booking.formatCurrency(booking.fareForPassenger(p)) }}
+        </span>
+      </div>
+
+      <div class="receipt-row">
+        <span>Fare class</span>
+        <span>{{ booking.selectedFareClass.label }}</span>
+      </div>
+      <div class="receipt-row" *ngIf="booking.totalDiscount">
+        <span>Discount applied</span>
+        <span class="discount-value">− {{ booking.formatCurrency(booking.totalDiscount) }}</span>
+      </div>
+      <div class="receipt-row">
+        <span>Subtotal</span>
+        <span>{{ booking.formatCurrency(booking.subtotal) }}</span>
+      </div>
+      <div class="receipt-row">
+        <span>Service fee</span>
+        <span>{{ booking.formatCurrency(booking.serviceFee) }}</span>
+      </div>
+      <div class="receipt-divider"></div>
+      <div class="receipt-row total">
+        <span>Total</span>
+        <span>{{ booking.formatCurrency(booking.total) }}</span>
+      </div>
+    </div>
+
+    <p class="id-reminder" *ngIf="booking.discountedCount">
+      <ion-icon name="information-circle-outline"></ion-icon>
+      {{ booking.discountedCount }} discounted fare{{ booking.discountedCount > 1 ? 's' : '' }} — the conductor will ask to see a valid ID before boarding.
+    </p>
+
+    <!-- PAYMENT METHODS -->
+    <div class="section">
+      <p class="section-title">Payment Method</p>
+      <div class="method-list">
+        <button
+          class="method-card"
+          *ngFor="let m of methods"
+          [class.active]="booking.paymentMethod === m.id"
+          (click)="selectMethod(m.id)">
+          <div class="m-icon"><ion-icon [name]="m.icon"></ion-icon></div>
+          <div class="m-text">
+            <h4>{{ m.label }}</h4>
+            <p>{{ m.sub }}</p>
+          </div>
+          <div class="m-radio" [class.checked]="booking.paymentMethod === m.id"></div>
+        </button>
+      </div>
+    </div>
+
+    <!-- CARD DETAILS (only if card selected) -->
+    <div class="section card-fields" *ngIf="booking.paymentMethod === 'card'">
+      <p class="section-title">Card Details</p>
+      <div class="field-group">
+        <label>Card Number</label>
+        <input type="text" [(ngModel)]="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19" />
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label>Expiry</label>
+          <input type="text" [(ngModel)]="cardExpiry" placeholder="MM/YY" maxlength="5" />
+        </div>
+        <div class="field-group">
+          <label>CVV</label>
+          <input type="text" [(ngModel)]="cardCvv" placeholder="123" maxlength="3" />
+        </div>
+      </div>
+      <p class="secure-note"><ion-icon name="lock-closed-outline"></ion-icon> Payments are encrypted and secure</p>
+    </div>
+
+    <!-- TERMS -->
+    <label class="terms-row">
+      <input type="checkbox" [(ngModel)]="agreed" />
+      <span class="checkbox-box" [class.checked]="agreed">
+        <ion-icon name="checkmark-circle" *ngIf="agreed"></ion-icon>
+      </span>
+      <span class="terms-text">I agree to Byahero's fare and cancellation policy</span>
+    </label>
+
+  </div>
+
+  <!-- STICKY FOOTER -->
+  <div class="flow-footer" *ngIf="booking.trip">
+    <div class="footer-price">
+      <span class="label">Total to pay</span>
+      <span class="value">{{ booking.formatCurrency(booking.total) }}</span>
+    </div>
+    <button class="footer-cta" [disabled]="!canPay" (click)="pay()">
+      Pay Now
+    </button>
+  </div>
+</ion-content>

@@ -1,0 +1,82 @@
+<ion-content fullscreen class="flow-content">
+  <div class="flow-wrap" *ngIf="booking.trip">
+
+    <div class="flow-header">
+      <button class="icon-btn" (click)="goBack()" aria-label="Go back">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </button>
+      <div class="flow-progress-track">
+        <div class="flow-progress-fill" style="width: 50%"></div>
+      </div>
+      <span class="step-count">2/4</span>
+    </div>
+
+    <h1 class="flow-title">Select Your Seat{{ booking.passengerCount > 1 ? 's' : '' }}</h1>
+    <p class="flow-sub">
+      Choose {{ booking.passengerCount }} seat{{ booking.passengerCount > 1 ? 's' : '' }}
+      · {{ booking.selectedFareClass.label }} class
+    </p>
+
+    <!-- BUS FRAME -->
+    <div class="bus-frame">
+      <div class="bus-front">
+        <ion-icon name="navigate-outline"></ion-icon>
+        <span>FRONT</span>
+      </div>
+
+      <div class="seat-grid">
+        <div class="seat-row" *ngFor="let row of rowNumbers">
+          <span class="row-num">{{ row }}</span>
+
+          <div class="seat-pair">
+            <button
+              *ngFor="let seat of leftPair(row)"
+              class="seat"
+              [ngClass]="seat.status"
+              [disabled]="seat.status === 'booked'"
+              (click)="toggleSeat(seat)">
+              {{ seat.id }}
+            </button>
+          </div>
+
+          <div class="aisle-gap"></div>
+
+          <div class="seat-pair">
+            <button
+              *ngFor="let seat of rightPair(row)"
+              class="seat"
+              [ngClass]="seat.status"
+              [disabled]="seat.status === 'booked'"
+              (click)="toggleSeat(seat)">
+              {{ seat.id }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LEGEND -->
+    <div class="legend-row">
+      <div class="legend-item"><span class="swatch available"></span> Available</div>
+      <div class="legend-item"><span class="swatch selected"></span> Selected</div>
+      <div class="legend-item"><span class="swatch booked"></span> Booked</div>
+    </div>
+
+    <p class="hint-text" *ngIf="booking.selectedSeats.length < booking.passengerCount">
+      Tap {{ booking.passengerCount - booking.selectedSeats.length }} more seat{{ (booking.passengerCount - booking.selectedSeats.length) > 1 ? 's' : '' }} to continue
+    </p>
+
+  </div>
+
+  <!-- STICKY FOOTER -->
+  <div class="flow-footer" *ngIf="booking.trip">
+    <div class="footer-price">
+      <span class="label">{{ booking.selectedSeats.length }}/{{ booking.passengerCount }} seats · {{ booking.selectedSeats.join(', ') || '—' }}</span>
+      <span class="value">{{ booking.formatCurrency(booking.subtotal) }}</span>
+    </div>
+    <button class="footer-cta" [disabled]="!canContinue" (click)="continue()">
+      Continue
+      <ion-icon name="chevron-forward-outline"></ion-icon>
+    </button>
+  </div>
+</ion-content>

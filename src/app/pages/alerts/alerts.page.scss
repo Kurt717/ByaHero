@@ -55,6 +55,14 @@ ion-content.alerts-content {
     display: flex; align-items: center; justify-content: center;
     flex-shrink: 0;
 
+    .beacon-burst {
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 80px; height: 80px;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
     .beacon-ring {
       position: absolute;
       inset: 0;
@@ -124,7 +132,9 @@ ion-content.alerts-content {
     }
 
     .mini-badge {
-      background: var(--accent-red);
+      background-color: var(--accent-red);
+      background-image: radial-gradient(rgba(255,255,255,0.35) 1px, transparent 1.2px);
+      background-size: 5px 5px;
       color: #FFFFFF;
       font-size: 10px;
       font-weight: 800;
@@ -162,7 +172,9 @@ ion-content.alerts-content {
     &:active { transform: scale(0.95); }
 
     &.active {
-      background: var(--primary-navy);
+      background-color: var(--primary-navy);
+      background-image: radial-gradient(rgba(255,255,255,0.18) 1px, transparent 1.3px);
+      background-size: 6px 6px;
       color: #FFFFFF;
       border-color: var(--primary-navy);
     }
@@ -212,10 +224,10 @@ ion-content.alerts-content {
 
   .unread-dot {
     position: absolute;
-    top: 14px; left: 6px;
-    width: 6px; height: 6px;
-    border-radius: 50%;
+    top: 12px; left: 4px;
+    width: 10px; height: 10px;
     background: var(--accent-red);
+    clip-path: polygon(50% 0%, 61% 35%, 100% 50%, 61% 65%, 50% 100%, 39% 65%, 0% 50%, 39% 35%);
   }
 
   .alert-icon {
@@ -320,7 +332,9 @@ ion-content.alerts-content {
   }
 
   .chat-badge {
-    background: var(--accent-red);
+    background-color: var(--accent-red);
+    background-image: radial-gradient(rgba(255,255,255,0.35) 1px, transparent 1.2px);
+    background-size: 5px 5px;
     color: #FFFFFF;
     font-size: 10.5px;
     font-weight: 800;

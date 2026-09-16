@@ -1,6 +1,7 @@
+<!-- onboarding.page.html — COMPLETE FILE -->
 <ion-content fullscreen class="onboarding-screen">
   <div class="screen-wrapper">
-    
+
     <!-- Top Bar -->
     <div class="top-bar">
       <button class="skip-btn" (click)="skip()">Skip</button>
@@ -8,46 +9,241 @@
 
     <!-- Main Carousel -->
     <div class="carousel-container" [class.dir-next]="direction === 'next'" [class.dir-prev]="direction === 'prev'">
-      
-      <!-- Angular Loop: Applies 'active' class based on your component's activeIndex -->
+
       <div class="slide" *ngFor="let slide of slides; let i = index" [class.active]="i === activeIndex">
-        
-        <!-- Original Minimalist Illustration: Bus/UV in North Luzon -->
+
         <div class="illustration-container">
-          <svg viewBox="0 0 240 200" xmlns="http://www.w3.org/2000/svg">
-            <!-- Background Mountains (North Luzon Vibe) -->
-            <path d="M 10 150 L 70 70 L 130 150 Z" fill="#f1f5f9" />
-            <path d="M 80 150 L 150 40 L 230 150 Z" fill="#e2e8f0" />
-            
-            <!-- Minimalist Sun/Accent -->
-            <circle cx="150" cy="40" r="14" fill="#da291c" opacity="0.1" />
-            <circle cx="150" cy="40" r="8" fill="#da291c" />
 
-            <!-- The Winding Route / Road -->
-            <path d="M 10 160 Q 120 130 230 160" fill="none" stroke="#15224f" stroke-width="6" stroke-linecap="round" />
-            <path d="M 10 170 Q 120 140 230 170" fill="none" stroke="#da291c" stroke-width="2" stroke-dasharray="8 6" stroke-linecap="round" />
+          <!-- SLIDE 0: Find your route instantly
+               Heroic bus arriving diagonally, gold sunburst, speed lines, location pin, bunting -->
+          <svg *ngIf="i === 0" viewBox="0 0 260 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <defs>
+              <pattern id="htS0" width="8" height="8" patternUnits="userSpaceOnUse">
+                <circle cx="1.5" cy="1.5" r="1.1" fill="#151D48" opacity="0.22"/>
+              </pattern>
+              <clipPath id="htClipS0"><circle cx="36" cy="36" r="46"/></clipPath>
+            </defs>
 
-            <!-- Main Vehicle (Modern Bus / UV Express) -->
-            <rect x="70" y="95" width="100" height="45" rx="8" fill="#15224f" />
-            
-            <!-- Vehicle Windows -->
-            <rect x="75" y="103" width="22" height="16" rx="3" fill="#ffffff" />
-            <rect x="102" y="103" width="22" height="16" rx="3" fill="#ffffff" />
-            <rect x="129" y="103" width="35" height="16" rx="3" fill="#ffffff" />
-            
-            <!-- Brand Stripe on Vehicle -->
-            <rect x="70" y="128" width="100" height="3" fill="#da291c" />
-            
-            <!-- Wheels -->
-            <circle cx="95" cy="142" r="9" fill="#1e293b" />
-            <circle cx="95" cy="142" r="4" fill="#ffffff" />
-            <circle cx="155" cy="142" r="9" fill="#1e293b" />
-            <circle cx="155" cy="142" r="4" fill="#ffffff" />
+            <!-- Screentone cluster: upper-left -->
+            <rect x="0" y="0" width="82" height="82" fill="url(#htS0)" clip-path="url(#htClipS0)"/>
 
-            <!-- Location Pin Drop -->
-            <path d="M 50 110 C 42 110, 36 104, 36 96 C 36 85, 50 70, 50 70 C 50 70, 64 85, 64 96 C 64 104, 58 110, 50 110 Z" fill="#da291c" />
-            <circle cx="50" cy="94" r="3" fill="#ffffff" />
+            <!-- Sunburst rays (gold, fan from right edge — fiesta ray motif) -->
+            <polygon points="260,118  72,0   88,30"  fill="#FFE066" opacity="0.55"/>
+            <polygon points="260,118  64,68  70,96"  fill="#FFE066" opacity="0.5"/>
+            <polygon points="260,118  66,148 74,174" fill="#FFE066" opacity="0.45"/>
+            <polygon points="260,118  92,196 110,200" fill="#FFE066" opacity="0.38"/>
+            <polygon points="260,118  80,34  88,52"  fill="#FFE066" opacity="0.28"/>
+            <polygon points="260,118  74,118 78,138" fill="#FFE066" opacity="0.28"/>
+            <!-- Thin red accent rays (faint, not competing with gold) -->
+            <polygon points="260,118  76,50  82,66"  fill="#D32F2F" opacity="0.10"/>
+            <polygon points="260,118  76,138 82,156" fill="#D32F2F" opacity="0.10"/>
+
+            <!-- Road strip -->
+            <rect x="0" y="173" width="260" height="27" rx="5" fill="#E2E8F0"/>
+            <line x1="0" y1="186" x2="260" y2="186"
+              stroke="#CBD5E1" stroke-width="1.5" stroke-dasharray="14 8"/>
+
+            <!-- Speed lines (motion energy, left of bus) -->
+            <line x1="0"  y1="128" x2="38" y2="128" stroke="#151D48" stroke-width="3.5" stroke-linecap="round" opacity="0.12"/>
+            <line x1="0"  y1="138" x2="46" y2="138" stroke="#151D48" stroke-width="2.5" stroke-linecap="round" opacity="0.09"/>
+            <line x1="4"  y1="149" x2="40" y2="149" stroke="#151D48" stroke-width="2"   stroke-linecap="round" opacity="0.09"/>
+            <line x1="2"  y1="159" x2="34" y2="159" stroke="#151D48" stroke-width="2"   stroke-linecap="round" opacity="0.07"/>
+
+            <!-- Bus: heroic, large-scale, slight diagonal (-5°) -->
+            <g transform="translate(28,86) rotate(-5,92,40)">
+              <rect x="0"   y="0"  width="188" height="70" rx="11" fill="#151D48"/>
+              <!-- Windows -->
+              <rect x="8"   y="10" width="30" height="22" rx="3.5" fill="#C7D2FE" opacity="0.78"/>
+              <rect x="44"  y="10" width="30" height="22" rx="3.5" fill="#C7D2FE" opacity="0.78"/>
+              <rect x="80"  y="10" width="30" height="22" rx="3.5" fill="#D4E0FF" opacity="0.92"/>
+              <!-- Windshield -->
+              <rect x="116" y="8"  width="58" height="28" rx="6" fill="#ffffff" opacity="0.93"/>
+              <rect x="121" y="11" width="36" height="5"  rx="2.5" fill="rgba(255,255,255,0.42)"/>
+              <!-- Red accent stripe -->
+              <rect x="0"   y="54" width="188" height="12" rx="5" fill="#D32F2F"/>
+              <!-- Gold headlight -->
+              <rect x="179" y="20" width="8"  height="8"  rx="2" fill="#FFE066"/>
+              <!-- Wheel arches -->
+              <ellipse cx="40"  cy="72" rx="23" ry="8" fill="#08102A"/>
+              <ellipse cx="150" cy="72" rx="23" ry="8" fill="#08102A"/>
+              <!-- Wheels (inside transform so they tilt with bus) -->
+              <circle cx="40"  cy="73" r="13" fill="#08102A"/>
+              <circle cx="40"  cy="73" r="5"  fill="#CBD5E1"/>
+              <circle cx="150" cy="73" r="13" fill="#08102A"/>
+              <circle cx="150" cy="73" r="5"  fill="#CBD5E1"/>
+            </g>
+
+            <!-- Location pin (destination ahead of bus) -->
+            <g transform="translate(8,74)">
+              <path d="M12 0C5.4 0 0 5.4 0 12C0 21 12 34 12 34S24 21 24 12C24 5.4 18.6 0 12 0Z" fill="#D32F2F"/>
+              <circle cx="12" cy="12" r="4.5" fill="#ffffff"/>
+            </g>
+
+            <!-- Star sparkle: semantic "live/active" — ONE instance, on the bus arrival -->
+            <polygon
+              points="238,18 239.8,23.4 245.2,25 239.8,26.6 238,32 236.2,26.6 230.8,25 236.2,23.4"
+              fill="#FFE066"/>
+
+            <!-- Bunting pennants (fiesta energy, top center) -->
+            <line x1="94" y1="5" x2="178" y2="5" stroke="#CBD5E1" stroke-width="0.8" opacity="0.6"/>
+            <polygon points="94,5  103,19  85,19"  fill="#D32F2F" opacity="0.55"/>
+            <polygon points="113,5 122,19 104,19"  fill="#FFE066" opacity="0.72"/>
+            <polygon points="132,5 141,19 123,19"  fill="#151D48" opacity="0.45"/>
+            <polygon points="151,5 160,19 142,19"  fill="#D32F2F" opacity="0.55"/>
+            <polygon points="170,5 179,19 161,19"  fill="#FFE066" opacity="0.72"/>
           </svg>
+
+          <!-- SLIDE 1: Track your ride live
+               Top-down radar map — road grid, concentric signal rings, bus silhouette at center -->
+          <svg *ngIf="i === 1" viewBox="0 0 260 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <defs>
+              <pattern id="htS1" width="8" height="8" patternUnits="userSpaceOnUse">
+                <circle cx="1.5" cy="1.5" r="1.1" fill="#151D48" opacity="0.20"/>
+              </pattern>
+              <clipPath id="htClipS1"><circle cx="224" cy="168" r="44"/></clipPath>
+            </defs>
+
+            <!-- Road grid (top-down view) -->
+            <rect x="0"   y="89" width="260" height="22" fill="#E2E8F0"/>
+            <rect x="119" y="0"  width="22"  height="200" fill="#E2E8F0"/>
+            <!-- Diagonal secondary road (dynamic diagonal composition) -->
+            <line x1="0" y1="200" x2="260" y2="0"
+              stroke="#E2E8F0" stroke-width="14" opacity="0.55"/>
+            <!-- Road center dashes -->
+            <line x1="0"   y1="100" x2="260" y2="100"
+              stroke="#CBD5E1" stroke-width="1.5" stroke-dasharray="12 8"/>
+            <line x1="130" y1="0"   x2="130" y2="200"
+              stroke="#CBD5E1" stroke-width="1.5" stroke-dasharray="12 8"/>
+
+            <!-- Signal rings expanding outward from bus center (130, 100) -->
+            <circle cx="130" cy="100" r="86" fill="none" stroke="#D32F2F" stroke-width="1"   opacity="0.07"/>
+            <circle cx="130" cy="100" r="64" fill="none" stroke="#D32F2F" stroke-width="1.5" opacity="0.13"/>
+            <circle cx="130" cy="100" r="44" fill="none" stroke="#D32F2F" stroke-width="2"   opacity="0.22"/>
+            <circle cx="130" cy="100" r="25" fill="none" stroke="#D32F2F" stroke-width="2.5" opacity="0.38"/>
+
+            <!-- Road waypoint markers -->
+            <circle cx="44"  cy="100" r="5.5" fill="#D32F2F" opacity="0.5"/>
+            <circle cx="216" cy="100" r="5.5" fill="#D32F2F" opacity="0.5"/>
+            <circle cx="130" cy="36"  r="5.5" fill="#FFE066" opacity="0.85"/>
+            <circle cx="130" cy="164" r="5.5" fill="#D32F2F" opacity="0.5"/>
+
+            <!-- Center disc: navy background for bus icon -->
+            <circle cx="130" cy="100" r="34" fill="#F8FAFC"/>
+            <circle cx="130" cy="100" r="31" fill="#151D48"/>
+
+            <!-- Top-down bus silhouette (centered at 130,100, pointing north) -->
+            <g transform="translate(130,100)">
+              <rect x="-13" y="-24" width="26" height="48" rx="5" fill="#F8FAFC"/>
+              <!-- Windshield (front, top of rect) -->
+              <rect x="-13" y="-24" width="26" height="13" rx="5" fill="#8FA3FF" opacity="0.82"/>
+              <!-- Cabin windows -->
+              <rect x="-10" y="-7"  width="9" height="8" rx="2" fill="#C7D2FE" opacity="0.75"/>
+              <rect x="1"   y="-7"  width="9" height="8" rx="2" fill="#C7D2FE" opacity="0.75"/>
+              <!-- Red stripe (rear) -->
+              <rect x="-13" y="18"  width="26" height="8" rx="4" fill="#D32F2F" opacity="0.9"/>
+              <!-- Direction arrow (pointing north = forward) -->
+              <polygon points="0,-29 7,-24 -7,-24" fill="#FFE066"/>
+            </g>
+
+            <!-- Screentone cluster: lower-right -->
+            <rect x="180" y="124" width="88" height="88"
+              fill="url(#htS1)" clip-path="url(#htClipS1)"/>
+
+            <!-- Star sparkle: semantic "live" — ONE instance, this feature is live -->
+            <polygon
+              points="34,22 35.7,27.3 41.2,28.9 35.7,30.5 34,35.8 32.3,30.5 26.8,28.9 32.3,27.3"
+              fill="#FFE066"/>
+
+            <!-- Bunting pennants (top-right corner) -->
+            <line x1="168" y1="4" x2="258" y2="4" stroke="#CBD5E1" stroke-width="0.8" opacity="0.6"/>
+            <polygon points="168,4 177,18 159,18" fill="#FFE066" opacity="0.72"/>
+            <polygon points="187,4 196,18 178,18" fill="#D32F2F" opacity="0.55"/>
+            <polygon points="206,4 215,18 197,18" fill="#151D48" opacity="0.45"/>
+            <polygon points="225,4 234,18 216,18" fill="#FFE066" opacity="0.72"/>
+            <polygon points="244,4 253,18 235,18" fill="#D32F2F" opacity="0.55"/>
+          </svg>
+
+          <!-- SLIDE 2: Fixed, fair fares
+               Oversized ticket stub with ticket-notch visual language, pop-yellow fare chip.
+               No 8-pointed sparkle (fare is fixed/static, not live). -->
+          <svg *ngIf="i === 2" viewBox="0 0 260 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <defs>
+              <pattern id="htS2body" width="8" height="8" patternUnits="userSpaceOnUse">
+                <circle cx="1.5" cy="1.5" r="1.1" fill="rgba(255,255,255,0.14)"/>
+              </pattern>
+              <pattern id="htS2corner" width="8" height="8" patternUnits="userSpaceOnUse">
+                <circle cx="1.5" cy="1.5" r="1.1" fill="#151D48" opacity="0.20"/>
+              </pattern>
+              <clipPath id="htClipS2"><circle cx="228" cy="26" r="40"/></clipPath>
+            </defs>
+
+            <!-- Screentone cluster: upper-right -->
+            <rect x="188" y="0" width="80" height="66"
+              fill="url(#htS2corner)" clip-path="url(#htClipS2)"/>
+
+            <!-- Ticket body: large navy rounded rect -->
+            <rect x="16" y="26" width="228" height="148" rx="20" fill="#151D48"/>
+            <!-- Screentone texture on ticket surface -->
+            <rect x="16" y="26" width="228" height="148" rx="20" fill="url(#htS2body)"/>
+
+            <!-- Ticket-notch cutouts (the byahero stamp motif at full decorative scale) -->
+            <circle cx="16"  cy="100" r="19" fill="#F8FAFC"/>
+            <circle cx="244" cy="100" r="19" fill="#F8FAFC"/>
+
+            <!-- Perforation dashed divider -->
+            <line x1="35" y1="100" x2="225" y2="100"
+              stroke="rgba(255,255,255,0.22)" stroke-width="1.5" stroke-dasharray="7 5"/>
+
+            <!-- Top half: operator badge + route line -->
+            <rect x="88" y="42" width="84" height="18" rx="9" fill="rgba(255,255,255,0.10)"/>
+            <rect x="100" y="47" width="60" height="6" rx="3" fill="rgba(255,255,255,0.32)"/>
+            <!-- Stylised route line -->
+            <circle cx="64"  cy="80" r="5" fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="2"/>
+            <line x1="72" y1="80" x2="188" y2="80"
+              stroke="rgba(255,255,255,0.2)" stroke-width="1.5" stroke-dasharray="6 4"/>
+            <circle cx="196" cy="80" r="5" fill="#D32F2F"/>
+            <!-- City name placeholder blocks -->
+            <rect x="44"  y="88" width="42" height="6" rx="3" fill="rgba(255,255,255,0.45)"/>
+            <rect x="174" y="88" width="42" height="6" rx="3" fill="rgba(255,255,255,0.45)"/>
+
+            <!-- Bottom half: fare chip — THE ONE pop-art standout element -->
+            <rect x="76" y="112" width="108" height="46" rx="9" fill="#FFE066"
+              transform="rotate(-2, 130, 135)"/>
+            <!-- Fare text (₱ 480 from Victory Liner booking in bookings.page.ts) -->
+            <text x="130" y="140"
+              text-anchor="middle"
+              font-family="Plus Jakarta Sans, -apple-system, sans-serif"
+              font-size="24" font-weight="800"
+              fill="#151D48"
+              transform="rotate(-2, 130, 140)">&#8369; 480</text>
+
+            <!-- Seat / date placeholder blocks -->
+            <rect x="48"  y="158" width="54" height="6" rx="3" fill="rgba(255,255,255,0.28)"/>
+            <rect x="158" y="158" width="54" height="6" rx="3" fill="rgba(255,255,255,0.28)"/>
+
+            <!-- Small diamond accents (decorative, NOT the 8-pointed sparkle) -->
+            <polygon points="32,16 36,22 32,28 28,22" fill="#FFE066" opacity="0.9"/>
+            <polygon points="228,170 232,176 228,182 224,176" fill="#FFE066" opacity="0.9"/>
+            <polygon points="52,176 55,180 52,184 49,180" fill="#D32F2F" opacity="0.6"/>
+
+            <!-- Shield / checkmark (fixed = protected fare) -->
+            <g transform="translate(106, 176)">
+              <circle cx="24" cy="14" r="12"
+                fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="1.5"/>
+              <polyline points="19,14 22,17 29,10"
+                fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round"/>
+            </g>
+
+            <!-- Bunting pennants (lower-left, different corner from slide 0/1) -->
+            <line x1="16" y1="186" x2="108" y2="186" stroke="#CBD5E1" stroke-width="0.8" opacity="0.5"/>
+            <polygon points="16,186  25,200  7,200"  fill="#D32F2F" opacity="0.45"/>
+            <polygon points="35,186  44,200  26,200" fill="#FFE066" opacity="0.6"/>
+            <polygon points="54,186  63,200  45,200" fill="#151D48" opacity="0.35"/>
+            <polygon points="73,186  82,200  64,200" fill="#D32F2F" opacity="0.45"/>
+            <polygon points="92,186 101,200  83,200" fill="#FFE066" opacity="0.6"/>
+          </svg>
+
         </div>
 
         <h2 class="slide-title">{{ slide.title || 'Safe journeys across the North.' }}</h2>
@@ -58,11 +254,11 @@
 
     </div>
 
-    <!-- Functional Pagination Dots -->
+    <!-- Pagination Dots -->
     <div class="pagination-dots">
-      <button 
-        *ngFor="let slide of slides; let i = index" 
-        class="dot" 
+      <button
+        *ngFor="let slide of slides; let i = index"
+        class="dot"
         [class.active]="i === activeIndex"
         (click)="goToDot(i)"
         aria-label="Change slide">
@@ -71,16 +267,15 @@
 
     <!-- Bottom Actions -->
     <div class="bottom-actions">
-      <!-- Minimalist Button (No border, solid Navy, Red Arrow) -->
       <button class="primary-btn" (click)="onPrimaryAction()">
         <span class="btn-text">{{ isLastSlide ? 'Get Started' : 'Next' }}</span>
         <ion-icon name="arrow-forward" class="btn-arrow"></ion-icon>
       </button>
-      
+
       <p class="login-text">
         Already have an account? <a routerLink="/login">Log in</a>
       </p>
     </div>
-    
+
   </div>
 </ion-content>

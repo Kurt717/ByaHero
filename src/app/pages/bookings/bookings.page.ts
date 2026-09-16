@@ -7,6 +7,7 @@ import {
   timeOutline, calendarOutline, chevronForwardOutline, checkmarkCircle, closeCircle,
   qrCodeOutline, bus, fileTrayOutline, arrowForwardOutline, refreshOutline, radioButtonOn
 } from 'ionicons/icons';
+import { TicketService, Booking, BookingStatus } from '../bookings/ticket.service';
 
 addIcons({
   'time-outline': timeOutline, 'calendar-outline': calendarOutline,
@@ -16,20 +17,7 @@ addIcons({
   'refresh-outline': refreshOutline, 'radio-button-on': radioButtonOn
 });
 
-type BookingStatus = 'confirmed' | 'boarding' | 'completed' | 'cancelled';
 type TabKey = 'upcoming' | 'past';
-
-interface Booking {
-  operator: string;
-  from: string;
-  to: string;
-  date: string;
-  time: string;
-  seat: string;
-  fare: string;
-  status: BookingStatus;
-  bookingRef: string;
-}
 
 @Component({
   selector: 'app-bookings',
@@ -64,7 +52,7 @@ export class BookingsPage {
     },
   ];
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private ticketService: TicketService) {}
 
   get upcomingBookings(): Booking[] {
     return this.bookings.filter(b => b.status === 'confirmed' || b.status === 'boarding');
@@ -85,7 +73,8 @@ export class BookingsPage {
   }
 
   viewTicket(booking: Booking) {
-    console.log('Opening e-ticket for', booking.bookingRef);
+    this.ticketService.open(booking);
+    this.router.navigateByUrl('/e-ticket');
   }
 
   bookAgain(booking: Booking) {

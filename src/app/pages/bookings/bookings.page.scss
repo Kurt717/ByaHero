@@ -1,3 +1,4 @@
+/* bookings.page.scss — COMPLETE FILE */
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
 
 :host {
@@ -32,22 +33,56 @@ ion-content.bookings-content {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* --- HEADER (stamp mark, not a banner) --- */
+@keyframes markPulse {
+  0%   { transform: scale(1); opacity: 0.5; }
+  70%  { transform: scale(1.35); opacity: 0; }
+  100% { transform: scale(1.35); opacity: 0; }
+}
+
+/* --- HEADER (beacon mark, matches Alerts) --- */
 .page-header {
   display: flex;
   align-items: center;
   gap: 14px;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
   opacity: 0;
   animation: revealUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 
   .header-mark {
+    position: relative;
     width: 48px; height: 48px;
     border-radius: 50%;
     border: 2px dashed var(--accent-red);
     display: flex; align-items: center; justify-content: center;
     flex-shrink: 0;
-    ion-icon { font-size: 22px; color: var(--accent-red); }
+    ion-icon { font-size: 22px; color: var(--accent-red); z-index: 2; }
+
+    .mark-burst {
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 76px; height: 76px;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .mark-ring {
+      position: absolute;
+      inset: -2px;
+      border-radius: 50%;
+      border: 2px solid var(--accent-red);
+      animation: markPulse 2.4s ease-out infinite;
+      pointer-events: none;
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: -2px; right: -2px;
+      width: 9px; height: 9px;
+      background: var(--accent-red);
+      clip-path: polygon(50% 0%, 61% 35%, 100% 50%, 61% 65%, 50% 100%, 39% 65%, 0% 50%, 39% 35%);
+      z-index: 3;
+    }
   }
 
   .header-text {
@@ -56,40 +91,58 @@ ion-content.bookings-content {
   }
 }
 
-/* --- TABS: sliding underline, distinct from Home's filled segmented control --- */
-.tab-bar {
-  position: relative;
+/* --- TABS: segmented pill (matches Alerts / Home) --- */
+.top-toggle {
   display: flex;
-  border-bottom: 1px solid var(--border-color);
+  background: #EEF1F6;
+  border-radius: 999px;
+  padding: 4px;
   margin-bottom: 20px;
   opacity: 0;
-  animation: revealUp 0.5s 0.08s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: revealUp 0.5s 0.06s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 
-  .tab {
+  .toggle-btn {
     flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
     background: transparent;
     border: none;
-    padding: 0 0 14px;
+    border-radius: 999px;
+    height: 42px;
     font-family: var(--font-family);
-    font-size: 14px;
+    font-size: 13.5px;
     font-weight: 700;
     color: var(--text-muted);
     cursor: pointer;
-    transition: color 0.25s ease;
+    transition: background-color 0.3s cubic-bezier(0.16, 1, 0.3, 1), color 0.3s ease, transform 0.15s ease;
 
-    &.active { color: var(--primary-navy); }
-  }
+    &:active { transform: scale(0.97); }
 
-  .tab-indicator {
-    position: absolute;
-    bottom: -1px;
-    left: 0;
-    width: 50%;
-    height: 2px;
-    background: var(--accent-red);
-    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    ion-icon { font-size: 16px; }
 
-    &.shift { transform: translateX(100%); }
+    &.active {
+      background: var(--bg-white);
+      color: var(--primary-navy);
+      box-shadow: 0 2px 8px rgba(21, 29, 72, 0.08);
+    }
+
+    .mini-badge {
+      background-color: var(--accent-red);
+      background-image: radial-gradient(rgba(255,255,255,0.35) 1px, transparent 1.2px);
+      background-size: 5px 5px;
+      color: #FFFFFF;
+      font-size: 10px;
+      font-weight: 800;
+      min-width: 16px;
+      height: 16px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 4px;
+    }
   }
 }
 
@@ -120,94 +173,164 @@ ion-content.bookings-content {
 
   .ticket-main {
     flex: 1;
-    padding: 18px;
+    padding: 18px 16px;
     min-width: 0;
+    background-image: radial-gradient(rgba(21, 29, 72, 0.05) 1px, transparent 1.3px);
+    background-size: 7px 7px;
   }
 
   .ticket-top {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 8px;
     margin-bottom: 14px;
 
     .operator {
-      display: flex; align-items: center; gap: 8px;
+      display: flex; align-items: center; gap: 8px; min-width: 0;
       .operator-icon {
         width: 26px; height: 26px;
         border-radius: 8px;
         background: #EEF2FF;
         display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0;
         ion-icon { font-size: 14px; color: var(--primary-navy); }
       }
-      .operator-name { font-size: 13.5px; font-weight: 700; color: var(--primary-navy); }
+      .operator-name {
+        font-size: 13.5px; font-weight: 700; color: var(--primary-navy);
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      }
     }
 
     .status-chip {
-      font-size: 10.5px;
+      font-size: 10px;
       font-weight: 800;
-      padding: 4px 10px;
+      padding: 4px 9px;
       border-radius: 999px;
       text-transform: uppercase;
       letter-spacing: 0.3px;
+      white-space: nowrap;
+      flex-shrink: 0;
 
-      &.confirmed { background: #DCFCE7; color: var(--success-green); }
-      &.boarding  { background: #FEF3C7; color: var(--amber); }
+      &.confirmed {
+        background-color: #DCFCE7;
+        background-image: radial-gradient(rgba(22,163,74,0.15) 1px, transparent 1.2px);
+        background-size: 5px 5px;
+        color: var(--success-green);
+      }
+      &.boarding {
+        background-color: #FEF3C7;
+        background-image: radial-gradient(rgba(217,119,6,0.18) 1px, transparent 1.2px);
+        background-size: 5px 5px;
+        color: var(--amber);
+      }
       &.completed { background: #F1F5F9; color: var(--text-muted); }
       &.cancelled { background: #FEE2E2; color: var(--accent-red); }
     }
   }
 
-  .route-row {
+  /* --- ROUTE: fixed height so every card matches --- */
+  .route-col {
     display: flex;
-    align-items: center;
-    gap: 8px;
+    gap: 12px;
+    align-items: stretch;
     margin-bottom: 14px;
+    min-height: 62px;
 
-    .place { font-size: 12.5px; font-weight: 700; color: var(--text-main); flex-shrink: 0; max-width: 72px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-
-    .route-path {
-      flex: 1;
+    .route-line-v {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      min-width: 0;
+      flex-shrink: 0;
+      padding: 3px 0;
 
-      .node { width: 6px; height: 6px; border-radius: 50%; background: var(--primary-navy); flex-shrink: 0; }
-      .node.dest { background: var(--accent-red); }
-      .dash-line { flex: 1; height: 1px; border-top: 1.5px dashed #CBD5E1; }
-      .riding-bus { font-size: 13px; color: var(--text-muted); margin: 0 4px; flex-shrink: 0; }
+      .rnode {
+        width: 8px; height: 8px;
+        border-radius: 50%;
+        flex-shrink: 0;
+
+        &.origin {
+          border: 2px solid var(--primary-navy);
+          background: var(--bg-white);
+        }
+        &.dest { background: var(--accent-red); }
+      }
+
+      .rdash {
+        flex: 1;
+        width: 1.5px;
+        border-left: 1.5px dashed #CBD5E1;
+        margin: 3px 0;
+        min-height: 12px;
+      }
+
+      .rbus {
+        font-size: 12px;
+        color: var(--text-muted);
+        flex-shrink: 0;
+      }
+    }
+
+    .route-names {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+
+      .place {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--text-main);
+        line-height: 1.25;
+      }
     }
   }
 
+  /* --- META: nowrap so dates never break across lines --- */
   .meta-row {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 12px;
+    margin-bottom: 10px;
 
     .meta {
       display: flex; align-items: center; gap: 4px;
-      font-size: 11.5px; font-weight: 600; color: var(--text-muted);
-      ion-icon { font-size: 13px; }
+      font-size: 11px; font-weight: 600; color: var(--text-muted);
+      white-space: nowrap;
+      ion-icon { font-size: 12px; flex-shrink: 0; }
     }
-    .meta.seat {
-      margin-left: auto;
+  }
+
+  .seat-row {
+    display: flex;
+
+    .seat-chip {
+      font-size: 11px;
+      font-weight: 800;
       color: var(--primary-navy);
-      font-weight: 700;
+      background: #EEF2FF;
+      padding: 4px 10px;
+      border-radius: 999px;
+      white-space: nowrap;
     }
   }
 
   /* --- The tear-off stub --- */
   .ticket-stub {
     position: relative;
-    width: 92px;
+    width: 86px;
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 6px;
-    padding: 14px 8px;
+    padding: 14px 6px;
     border-left: 2px dashed #E2E8F0;
     text-align: center;
+    background-image: radial-gradient(rgba(21, 29, 72, 0.05) 1px, transparent 1.3px);
+    background-size: 7px 7px;
 
     /* Perforation notches */
     &::before, &::after {
@@ -223,8 +346,8 @@ ion-content.bookings-content {
     &::after { bottom: -10px; }
 
     .qr-icon { font-size: 26px; color: var(--primary-navy); }
-    .fare { font-size: 13px; font-weight: 800; color: var(--primary-navy); }
-    .ref { font-size: 9px; font-weight: 600; color: var(--text-muted); letter-spacing: 0.3px; }
+    .fare { font-size: 13px; font-weight: 800; color: var(--primary-navy); white-space: nowrap; }
+    .ref { font-size: 9px; font-weight: 600; color: var(--text-muted); letter-spacing: 0.3px; white-space: nowrap; }
 
     .stub-action {
       margin-top: 4px;

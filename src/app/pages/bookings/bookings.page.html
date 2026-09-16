@@ -1,9 +1,23 @@
+<!-- bookings.page.html — COMPLETE FILE -->
 <ion-content fullscreen class="bookings-content">
   <div class="bookings-wrap">
 
-    <!-- HEADER — no gradient block, a stamp mark instead -->
+    <!-- HEADER — beacon mark, matches Alerts/Profile -->
     <div class="page-header">
       <div class="header-mark">
+        <svg class="mark-burst" viewBox="0 0 80 80" aria-hidden="true">
+          <g stroke="#8FA3FF" stroke-width="2" opacity="0.4" stroke-linecap="round">
+            <line x1="40" y1="6" x2="40" y2="16"/>
+            <line x1="40" y1="64" x2="40" y2="74"/>
+            <line x1="6" y1="40" x2="16" y2="40"/>
+            <line x1="64" y1="40" x2="74" y2="40"/>
+            <line x1="14" y1="14" x2="21" y2="21"/>
+            <line x1="59" y1="59" x2="66" y2="66"/>
+            <line x1="14" y1="66" x2="21" y2="59"/>
+            <line x1="59" y1="21" x2="66" y2="14"/>
+          </g>
+        </svg>
+        <span class="mark-ring"></span>
         <ion-icon name="bus"></ion-icon>
       </div>
       <div class="header-text">
@@ -15,15 +29,17 @@
       </div>
     </div>
 
-    <!-- TABS -->
-    <div class="tab-bar">
-      <button class="tab" [class.active]="activeTab === 'upcoming'" (click)="setTab('upcoming')">
+    <!-- TABS — segmented pill, matches Alerts/Home -->
+    <div class="top-toggle">
+      <button class="toggle-btn" [class.active]="activeTab === 'upcoming'" (click)="setTab('upcoming')">
+        <ion-icon name="time-outline"></ion-icon>
         Upcoming
+        <span class="mini-badge" *ngIf="upcomingBookings.length">{{ upcomingBookings.length }}</span>
       </button>
-      <button class="tab" [class.active]="activeTab === 'past'" (click)="setTab('past')">
+      <button class="toggle-btn" [class.active]="activeTab === 'past'" (click)="setTab('past')">
+        <ion-icon name="file-tray-outline"></ion-icon>
         Past
       </button>
-      <div class="tab-indicator" [class.shift]="activeTab === 'past'"></div>
     </div>
 
     <!-- TICKETS -->
@@ -39,22 +55,26 @@
             <span class="status-chip" [ngClass]="booking.status">{{ statusLabel(booking.status) }}</span>
           </div>
 
-          <div class="route-row">
-            <span class="place">{{ booking.from }}</span>
-            <span class="route-path">
-              <span class="node"></span>
-              <span class="dash-line"></span>
-              <ion-icon name="bus" class="riding-bus"></ion-icon>
-              <span class="dash-line"></span>
-              <span class="node dest"></span>
-            </span>
-            <span class="place">{{ booking.to }}</span>
+          <div class="route-col">
+            <div class="route-line-v">
+              <span class="rnode origin"></span>
+              <span class="rdash"></span>
+              <ion-icon name="bus" class="rbus"></ion-icon>
+              <span class="rdash"></span>
+              <span class="rnode dest"></span>
+            </div>
+            <div class="route-names">
+              <span class="place">{{ booking.from }}</span>
+              <span class="place">{{ booking.to }}</span>
+            </div>
           </div>
 
           <div class="meta-row">
             <span class="meta"><ion-icon name="calendar-outline"></ion-icon>{{ booking.date }}</span>
             <span class="meta"><ion-icon name="time-outline"></ion-icon>{{ booking.time }}</span>
-            <span class="meta seat">{{ booking.seat }}</span>
+          </div>
+          <div class="seat-row">
+            <span class="seat-chip">{{ booking.seat }}</span>
           </div>
         </div>
 

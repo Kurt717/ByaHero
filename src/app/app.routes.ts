@@ -22,6 +22,27 @@ export const routes: Routes = [
     path: 'signup',
     loadComponent: () => import('./pages/signup/signup.page').then( m => m.SignupPage)
   },
+  // --- BOOKING FLOW (outside the tab bar, full-screen wizard) ---
+  {
+    path: 'booking/trip',
+    loadComponent: () => import('./pages/booking/trip-details/trip-details.page').then(m => m.TripDetailsPage)
+  },
+  {
+    path: 'booking/seats',
+    loadComponent: () => import('./pages/booking/seat-selection/seat-selection.page').then(m => m.SeatSelectionPage)
+  },
+  {
+    path: 'booking/payment',
+    loadComponent: () => import('./pages/booking/payment/payment.page').then(m => m.PaymentPage)
+  },
+  {
+    path: 'booking/confirmation',
+    loadComponent: () => import('./pages/booking/confirmation/confirmation.page').then(m => m.ConfirmationPage)
+  },
+    {
+    path: 'e-ticket',
+    loadComponent: () => import('./pages/bookings/ticket/ticket.page').then(m => m.TicketPage)
+  },
   {
     path: '',
     loadComponent: () => import('./tabs/tabs.page').then( m => m.TabsPage),

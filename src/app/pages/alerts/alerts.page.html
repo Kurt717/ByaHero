@@ -4,6 +4,18 @@
     <!-- HEADER: signal beacon, not a gradient banner -->
     <div class="page-header">
       <div class="beacon">
+        <svg class="beacon-burst" viewBox="0 0 80 80" aria-hidden="true">
+          <g stroke="#8FA3FF" stroke-width="2" opacity="0.4" stroke-linecap="round">
+            <line x1="40" y1="6" x2="40" y2="16"/>
+            <line x1="40" y1="64" x2="40" y2="74"/>
+            <line x1="6" y1="40" x2="16" y2="40"/>
+            <line x1="64" y1="40" x2="74" y2="40"/>
+            <line x1="14" y1="14" x2="21" y2="21"/>
+            <line x1="59" y1="59" x2="66" y2="66"/>
+            <line x1="14" y1="66" x2="21" y2="59"/>
+            <line x1="59" y1="21" x2="66" y2="14"/>
+          </g>
+        </svg>
         <span class="beacon-ring"></span>
         <ion-icon name="notifications-outline" *ngIf="topTab === 'alerts'"></ion-icon>
         <ion-icon name="chatbubble-ellipses-outline" *ngIf="topTab === 'chats'"></ion-icon>

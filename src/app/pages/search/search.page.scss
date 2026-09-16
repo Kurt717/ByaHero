@@ -1,3 +1,4 @@
+/* search.page.scss — COMPLETE FILE */
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
 
 :host {
@@ -10,6 +11,7 @@
   --text-main: #1F2937;
   --text-muted: #6B7280;
   --border-color: #E2E8F0;
+  --pop-yellow: #FFE066;
   --font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
 }
 
@@ -17,16 +19,6 @@ ion-content.search-content {
   --background: var(--bg-page);
   font-family: var(--font-family);
   -webkit-font-smoothing: antialiased;
-}
-
-.header-bg-block {
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 200px;
-  background: linear-gradient(135deg, var(--primary-navy-bg) 0%, var(--primary-navy-dark) 100%);
-  border-bottom-left-radius: 32px;
-  border-bottom-right-radius: 32px;
-  z-index: 0;
 }
 
 .search-wrap {
@@ -39,7 +31,6 @@ ion-content.search-content {
   margin: 0 auto;
 }
 
-/* --- ENTRANCE KEYFRAMES --- */
 @keyframes revealUp {
   from { opacity: 0; transform: translateY(18px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -58,7 +49,7 @@ ion-content.search-content {
   .hero-title {
     font-size: 18px;
     font-weight: 800;
-    color: #FFFFFF;
+    color: var(--primary-navy);
     margin: 0;
     letter-spacing: -0.02em;
   }
@@ -66,21 +57,38 @@ ion-content.search-content {
   .icon-btn {
     width: 40px; height: 40px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.15);
+    background: #EEF2FF;
     border: none;
     display: flex; align-items: center; justify-content: center;
     cursor: pointer;
     transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.2s ease;
 
-    &:active {
-      transform: scale(0.88);
-      background: rgba(255, 255, 255, 0.25);
-    }
-    ion-icon { font-size: 20px; color: #FFFFFF; }
+    &:active { transform: scale(0.88); background: #E0E7FF; }
+    ion-icon { font-size: 20px; color: var(--primary-navy); }
   }
 }
 
-/* --- 2. SEARCH INPUT --- */
+/* --- 2. SEARCH INPUT — viewfinder frame --- */
+.search-pill-frame {
+  position: relative;
+  padding: 8px;
+  margin-bottom: 20px;
+  opacity: 0;
+  animation: revealUp 0.5s 0.08s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+
+  .corner {
+    position: absolute;
+    width: 14px; height: 14px;
+    border: 2px solid var(--accent-red);
+    opacity: 0.55;
+    pointer-events: none;
+  }
+  .tl { top: 0;    left: 0;  border-right: none; border-bottom: none; }
+  .tr { top: 0;    right: 0; border-left: none;  border-bottom: none; }
+  .bl { bottom: 0; left: 0;  border-right: none; border-top: none; }
+  .br { bottom: 0; right: 0; border-left: none;  border-top: none; }
+}
+
 .search-pill {
   display: flex;
   align-items: center;
@@ -89,10 +97,7 @@ ion-content.search-content {
   border-radius: 999px;
   height: 56px;
   padding: 0 20px;
-  margin-bottom: 20px;
-  border: 1.5px solid transparent;
-  opacity: 0;
-  animation: revealUp 0.5s 0.08s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  border: 1.5px solid var(--border-color);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 
   &:focus-within {
@@ -116,7 +121,6 @@ ion-content.search-content {
     font-weight: 500;
     color: var(--text-main);
     outline: none;
-
     &::placeholder { color: var(--text-muted); }
   }
 
@@ -128,13 +132,12 @@ ion-content.search-content {
     padding: 0;
     color: var(--text-muted);
     transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.2s ease;
-
     &:active { transform: scale(0.85); }
     ion-icon { font-size: 20px; }
   }
 }
 
-/* --- 3. CATEGORIES (reused pattern from Home) --- */
+/* --- 3. CATEGORIES --- */
 .categories-grid {
   display: flex;
   justify-content: space-between;
@@ -194,20 +197,17 @@ ion-content.search-content {
     }
   }
 
-  /* One shared pill style for every header action: Clear / View All / Sort trigger */
-  .section-action {
+  /* View All pill — was in HTML but had no SCSS entry */
+  .view-all-pill {
     font-size: 12px;
     font-weight: 700;
     color: var(--primary-navy);
     background: #EEF2FF;
-    border: none;
-    cursor: pointer;
     padding: 6px 12px;
     border-radius: 999px;
-    font-family: var(--font-family);
-    transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease;
-
-    &:active { transform: scale(0.94); background: #E0E7FF; }
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    &:active { background: #E0E7FF; }
   }
 
   .sort-control {
@@ -215,6 +215,12 @@ ion-content.search-content {
     align-items: center;
     gap: 4px;
     cursor: pointer;
+
+    span {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--primary-navy);
+    }
 
     ion-icon {
       font-size: 14px;
@@ -248,15 +254,36 @@ ion-content.search-content {
         color: var(--text-main);
         cursor: pointer;
         transition: background-color 0.15s ease;
-
         &:active { background: var(--bg-page); }
         &.selected { color: var(--primary-navy); font-weight: 800; }
       }
     }
   }
+
+  /* Clear link — FIXED: was nested inside .recent-item in the old SCSS
+     (generated .recent-list .recent-item .clear-link — never matched).
+     Now lives at .section level, matching its actual DOM position. */
+  .clear-link {
+    display: block;
+    margin-top: 8px;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-family: var(--font-family);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 4px 8px;
+    text-decoration: underline;
+    cursor: pointer;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: color 0.2s ease;
+    &:hover  { color: var(--primary-navy-bg); }
+    &:active { opacity: 0.7; }
+  }
 }
 
-/* --- 4. RECENT SEARCHES (flat list, not a duplicate card) --- */
+/* --- 4. RECENT SEARCHES --- */
 .recent-list {
   display: flex;
   flex-direction: column;
@@ -293,29 +320,6 @@ ion-content.search-content {
       color: var(--text-main);
     }
 
-.clear-link {
-      background: transparent;
-      border: none;
-      color: var(--text-muted); // Muted light grey
-      font-family: var(--font-family, inherit);
-      font-size: 13px;
-      font-weight: 500;
-      padding: 4px 8px;
-      text-decoration: underline; // Underlined
-      cursor: pointer;
-      outline: none; // Removes browser focus box
-      -webkit-tap-highlight-color: transparent; // Removes mobile click highlight box
-      transition: color 0.2s ease;
-
-      &:hover {
-        color: var(--primary-navy-bg); // Turns blue on hover
-      }
-
-      &:active {
-        opacity: 0.7;
-      }
-    }
-
     .chevron {
       font-size: 16px;
       color: #CBD5E1;
@@ -326,7 +330,9 @@ ion-content.search-content {
   }
 }
 
-/* --- 5. MOST VISITED (alternating navy / red tint for rhythm) --- */
+/* --- 5. MOST VISITED
+   Rule: all destination cards use flat navy with screentone dot texture.
+   One consistent rule — no alternating colours, no accidental red-family tints. --- */
 .destination-scroll {
   display: flex;
   gap: 12px;
@@ -353,34 +359,30 @@ ion-content.search-content {
       border-radius: 12px;
       display: flex; align-items: center; justify-content: center;
       margin-bottom: 10px;
-      ion-icon { font-size: 26px; }
-    }
-
-    /* Even cards: solid navy gradient, white icon */
-    &:nth-child(odd) .destination-thumb {
-      background: linear-gradient(135deg, var(--primary-navy-bg) 0%, var(--primary-navy-dark) 100%);
-      ion-icon { color: rgba(255,255,255,0.9); }
-    }
-
-    /* Odd cards: flat red tint, red icon — breaks up the row */
-    &:nth-child(even) .destination-thumb {
-      background: #FEF2F2;
-      ion-icon { color: var(--accent-red); }
+      background-color: var(--primary-navy);
+      background-image: radial-gradient(rgba(255,255,255,0.15) 1px, transparent 1.3px);
+      background-size: 8px 8px;
+      ion-icon { font-size: 26px; color: rgba(255,255,255,0.88); }
     }
 
     h4 { margin: 0 0 2px; font-size: 13px; font-weight: 700; color: var(--text-main); }
-    p { margin: 0; font-size: 11px; font-weight: 500; color: var(--text-muted); }
+    p  { margin: 0; font-size: 11px; font-weight: 500; color: var(--text-muted); }
   }
 }
 
-/* --- 6. POPULAR ROUTES (matches Home's trip-card) --- */
+/* --- 6. POPULAR ROUTES --- */
 .route-list {
   display: flex;
   flex-direction: column;
   gap: 14px;
 
   .trip-card {
-    background: var(--bg-white);
+    background-color: var(--bg-white);
+    background-image:
+      radial-gradient(circle at 0% 100%, transparent 0%, transparent 30%, var(--bg-white) 72%),
+      radial-gradient(rgba(21, 29, 72, 0.08) 1px, transparent 1.3px);
+    background-size: auto, 8px 8px;
+    background-repeat: no-repeat, repeat;
     border-radius: 22px;
     border: 1px solid var(--border-color);
     padding: 18px;
@@ -389,7 +391,6 @@ ion-content.search-content {
 
     &:active { transform: scale(0.985); border-color: var(--primary-navy); }
 
-    /* --- 6. POPULAR ROUTES: fare as a chip, not floating bold text --- */
     .card-top {
       display: flex; justify-content: space-between; align-items: flex-start;
       margin-bottom: 18px;
@@ -404,16 +405,17 @@ ion-content.search-content {
         }
         .op-text {
           h4 { margin: 0; font-size: 15px; font-weight: 700; color: var(--primary-navy); }
-          p { margin: 4px 0 0; font-size: 12px; font-weight: 500; color: var(--text-muted); }
+          p  { margin: 4px 0 0; font-size: 12px; font-weight: 500; color: var(--text-muted); }
         }
       }
       .fare {
         font-size: 13px;
         font-weight: 800;
         color: var(--primary-navy);
-        background: #EEF2FF;
-        padding: 6px 12px;
-        border-radius: 999px;
+        background: var(--pop-yellow);
+        padding: 4px 10px;
+        border-radius: 6px;
+        transform: rotate(2deg);
       }
     }
 
@@ -437,7 +439,7 @@ ion-content.search-content {
   }
 }
 
-/* --- 7. NEARBY TERMINALS: tinted icon + distance chip --- */
+/* --- 7. NEARBY TERMINALS --- */
 .terminal-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;

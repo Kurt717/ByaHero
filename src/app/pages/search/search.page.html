@@ -1,6 +1,4 @@
 <ion-content fullscreen class="search-content">
-  <div class="header-bg-block"></div>
-
   <div class="search-wrap">
 
     <!-- 1. HEADER -->
@@ -14,20 +12,26 @@
       </button>
     </div>
 
-    <!-- 2. SEARCH INPUT -->
-    <div class="search-pill">
-      <ion-icon name="search-outline"></ion-icon>
-      <input
-        type="text"
-        placeholder="Where are you going?"
-        [(ngModel)]="query"
-        name="query" />
-      <button class="pill-action" *ngIf="query" (click)="clearQuery()" aria-label="Clear search">
-        <ion-icon name="close-circle-outline"></ion-icon>
-      </button>
-      <button class="pill-action" *ngIf="!query" aria-label="Voice search">
-        <ion-icon name="mic-outline"></ion-icon>
-      </button>
+    <!-- 2. SEARCH INPUT — framed like a viewfinder locking onto a route -->
+    <div class="search-pill-frame">
+      <span class="corner tl"></span>
+      <span class="corner tr"></span>
+      <span class="corner bl"></span>
+      <span class="corner br"></span>
+      <div class="search-pill">
+        <ion-icon name="search-outline"></ion-icon>
+        <input
+          type="text"
+          placeholder="Where are you going?"
+          [(ngModel)]="query"
+          name="query" />
+        <button class="pill-action" *ngIf="query" (click)="clearQuery()" aria-label="Clear search">
+          <ion-icon name="close-circle-outline"></ion-icon>
+        </button>
+        <button class="pill-action" *ngIf="!query" aria-label="Voice search">
+          <ion-icon name="mic-outline"></ion-icon>
+        </button>
+      </div>
     </div>
 
     <!-- 3. CATEGORY FILTERS -->

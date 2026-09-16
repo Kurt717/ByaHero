@@ -1,0 +1,67 @@
+<ion-content fullscreen class="flow-content">
+  <div class="flow-wrap" *ngIf="booking.trip as trip">
+
+    <!-- SUCCESS BADGE -->
+    <div class="success-badge">
+      <div class="badge-ring">
+        <ion-icon name="checkmark-outline"></ion-icon>
+      </div>
+    </div>
+
+    <h1 class="confirm-title">Booking Confirmed!</h1>
+    <p class="confirm-sub">Your seat{{ booking.selectedSeats.length > 1 ? 's are' : ' is' }} reserved with {{ trip.operator }}</p>
+
+    <!-- E-TICKET -->
+    <div class="ticket">
+      <div class="ticket-main">
+        <div class="ticket-top">
+          <div class="operator">
+            <span class="operator-icon"><ion-icon name="bus"></ion-icon></span>
+            <span class="operator-name">{{ trip.operator }}</span>
+          </div>
+          <span class="status-chip">Confirmed</span>
+        </div>
+
+        <div class="route-col">
+          <div class="route-line-v">
+            <span class="rnode origin"></span>
+            <span class="rdash"></span>
+            <ion-icon name="bus" class="rbus"></ion-icon>
+            <span class="rdash"></span>
+            <span class="rnode dest"></span>
+          </div>
+          <div class="route-names">
+            <span class="place">{{ trip.from }}</span>
+            <span class="place">{{ trip.to }}</span>
+          </div>
+        </div>
+
+        <div class="meta-row">
+          <span class="meta"><ion-icon name="calendar-outline"></ion-icon>{{ booking.travelDate }}</span>
+          <span class="meta seat">{{ booking.selectedSeats.join(', ') }}</span>
+        </div>
+      </div>
+
+      <div class="ticket-stub">
+        <ion-icon name="qr-code-outline" class="qr-icon"></ion-icon>
+        <span class="fare">{{ booking.formatCurrency(booking.total) }}</span>
+        <span class="ref">{{ booking.bookingRef }}</span>
+      </div>
+    </div>
+
+    <p class="sms-note">A confirmation SMS has been sent to your registered number.</p>
+
+  </div>
+
+  <!-- ACTIONS -->
+  <div class="confirm-actions" *ngIf="booking.trip">
+    <button class="primary-cta" (click)="viewBookings()">
+      <ion-icon name="list-outline"></ion-icon>
+      View My Bookings
+    </button>
+    <button class="secondary-cta" (click)="goHome()">
+      <ion-icon name="home-outline"></ion-icon>
+      Back to Home
+    </button>
+  </div>
+</ion-content>
