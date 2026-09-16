@@ -1,17 +1,19 @@
 /* bookings.page.scss — COMPLETE FILE */
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap");
 
 :host {
-  --primary-navy: #151D48;
-  --accent-red: #D32F2F;
-  --bg-page: #F8FAFC;
-  --bg-white: #FFFFFF;
-  --text-main: #1F2937;
-  --text-muted: #6B7280;
-  --border-color: #E2E8F0;
-  --success-green: #16A34A;
-  --amber: #D97706;
-  --font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+  --primary-navy: #151d48;
+  --accent-red: #d32f2f;
+  --bg-page: #f8fafc;
+  --bg-white: #ffffff;
+  --text-main: #1f2937;
+  --text-muted: #6b7280;
+  --border-color: #e2e8f0;
+  --success-green: #16a34a;
+  --amber: #d97706;
+  --font-family:
+    "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "SF Pro Display",
+    sans-serif;
 }
 
 ion-content.bookings-content {
@@ -29,14 +31,29 @@ ion-content.bookings-content {
 }
 
 @keyframes revealUp {
-  from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes markPulse {
-  0%   { transform: scale(1); opacity: 0.5; }
-  70%  { transform: scale(1.35); opacity: 0; }
-  100% { transform: scale(1.35); opacity: 0; }
+  0% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  70% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
 }
 
 /* --- HEADER (beacon mark, matches Alerts) --- */
@@ -50,17 +67,26 @@ ion-content.bookings-content {
 
   .header-mark {
     position: relative;
-    width: 48px; height: 48px;
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
     border: 2px dashed var(--accent-red);
-    display: flex; align-items: center; justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     flex-shrink: 0;
-    ion-icon { font-size: 22px; color: var(--accent-red); z-index: 2; }
+    ion-icon {
+      font-size: 22px;
+      color: var(--accent-red);
+      z-index: 2;
+    }
 
     .mark-burst {
       position: absolute;
-      top: 50%; left: 50%;
-      width: 76px; height: 76px;
+      top: 50%;
+      left: 50%;
+      width: 76px;
+      height: 76px;
       transform: translate(-50%, -50%);
       pointer-events: none;
     }
@@ -75,26 +101,48 @@ ion-content.bookings-content {
     }
 
     &::after {
-      content: '';
+      content: "";
       position: absolute;
-      top: -2px; right: -2px;
-      width: 9px; height: 9px;
+      top: -2px;
+      right: -2px;
+      width: 9px;
+      height: 9px;
       background: var(--accent-red);
-      clip-path: polygon(50% 0%, 61% 35%, 100% 50%, 61% 65%, 50% 100%, 39% 65%, 0% 50%, 39% 35%);
+      clip-path: polygon(
+        50% 0%,
+        61% 35%,
+        100% 50%,
+        61% 65%,
+        50% 100%,
+        39% 65%,
+        0% 50%,
+        39% 35%
+      );
       z-index: 3;
     }
   }
 
   .header-text {
-    h1 { margin: 0; font-size: 20px; font-weight: 800; color: var(--primary-navy); letter-spacing: -0.02em; }
-    p { margin: 2px 0 0; font-size: 13px; font-weight: 600; color: var(--text-muted); }
+    h1 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--primary-navy);
+      letter-spacing: -0.02em;
+    }
+    p {
+      margin: 2px 0 0;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
   }
 }
 
 /* --- TABS: segmented pill (matches Alerts / Home) --- */
 .top-toggle {
   display: flex;
-  background: #EEF1F6;
+  background: #eef1f6;
   border-radius: 999px;
   padding: 4px;
   margin-bottom: 20px;
@@ -116,11 +164,18 @@ ion-content.bookings-content {
     font-weight: 700;
     color: var(--text-muted);
     cursor: pointer;
-    transition: background-color 0.3s cubic-bezier(0.16, 1, 0.3, 1), color 0.3s ease, transform 0.15s ease;
+    transition:
+      background-color 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+      color 0.3s ease,
+      transform 0.15s ease;
 
-    &:active { transform: scale(0.97); }
+    &:active {
+      transform: scale(0.97);
+    }
 
-    ion-icon { font-size: 16px; }
+    ion-icon {
+      font-size: 16px;
+    }
 
     &.active {
       background: var(--bg-white);
@@ -130,9 +185,12 @@ ion-content.bookings-content {
 
     .mini-badge {
       background-color: var(--accent-red);
-      background-image: radial-gradient(rgba(255,255,255,0.35) 1px, transparent 1.2px);
+      background-image: radial-gradient(
+        rgba(255, 255, 255, 0.35) 1px,
+        transparent 1.2px
+      );
       background-size: 5px 5px;
-      color: #FFFFFF;
+      color: #ffffff;
       font-size: 10px;
       font-weight: 800;
       min-width: 16px;
@@ -164,18 +222,32 @@ ion-content.bookings-content {
   animation: revealUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   transition: opacity 0.3s ease;
 
-  &:nth-child(1) { animation-delay: 0.16s; }
-  &:nth-child(2) { animation-delay: 0.22s; }
-  &:nth-child(3) { animation-delay: 0.28s; }
-  &:nth-child(n+4) { animation-delay: 0.34s; }
+  &:nth-child(1) {
+    animation-delay: 0.16s;
+  }
+  &:nth-child(2) {
+    animation-delay: 0.22s;
+  }
+  &:nth-child(3) {
+    animation-delay: 0.28s;
+  }
+  &:nth-child(n + 4) {
+    animation-delay: 0.34s;
+  }
 
-  &.dimmed { filter: grayscale(0.4); opacity: 0.85 !important; }
+  &.dimmed {
+    filter: grayscale(0.4);
+    opacity: 0.85 !important;
+  }
 
   .ticket-main {
     flex: 1;
     padding: 18px 16px;
     min-width: 0;
-    background-image: radial-gradient(rgba(21, 29, 72, 0.05) 1px, transparent 1.3px);
+    background-image: radial-gradient(
+      rgba(21, 29, 72, 0.05) 1px,
+      transparent 1.3px
+    );
     background-size: 7px 7px;
   }
 
@@ -187,18 +259,31 @@ ion-content.bookings-content {
     margin-bottom: 14px;
 
     .operator {
-      display: flex; align-items: center; gap: 8px; min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
       .operator-icon {
-        width: 26px; height: 26px;
+        width: 26px;
+        height: 26px;
         border-radius: 8px;
-        background: #EEF2FF;
-        display: flex; align-items: center; justify-content: center;
+        background: #eef2ff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         flex-shrink: 0;
-        ion-icon { font-size: 14px; color: var(--primary-navy); }
+        ion-icon {
+          font-size: 14px;
+          color: var(--primary-navy);
+        }
       }
       .operator-name {
-        font-size: 13.5px; font-weight: 700; color: var(--primary-navy);
-        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        font-size: 13.5px;
+        font-weight: 700;
+        color: var(--primary-navy);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
     }
 
@@ -213,19 +298,31 @@ ion-content.bookings-content {
       flex-shrink: 0;
 
       &.confirmed {
-        background-color: #DCFCE7;
-        background-image: radial-gradient(rgba(22,163,74,0.15) 1px, transparent 1.2px);
+        background-color: #dcfce7;
+        background-image: radial-gradient(
+          rgba(22, 163, 74, 0.15) 1px,
+          transparent 1.2px
+        );
         background-size: 5px 5px;
         color: var(--success-green);
       }
       &.boarding {
-        background-color: #FEF3C7;
-        background-image: radial-gradient(rgba(217,119,6,0.18) 1px, transparent 1.2px);
+        background-color: #fef3c7;
+        background-image: radial-gradient(
+          rgba(217, 119, 6, 0.18) 1px,
+          transparent 1.2px
+        );
         background-size: 5px 5px;
         color: var(--amber);
       }
-      &.completed { background: #F1F5F9; color: var(--text-muted); }
-      &.cancelled { background: #FEE2E2; color: var(--accent-red); }
+      &.completed {
+        background: #f1f5f9;
+        color: var(--text-muted);
+      }
+      &.cancelled {
+        background: #fee2e2;
+        color: var(--accent-red);
+      }
     }
   }
 
@@ -245,7 +342,8 @@ ion-content.bookings-content {
       padding: 3px 0;
 
       .rnode {
-        width: 8px; height: 8px;
+        width: 8px;
+        height: 8px;
         border-radius: 50%;
         flex-shrink: 0;
 
@@ -253,13 +351,15 @@ ion-content.bookings-content {
           border: 2px solid var(--primary-navy);
           background: var(--bg-white);
         }
-        &.dest { background: var(--accent-red); }
+        &.dest {
+          background: var(--accent-red);
+        }
       }
 
       .rdash {
         flex: 1;
         width: 1.5px;
-        border-left: 1.5px dashed #CBD5E1;
+        border-left: 1.5px dashed #cbd5e1;
         margin: 3px 0;
         min-height: 12px;
       }
@@ -295,10 +395,17 @@ ion-content.bookings-content {
     margin-bottom: 10px;
 
     .meta {
-      display: flex; align-items: center; gap: 4px;
-      font-size: 11px; font-weight: 600; color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
       white-space: nowrap;
-      ion-icon { font-size: 12px; flex-shrink: 0; }
+      ion-icon {
+        font-size: 12px;
+        flex-shrink: 0;
+      }
     }
   }
 
@@ -309,7 +416,7 @@ ion-content.bookings-content {
       font-size: 11px;
       font-weight: 800;
       color: var(--primary-navy);
-      background: #EEF2FF;
+      background: #eef2ff;
       padding: 4px 10px;
       border-radius: 999px;
       white-space: nowrap;
@@ -327,32 +434,55 @@ ion-content.bookings-content {
     justify-content: center;
     gap: 6px;
     padding: 14px 6px;
-    border-left: 2px dashed #E2E8F0;
+    border-left: 2px dashed #e2e8f0;
     text-align: center;
-    background-image: radial-gradient(rgba(21, 29, 72, 0.05) 1px, transparent 1.3px);
+    background-image: radial-gradient(
+      rgba(21, 29, 72, 0.05) 1px,
+      transparent 1.3px
+    );
     background-size: 7px 7px;
 
     /* Perforation notches */
-    &::before, &::after {
-      content: '';
+    &::before,
+    &::after {
+      content: "";
       position: absolute;
       left: -10px;
-      width: 20px; height: 20px;
+      width: 20px;
+      height: 20px;
       background: var(--bg-page);
       border-radius: 50%;
       z-index: 2;
     }
-    &::before { top: -10px; }
-    &::after { bottom: -10px; }
+    &::before {
+      top: -10px;
+    }
+    &::after {
+      bottom: -10px;
+    }
 
-    .qr-icon { font-size: 26px; color: var(--primary-navy); }
-    .fare { font-size: 13px; font-weight: 800; color: var(--primary-navy); white-space: nowrap; }
-    .ref { font-size: 9px; font-weight: 600; color: var(--text-muted); letter-spacing: 0.3px; white-space: nowrap; }
+    .qr-icon {
+      font-size: 26px;
+      color: var(--primary-navy);
+    }
+    .fare {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--primary-navy);
+      white-space: nowrap;
+    }
+    .ref {
+      font-size: 9px;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+    }
 
     .stub-action {
       margin-top: 4px;
       background: var(--primary-navy);
-      color: #FFFFFF;
+      color: #ffffff;
       border: none;
       border-radius: 999px;
       font-family: var(--font-family);
@@ -362,16 +492,23 @@ ion-content.bookings-content {
       cursor: pointer;
       transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
 
-      &:active { transform: scale(0.9); }
+      &:active {
+        transform: scale(0.9);
+      }
 
       &.outline {
         background: transparent;
         border: 1.5px solid var(--border-color);
         color: var(--primary-navy);
-        width: 30px; height: 30px;
+        width: 30px;
+        height: 30px;
         padding: 0;
-        display: flex; align-items: center; justify-content: center;
-        ion-icon { font-size: 14px; }
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        ion-icon {
+          font-size: 14px;
+        }
       }
     }
 
@@ -390,7 +527,10 @@ ion-content.bookings-content {
       opacity: 0.85;
       z-index: 3;
 
-      &.cancelled { border-color: var(--accent-red); color: var(--accent-red); }
+      &.cancelled {
+        border-color: var(--accent-red);
+        color: var(--accent-red);
+      }
     }
   }
 }
@@ -416,21 +556,40 @@ ion-content.bookings-content {
   animation: revealUp 0.5s 0.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 
   .empty-ticket-outline {
-    width: 72px; height: 72px;
+    width: 72px;
+    height: 72px;
     border-radius: 20px;
-    border: 2px dashed #CBD5E1;
-    display: flex; align-items: center; justify-content: center;
+    border: 2px dashed #cbd5e1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     margin-bottom: 18px;
-    ion-icon { font-size: 30px; color: #94A3B8; }
+    ion-icon {
+      font-size: 30px;
+      color: #94a3b8;
+    }
   }
 
-  h3 { margin: 0 0 6px; font-size: 16px; font-weight: 800; color: var(--text-main); }
-  p { margin: 0 0 20px; font-size: 13px; color: var(--text-muted); max-width: 240px; line-height: 1.5; }
+  h3 {
+    margin: 0 0 6px;
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--text-main);
+  }
+  p {
+    margin: 0 0 20px;
+    font-size: 13px;
+    color: var(--text-muted);
+    max-width: 240px;
+    line-height: 1.5;
+  }
 
   .empty-cta {
-    display: flex; align-items: center; gap: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
     background: var(--primary-navy);
-    color: #FFFFFF;
+    color: #ffffff;
     border: none;
     border-radius: 999px;
     padding: 12px 22px;
@@ -440,13 +599,19 @@ ion-content.bookings-content {
     cursor: pointer;
     transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
 
-    &:active { transform: scale(0.95); }
-    ion-icon { font-size: 15px; }
+    &:active {
+      transform: scale(0.95);
+    }
+    ion-icon {
+      font-size: 15px;
+    }
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.001ms !important;
     transition-duration: 0.001ms !important;
   }

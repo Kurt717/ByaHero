@@ -1,14 +1,16 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap");
 
 :host {
-  --primary-navy: #151D48;
-  --accent-red: #DC2626;
-  --bg-white: #FFFFFF;
-  --bg-gray: #F8FAFC;
-  --text-black: #1F1F1F;
+  --primary-navy: #151d48;
+  --accent-red: #dc2626;
+  --bg-white: #ffffff;
+  --bg-gray: #f8fafc;
+  --text-black: #1f1f1f;
   --text-muted: #64748b;
-  
-  --font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+
+  --font-family:
+    "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "SF Pro Display",
+    sans-serif;
 }
 
 ion-content.auth-content {
@@ -31,7 +33,9 @@ ion-content.auth-content {
   --color: var(--text-black);
   margin: 0;
   --padding-start: 8px;
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
+  transition:
+    transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.2s ease;
 
   &:active {
     transform: scale(0.9);
@@ -50,7 +54,7 @@ ion-content.auth-content {
   flex-direction: column;
   align-items: center;
   box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.04);
-  
+
   animation: slideUpSheet 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
@@ -66,8 +70,12 @@ ion-content.auth-content {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 /* Overlapping Logo */
@@ -87,8 +95,10 @@ ion-content.auth-content {
 
   .logo-burst {
     position: absolute;
-    top: 50%; left: 50%;
-    width: 160px; height: 160px;
+    top: 50%;
+    left: 50%;
+    width: 160px;
+    height: 160px;
     transform: translate(-50%, -50%);
     pointer-events: none;
     animation: burstPulse 3s ease-in-out infinite;
@@ -103,8 +113,15 @@ ion-content.auth-content {
 }
 
 @keyframes burstPulse {
-  0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
-  50%      { opacity: 1;   transform: translate(-50%, -50%) scale(1.06); }
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.06);
+  }
 }
 
 @keyframes scaleIn {
@@ -139,7 +156,9 @@ ion-content.auth-content {
     color: var(--primary-navy);
     margin: 0 0 8px 0;
     letter-spacing: -0.03em;
-    text-shadow: -1.5px 0 0 rgba(0, 200, 255, 0.3), 1.5px 0 0 rgba(255, 0, 110, 0.28);
+    text-shadow:
+      -1.5px 0 0 rgba(0, 200, 255, 0.3),
+      1.5px 0 0 rgba(255, 0, 110, 0.28);
   }
 
   p {
@@ -162,9 +181,13 @@ ion-content.auth-content {
   opacity: 0;
   animation: fadeUpStagger 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 
-  &:nth-child(1) { animation-delay: 0.1s; }
-  &:nth-child(2) { animation-delay: 0.15s; }
-  
+  &:nth-child(1) {
+    animation-delay: 0.1s;
+  }
+  &:nth-child(2) {
+    animation-delay: 0.15s;
+  }
+
   label {
     font-size: 13px;
     font-weight: 600;
@@ -222,7 +245,7 @@ ion-content.auth-content {
     color: var(--text-black);
     width: 100%;
   }
-  
+
   .toggle-icon {
     margin-right: 0;
     margin-left: 12px;
@@ -251,7 +274,9 @@ ion-content.auth-content {
     cursor: pointer;
     transition: opacity 0.2s;
 
-    &:hover { opacity: 0.8; }
+    &:hover {
+      opacity: 0.8;
+    }
   }
 }
 
@@ -352,7 +377,7 @@ ion-content.auth-content {
   margin: 0;
   opacity: 0;
   animation: fadeIn 0.5s 0.45s ease-out forwards;
-  
+
   a {
     color: var(--accent-red);
     font-weight: 600;

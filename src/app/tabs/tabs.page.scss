@@ -1,11 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap");
 
 :host {
-  --primary-navy: #151D48;
-  --bg-white: #FFFFFF;
-  --bg-page: #F8FAFC;
-  --border-color: #E2E8F0;
-  --accent-red: #D32F2F;
+  --primary-navy: #151d48;
+  --bg-white: #ffffff;
+  --bg-page: #f8fafc;
+  --border-color: #e2e8f0;
+  --accent-red: #d32f2f;
 
   display: block;
   height: 100%;
@@ -13,14 +13,23 @@
 }
 
 @keyframes navSlideUp {
-  from { opacity: 0; transform: translateY(28px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .floating-nav-container {
   position: fixed;
-  bottom: 24px; left: 0; right: 0;
-  display: flex; justify-content: center;
+  bottom: 24px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
   z-index: 1000;
   opacity: 0;
   animation: navSlideUp 0.6s 0.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -34,7 +43,7 @@
   padding: 8px 20px 10px;
   border-radius: 28px;
   gap: 16px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
 
   .nav-item {
     background: transparent;
@@ -44,69 +53,114 @@
     align-items: center;
     justify-content: flex-end;
     gap: 3px;
-    color: #9CA3AF;
+    color: #9ca3af;
     cursor: pointer;
     transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
 
-    &:active { transform: scale(0.9); }
+    &:active {
+      transform: scale(0.9);
+    }
 
     .icon-bg {
       position: relative;
-      width: 42px; height: 42px;
+      width: 42px;
+      height: 42px;
       border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-      ion-icon { font-size: 22px; }
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition:
+        background-color 0.3s ease,
+        color 0.3s ease,
+        transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      ion-icon {
+        font-size: 22px;
+      }
     }
 
     .nav-label {
       font-size: 9.5px;
       font-weight: 700;
-      color: #9CA3AF;
+      color: #9ca3af;
       transition: color 0.3s ease;
       white-space: nowrap;
-      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;;
+      font-family:
+        "Plus Jakarta Sans",
+        -apple-system,
+        BlinkMacSystemFont,
+        "SF Pro Display",
+        sans-serif;
     }
 
     &.active {
       .icon-bg {
         background-color: var(--primary-navy);
         background-image:
-          radial-gradient(circle at 100% 100%, transparent 0%, transparent 25%, var(--primary-navy) 60%),
+          radial-gradient(
+            circle at 100% 100%,
+            transparent 0%,
+            transparent 25%,
+            var(--primary-navy) 60%
+          ),
           radial-gradient(rgba(255, 255, 255, 0.18) 1px, transparent 1.3px);
-        background-size: auto, 6px 6px;
-        color: #FFFFFF;
+        background-size:
+          auto,
+          6px 6px;
+        color: #ffffff;
         transform: translateY(-2px);
 
         &::after {
-          content: '';
+          content: "";
           position: absolute;
-          top: -2px; right: -1px;
-          width: 8px; height: 8px;
+          top: -2px;
+          right: -1px;
+          width: 8px;
+          height: 8px;
           background: var(--accent-red);
-          clip-path: polygon(50% 0%, 61% 35%, 100% 50%, 61% 65%, 50% 100%, 39% 65%, 0% 50%, 39% 35%);
+          clip-path: polygon(
+            50% 0%,
+            61% 35%,
+            100% 50%,
+            61% 65%,
+            50% 100%,
+            39% 65%,
+            0% 50%,
+            39% 35%
+          );
         }
       }
 
-      .nav-label { color: var(--primary-navy); 
-      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif; ;}
+      .nav-label {
+        color: var(--primary-navy);
+        font-family:
+          "Plus Jakarta Sans",
+          -apple-system,
+          BlinkMacSystemFont,
+          "SF Pro Display",
+          sans-serif;
+      }
     }
 
     &.center-fab {
       .fab-inner {
         position: relative;
-        width: 54px; height: 54px;
+        width: 54px;
+        height: 54px;
         border-radius: 50%;
         background: var(--accent-red);
-        color: #FFFFFF;
-        display: flex; align-items: center; justify-content: center;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         margin-top: -30px;
         border: 4px solid var(--bg-page);
         transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-        ion-icon { font-size: 22px; }
+        ion-icon {
+          font-size: 22px;
+        }
 
         &::before {
-          content: '';
+          content: "";
           position: absolute;
           inset: -5px;
           border-radius: 50%;
@@ -114,15 +168,23 @@
         }
       }
 
-      .fab-label { color: var(--accent-red); font-weight: 800; margin-top: 1px; }
+      .fab-label {
+        color: var(--accent-red);
+        font-weight: 800;
+        margin-top: 1px;
+      }
 
-      &:active .fab-inner { transform: scale(0.88); }
+      &:active .fab-inner {
+        transform: scale(0.88);
+      }
     }
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.001ms !important;
     transition-duration: 0.001ms !important;
   }

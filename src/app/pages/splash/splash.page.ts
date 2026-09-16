@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
   standalone: true,
   imports: [CommonModule, IonContent],
   templateUrl: './splash.page.html',
-  styleUrls: ['./splash.page.scss']
+  styleUrls: ['./splash.page.scss'],
 })
 export class SplashPage implements OnInit {
   constructor(private router: Router) {}

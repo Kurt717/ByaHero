@@ -1,13 +1,16 @@
 <ion-content fullscreen class="profile-content">
   <div class="profile-wrap">
-
     <!-- 1. HEADER BAR -->
     <div class="page-header">
       <button class="icon-btn" (click)="goBack()" aria-label="Go back">
         <ion-icon name="chevron-back-outline"></ion-icon>
       </button>
       <h1 class="hero-title">Profile</h1>
-      <button class="icon-btn" (click)="editProfile()" aria-label="Edit profile">
+      <button
+        class="icon-btn"
+        (click)="editProfile()"
+        aria-label="Edit profile"
+      >
         <ion-icon name="create-outline"></ion-icon>
       </button>
     </div>
@@ -18,21 +21,30 @@
         <div class="id-top">
           <div class="avatar-wrap">
             <svg class="avatar-burst" viewBox="0 0 140 140" aria-hidden="true">
-              <g stroke="#8FA3FF" stroke-width="2.5" opacity="0.35" stroke-linecap="round">
-                <line x1="70" y1="4" x2="70" y2="20"/>
-                <line x1="70" y1="120" x2="70" y2="136"/>
-                <line x1="4" y1="70" x2="20" y2="70"/>
-                <line x1="120" y1="70" x2="136" y2="70"/>
-                <line x1="20" y1="20" x2="31" y2="31"/>
-                <line x1="109" y1="109" x2="120" y2="120"/>
-                <line x1="20" y1="120" x2="31" y2="109"/>
-                <line x1="109" y1="31" x2="120" y2="20"/>
+              <g
+                stroke="#8FA3FF"
+                stroke-width="2.5"
+                opacity="0.35"
+                stroke-linecap="round"
+              >
+                <line x1="70" y1="4" x2="70" y2="20" />
+                <line x1="70" y1="120" x2="70" y2="136" />
+                <line x1="4" y1="70" x2="20" y2="70" />
+                <line x1="120" y1="70" x2="136" y2="70" />
+                <line x1="20" y1="20" x2="31" y2="31" />
+                <line x1="109" y1="109" x2="120" y2="120" />
+                <line x1="20" y1="120" x2="31" y2="109" />
+                <line x1="109" y1="31" x2="120" y2="20" />
               </g>
             </svg>
             <ion-avatar class="profile-avatar">
               <img [src]="user.avatar" alt="{{ user.name }}'s profile photo" />
             </ion-avatar>
-            <button class="avatar-edit-btn" (click)="changePhoto()" aria-label="Change profile photo">
+            <button
+              class="avatar-edit-btn"
+              (click)="changePhoto()"
+              aria-label="Change profile photo"
+            >
               <ion-icon name="camera-outline"></ion-icon>
             </button>
           </div>
@@ -40,16 +52,26 @@
           <div class="id-text">
             <div class="name-row">
               <h2>{{ user.name }}</h2>
-              <ion-icon name="shield-checkmark-outline" class="verified" *ngIf="user.verified"></ion-icon>
+              <ion-icon
+                name="shield-checkmark-outline"
+                class="verified"
+                *ngIf="user.verified"
+              ></ion-icon>
             </div>
-            <span class="tier-ribbon"><ion-icon name="star"></ion-icon>{{ user.tier }} Kabyahe</span>
+            <span class="tier-ribbon"
+              ><ion-icon name="star"></ion-icon>{{ user.tier }} Kabyahe</span
+            >
             <span class="hero-id-code">{{ user.heroId }}</span>
           </div>
         </div>
 
         <div class="contact-row">
-          <span class="contact-chip"><ion-icon name="call-outline"></ion-icon>{{ user.phone }}</span>
-          <span class="contact-chip"><ion-icon name="mail-outline"></ion-icon>{{ user.email }}</span>
+          <span class="contact-chip"
+            ><ion-icon name="call-outline"></ion-icon>{{ user.phone }}</span
+          >
+          <span class="contact-chip"
+            ><ion-icon name="mail-outline"></ion-icon>{{ user.email }}</span
+          >
         </div>
       </div>
 
@@ -74,7 +96,9 @@
       <div class="rank-track">
         <div class="rank-fill" [style.width.%]="rankPercent"></div>
       </div>
-      <p class="rank-note">{{ pointsToNext }} points to unlock {{ rank.next }} perks</p>
+      <p class="rank-note">
+        {{ pointsToNext }} points to unlock {{ rank.next }} perks
+      </p>
     </div>
 
     <!-- 4. STATS STRIP -->
@@ -99,13 +123,18 @@
     <!-- 5. WALLET BAR -->
     <div class="wallet-bar" (click)="openWallet()">
       <div class="wallet-left">
-        <span class="wallet-icon"><ion-icon name="wallet-outline"></ion-icon></span>
+        <span class="wallet-icon"
+          ><ion-icon name="wallet-outline"></ion-icon
+        ></span>
         <div class="wallet-text">
           <span class="w-label">Byahero Wallet · ···{{ wallet.last4 }}</span>
           <span class="w-value">₱ {{ wallet.balance }}</span>
         </div>
       </div>
-      <button class="wallet-cta" (click)="$event.stopPropagation(); openWallet()">
+      <button
+        class="wallet-cta"
+        (click)="$event.stopPropagation(); openWallet()"
+      >
         <ion-icon name="add-outline"></ion-icon>
         Top Up
       </button>
@@ -113,7 +142,12 @@
 
     <!-- 6. QUICK ACTIONS -->
     <div class="quick-row">
-      <button class="quick" *ngFor="let q of quickActions" [ngClass]="q.tint" (click)="q.action()">
+      <button
+        class="quick"
+        *ngFor="let q of quickActions"
+        [ngClass]="q.tint"
+        (click)="q.action()"
+      >
         <span class="q-icon"><ion-icon [name]="q.icon"></ion-icon></span>
         <span class="q-label">{{ q.label }}</span>
       </button>
@@ -126,7 +160,11 @@
         <span class="group-rule"></span>
       </div>
       <div class="menu-list">
-        <button class="menu-item" *ngFor="let item of group.items" (click)="handleItem(item)">
+        <button
+          class="menu-item"
+          *ngFor="let item of group.items"
+          (click)="handleItem(item)"
+        >
           <div class="menu-icon" [class.tint-red]="item.danger">
             <ion-icon [name]="item.icon"></ion-icon>
           </div>
@@ -136,7 +174,11 @@
           <span class="menu-switch" *ngIf="item.toggle" [class.on]="item.on">
             <span class="knob"></span>
           </span>
-          <ion-icon name="chevron-forward-outline" class="chevron" *ngIf="!item.toggle"></ion-icon>
+          <ion-icon
+            name="chevron-forward-outline"
+            class="chevron"
+            *ngIf="!item.toggle"
+          ></ion-icon>
         </button>
       </div>
     </div>
@@ -147,6 +189,5 @@
       Log Out
     </button>
     <p class="app-version">Byahero v1.0.0 · Built for North Luzon</p>
-
   </div>
 </ion-content>

@@ -1,20 +1,24 @@
 <!-- bookings.page.html — COMPLETE FILE -->
 <ion-content fullscreen class="bookings-content">
   <div class="bookings-wrap">
-
     <!-- HEADER — beacon mark, matches Alerts/Profile -->
     <div class="page-header">
       <div class="header-mark">
         <svg class="mark-burst" viewBox="0 0 80 80" aria-hidden="true">
-          <g stroke="#8FA3FF" stroke-width="2" opacity="0.4" stroke-linecap="round">
-            <line x1="40" y1="6" x2="40" y2="16"/>
-            <line x1="40" y1="64" x2="40" y2="74"/>
-            <line x1="6" y1="40" x2="16" y2="40"/>
-            <line x1="64" y1="40" x2="74" y2="40"/>
-            <line x1="14" y1="14" x2="21" y2="21"/>
-            <line x1="59" y1="59" x2="66" y2="66"/>
-            <line x1="14" y1="66" x2="21" y2="59"/>
-            <line x1="59" y1="21" x2="66" y2="14"/>
+          <g
+            stroke="#8FA3FF"
+            stroke-width="2"
+            opacity="0.4"
+            stroke-linecap="round"
+          >
+            <line x1="40" y1="6" x2="40" y2="16" />
+            <line x1="40" y1="64" x2="40" y2="74" />
+            <line x1="6" y1="40" x2="16" y2="40" />
+            <line x1="64" y1="40" x2="74" y2="40" />
+            <line x1="14" y1="14" x2="21" y2="21" />
+            <line x1="59" y1="59" x2="66" y2="66" />
+            <line x1="14" y1="66" x2="21" y2="59" />
+            <line x1="59" y1="21" x2="66" y2="14" />
           </g>
         </svg>
         <span class="mark-ring"></span>
@@ -23,7 +27,8 @@
       <div class="header-text">
         <h1>My Bookings</h1>
         <p *ngIf="upcomingBookings.length; else noneUpcoming">
-          {{ upcomingBookings.length }} upcoming trip{{ upcomingBookings.length > 1 ? 's' : '' }}
+          {{ upcomingBookings.length }} upcoming trip{{ upcomingBookings.length
+          > 1 ? 's' : '' }}
         </p>
         <ng-template #noneUpcoming><p>No trips booked yet</p></ng-template>
       </div>
@@ -31,12 +36,22 @@
 
     <!-- TABS — segmented pill, matches Alerts/Home -->
     <div class="top-toggle">
-      <button class="toggle-btn" [class.active]="activeTab === 'upcoming'" (click)="setTab('upcoming')">
+      <button
+        class="toggle-btn"
+        [class.active]="activeTab === 'upcoming'"
+        (click)="setTab('upcoming')"
+      >
         <ion-icon name="time-outline"></ion-icon>
         Upcoming
-        <span class="mini-badge" *ngIf="upcomingBookings.length">{{ upcomingBookings.length }}</span>
+        <span class="mini-badge" *ngIf="upcomingBookings.length"
+          >{{ upcomingBookings.length }}</span
+        >
       </button>
-      <button class="toggle-btn" [class.active]="activeTab === 'past'" (click)="setTab('past')">
+      <button
+        class="toggle-btn"
+        [class.active]="activeTab === 'past'"
+        (click)="setTab('past')"
+      >
         <ion-icon name="file-tray-outline"></ion-icon>
         Past
       </button>
@@ -44,15 +59,22 @@
 
     <!-- TICKETS -->
     <div class="ticket-list" *ngIf="visibleBookings.length; else emptyState">
-      <div class="ticket" *ngFor="let booking of visibleBookings" [class.dimmed]="booking.status === 'completed' || booking.status === 'cancelled'">
-
+      <div
+        class="ticket"
+        *ngFor="let booking of visibleBookings"
+        [class.dimmed]="booking.status === 'completed' || booking.status === 'cancelled'"
+      >
         <div class="ticket-main">
           <div class="ticket-top">
             <div class="operator">
-              <span class="operator-icon"><ion-icon name="bus"></ion-icon></span>
+              <span class="operator-icon"
+                ><ion-icon name="bus"></ion-icon
+              ></span>
               <span class="operator-name">{{ booking.operator }}</span>
             </div>
-            <span class="status-chip" [ngClass]="booking.status">{{ statusLabel(booking.status) }}</span>
+            <span class="status-chip" [ngClass]="booking.status"
+              >{{ statusLabel(booking.status) }}</span
+            >
           </div>
 
           <div class="route-col">
@@ -70,8 +92,13 @@
           </div>
 
           <div class="meta-row">
-            <span class="meta"><ion-icon name="calendar-outline"></ion-icon>{{ booking.date }}</span>
-            <span class="meta"><ion-icon name="time-outline"></ion-icon>{{ booking.time }}</span>
+            <span class="meta"
+              ><ion-icon name="calendar-outline"></ion-icon>{{ booking.date
+              }}</span
+            >
+            <span class="meta"
+              ><ion-icon name="time-outline"></ion-icon>{{ booking.time }}</span
+            >
           </div>
           <div class="seat-row">
             <span class="seat-chip">{{ booking.seat }}</span>
@@ -80,30 +107,38 @@
 
         <div class="ticket-stub">
           <span class="stamp" *ngIf="booking.status === 'completed'">USED</span>
-          <span class="stamp cancelled" *ngIf="booking.status === 'cancelled'">CANCELLED</span>
+          <span class="stamp cancelled" *ngIf="booking.status === 'cancelled'"
+            >CANCELLED</span
+          >
 
-          <ion-icon name="qr-code-outline" class="qr-icon" *ngIf="booking.status !== 'cancelled'"></ion-icon>
+          <ion-icon
+            name="qr-code-outline"
+            class="qr-icon"
+            *ngIf="booking.status !== 'cancelled'"
+          ></ion-icon>
           <span class="fare">{{ booking.fare }}</span>
           <span class="ref">{{ booking.bookingRef }}</span>
 
           <button
             class="stub-action"
             *ngIf="booking.status === 'confirmed' || booking.status === 'boarding'"
-            (click)="viewTicket(booking)">
+            (click)="viewTicket(booking)"
+          >
             View
           </button>
           <button
             class="stub-action outline"
             *ngIf="booking.status === 'completed'"
-            (click)="bookAgain(booking)">
+            (click)="bookAgain(booking)"
+          >
             <ion-icon name="refresh-outline"></ion-icon>
           </button>
         </div>
-
       </div>
 
       <p class="list-end-note">
-        {{ activeTab === 'upcoming' ? "That's all your upcoming trips." : "That's your full trip history." }}
+        {{ activeTab === 'upcoming' ? "That's all your upcoming trips." :
+        "That's your full trip history." }}
       </p>
     </div>
 
@@ -120,6 +155,5 @@
         </button>
       </div>
     </ng-template>
-
   </div>
 </ion-content>

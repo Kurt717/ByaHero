@@ -1,6 +1,5 @@
 <ion-content fullscreen class="flow-content">
   <div class="flow-wrap" *ngIf="booking.trip as trip">
-
     <!-- HEADER + PROGRESS -->
     <div class="flow-header">
       <button class="icon-btn" (click)="goBack()" aria-label="Go back">
@@ -21,7 +20,10 @@
         <div class="op-logo"><ion-icon name="bus-outline"></ion-icon></div>
         <div class="op-text">
           <h4>{{ trip.operator }}</h4>
-          <p>{{ trip.eta }} • <span [ngClass]="trip.status">{{ trip.status }}</span></p>
+          <p>
+            {{ trip.eta }} •
+            <span [ngClass]="trip.status">{{ trip.status }}</span>
+          </p>
         </div>
         <span class="fare-tag">{{ trip.fare }}<small>/seat</small></span>
       </div>
@@ -46,7 +48,8 @@
           class="day-pill"
           *ngFor="let d of days"
           [class.active]="booking.travelDate === d.iso"
-          (click)="booking.travelDate = d.iso">
+          (click)="booking.travelDate = d.iso"
+        >
           <span class="dow">{{ d.dow }}</span>
           <span class="day">{{ d.day }}</span>
         </button>
@@ -57,18 +60,24 @@
     <div class="section">
       <div class="section-head">
         <p class="section-title">Passengers</p>
-        <span class="section-hint">{{ booking.passengers.length }}/{{ booking.maxPassengers }}</span>
+        <span class="section-hint"
+          >{{ booking.passengers.length }}/{{ booking.maxPassengers }}</span
+        >
       </div>
 
       <div class="passenger-list">
-        <div class="passenger-row" *ngFor="let p of booking.passengers; let i = index">
+        <div
+          class="passenger-row"
+          *ngFor="let p of booking.passengers; let i = index"
+        >
           <div class="passenger-top">
             <span class="passenger-index">Passenger {{ i + 1 }}</span>
             <button
               class="remove-btn"
               *ngIf="booking.passengers.length > 1"
               (click)="booking.removePassenger(p.id)"
-              aria-label="Remove passenger">
+              aria-label="Remove passenger"
+            >
               <ion-icon name="close-outline"></ion-icon>
             </button>
           </div>
@@ -78,7 +87,8 @@
               class="type-chip"
               *ngFor="let t of passengerTypes"
               [class.active]="p.type === t.id"
-              (click)="booking.setPassengerType(p.id, t.id)">
+              (click)="booking.setPassengerType(p.id, t.id)"
+            >
               {{ t.short }}
               <span class="off-tag" *ngIf="t.discount > 0">-20%</span>
             </button>
@@ -86,7 +96,11 @@
 
           <div class="id-field" *ngIf="requiresId(p.type)">
             <ion-icon name="id-card-outline"></ion-icon>
-            <input type="text" [(ngModel)]="p.idNumber" placeholder="{{ idPlaceholder(p.type) }} ID no. (optional)" />
+            <input
+              type="text"
+              [(ngModel)]="p.idNumber"
+              placeholder="{{ idPlaceholder(p.type) }} ID no. (optional)"
+            />
           </div>
         </div>
       </div>
@@ -94,14 +108,16 @@
       <button
         class="add-passenger-btn"
         (click)="booking.addPassenger()"
-        [disabled]="booking.passengers.length >= booking.maxPassengers">
+        [disabled]="booking.passengers.length >= booking.maxPassengers"
+      >
         <ion-icon name="add-outline"></ion-icon>
         Add Passenger
       </button>
 
       <p class="discount-note" *ngIf="booking.discountedCount">
         <ion-icon name="information-circle-outline"></ion-icon>
-        Student / Senior / PWD fares get 20% off under RA&nbsp;9994 &amp; RA&nbsp;10754 — present a valid ID to the conductor.
+        Student / Senior / PWD fares get 20% off under RA&nbsp;9994 &amp;
+        RA&nbsp;10754 — present a valid ID to the conductor.
       </p>
     </div>
 
@@ -113,7 +129,8 @@
           class="fare-class-card"
           *ngFor="let fc of booking.fareClasses"
           [class.active]="booking.fareClass === fc.id"
-          (click)="selectFareClass(fc.id)">
+          (click)="selectFareClass(fc.id)"
+        >
           <span class="fc-ribbon" *ngIf="fc.id === 'saver'">Best Value</span>
           <div class="fc-icon"><ion-icon [name]="fc.icon"></ion-icon></div>
           <div class="fc-text">
@@ -121,11 +138,14 @@
             <p>{{ fc.tagline }}</p>
           </div>
           <div class="fc-price">{{ formatFcPrice(fc.multiplier) }}</div>
-          <ion-icon class="fc-check" name="checkmark-circle" *ngIf="booking.fareClass === fc.id"></ion-icon>
+          <ion-icon
+            class="fc-check"
+            name="checkmark-circle"
+            *ngIf="booking.fareClass === fc.id"
+          ></ion-icon>
         </button>
       </div>
     </div>
-
   </div>
 
   <!-- STICKY FOOTER -->

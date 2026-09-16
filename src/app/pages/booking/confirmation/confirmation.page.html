@@ -1,6 +1,5 @@
 <ion-content fullscreen class="flow-content">
   <div class="flow-wrap" *ngIf="booking.trip as trip">
-
     <!-- SUCCESS BADGE -->
     <div class="success-badge">
       <div class="badge-ring">
@@ -9,7 +8,10 @@
     </div>
 
     <h1 class="confirm-title">Booking Confirmed!</h1>
-    <p class="confirm-sub">Your seat{{ booking.selectedSeats.length > 1 ? 's are' : ' is' }} reserved with {{ trip.operator }}</p>
+    <p class="confirm-sub">
+      Your seat{{ booking.selectedSeats.length > 1 ? 's are' : ' is' }} reserved
+      with {{ trip.operator }}
+    </p>
 
     <!-- E-TICKET -->
     <div class="ticket">
@@ -37,7 +39,10 @@
         </div>
 
         <div class="meta-row">
-          <span class="meta"><ion-icon name="calendar-outline"></ion-icon>{{ booking.travelDate }}</span>
+          <span class="meta"
+            ><ion-icon name="calendar-outline"></ion-icon>{{ booking.travelDate
+            }}</span
+          >
           <span class="meta seat">{{ booking.selectedSeats.join(', ') }}</span>
         </div>
       </div>
@@ -49,8 +54,9 @@
       </div>
     </div>
 
-    <p class="sms-note">A confirmation SMS has been sent to your registered number.</p>
-
+    <p class="sms-note">
+      A confirmation SMS has been sent to your registered number.
+    </p>
   </div>
 
   <!-- ACTIONS -->

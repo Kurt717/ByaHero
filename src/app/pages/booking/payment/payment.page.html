@@ -1,6 +1,5 @@
 <ion-content fullscreen class="flow-content">
   <div class="flow-wrap" *ngIf="booking.trip as trip">
-
     <div class="flow-header">
       <button class="icon-btn" (click)="goBack()" aria-label="Go back">
         <ion-icon name="arrow-back-outline"></ion-icon>
@@ -21,13 +20,20 @@
         <span>{{ trip.from }} → {{ trip.to }}</span>
       </div>
 
-      <div class="passenger-fare-row" *ngFor="let p of booking.passengers; let i = index">
+      <div
+        class="passenger-fare-row"
+        *ngFor="let p of booking.passengers; let i = index"
+      >
         <span>
           Passenger {{ i + 1 }} · {{ typeLabel(p.type) }}
-          <span class="seat-tag" *ngIf="booking.selectedSeats[i]">{{ booking.selectedSeats[i] }}</span>
+          <span class="seat-tag" *ngIf="booking.selectedSeats[i]"
+            >{{ booking.selectedSeats[i] }}</span
+          >
         </span>
         <span class="fare-amount">
-          <s *ngIf="p.type !== 'regular'">{{ booking.formatCurrency(booking.seatFare) }}</s>
+          <s *ngIf="p.type !== 'regular'"
+            >{{ booking.formatCurrency(booking.seatFare) }}</s
+          >
           {{ booking.formatCurrency(booking.fareForPassenger(p)) }}
         </span>
       </div>
@@ -38,7 +44,9 @@
       </div>
       <div class="receipt-row" *ngIf="booking.totalDiscount">
         <span>Discount applied</span>
-        <span class="discount-value">− {{ booking.formatCurrency(booking.totalDiscount) }}</span>
+        <span class="discount-value"
+          >− {{ booking.formatCurrency(booking.totalDiscount) }}</span
+        >
       </div>
       <div class="receipt-row">
         <span>Subtotal</span>
@@ -57,7 +65,9 @@
 
     <p class="id-reminder" *ngIf="booking.discountedCount">
       <ion-icon name="information-circle-outline"></ion-icon>
-      {{ booking.discountedCount }} discounted fare{{ booking.discountedCount > 1 ? 's' : '' }} — the conductor will ask to see a valid ID before boarding.
+      {{ booking.discountedCount }} discounted fare{{ booking.discountedCount >
+      1 ? 's' : '' }} — the conductor will ask to see a valid ID before
+      boarding.
     </p>
 
     <!-- PAYMENT METHODS -->
@@ -68,13 +78,17 @@
           class="method-card"
           *ngFor="let m of methods"
           [class.active]="booking.paymentMethod === m.id"
-          (click)="selectMethod(m.id)">
+          (click)="selectMethod(m.id)"
+        >
           <div class="m-icon"><ion-icon [name]="m.icon"></ion-icon></div>
           <div class="m-text">
             <h4>{{ m.label }}</h4>
             <p>{{ m.sub }}</p>
           </div>
-          <div class="m-radio" [class.checked]="booking.paymentMethod === m.id"></div>
+          <div
+            class="m-radio"
+            [class.checked]="booking.paymentMethod === m.id"
+          ></div>
         </button>
       </div>
     </div>
@@ -84,19 +98,37 @@
       <p class="section-title">Card Details</p>
       <div class="field-group">
         <label>Card Number</label>
-        <input type="text" [(ngModel)]="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19" />
+        <input
+          type="text"
+          [(ngModel)]="cardNumber"
+          placeholder="1234 5678 9012 3456"
+          maxlength="19"
+        />
       </div>
       <div class="field-row">
         <div class="field-group">
           <label>Expiry</label>
-          <input type="text" [(ngModel)]="cardExpiry" placeholder="MM/YY" maxlength="5" />
+          <input
+            type="text"
+            [(ngModel)]="cardExpiry"
+            placeholder="MM/YY"
+            maxlength="5"
+          />
         </div>
         <div class="field-group">
           <label>CVV</label>
-          <input type="text" [(ngModel)]="cardCvv" placeholder="123" maxlength="3" />
+          <input
+            type="text"
+            [(ngModel)]="cardCvv"
+            placeholder="123"
+            maxlength="3"
+          />
         </div>
       </div>
-      <p class="secure-note"><ion-icon name="lock-closed-outline"></ion-icon> Payments are encrypted and secure</p>
+      <p class="secure-note">
+        <ion-icon name="lock-closed-outline"></ion-icon> Payments are encrypted
+        and secure
+      </p>
     </div>
 
     <!-- TERMS -->
@@ -105,9 +137,10 @@
       <span class="checkbox-box" [class.checked]="agreed">
         <ion-icon name="checkmark-circle" *ngIf="agreed"></ion-icon>
       </span>
-      <span class="terms-text">I agree to Byahero's fare and cancellation policy</span>
+      <span class="terms-text"
+        >I agree to Byahero's fare and cancellation policy</span
+      >
     </label>
-
   </div>
 
   <!-- STICKY FOOTER -->

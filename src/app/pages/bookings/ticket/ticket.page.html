@@ -1,26 +1,51 @@
 <ion-content fullscreen class="ticket-content">
-
   <!-- HERO VISOR BAND -->
   <div class="ticket-hero">
-    <svg class="hero-mask" viewBox="0 0 390 200" preserveAspectRatio="xMidYMin slice" aria-hidden="true">
+    <svg
+      class="hero-mask"
+      viewBox="0 0 390 200"
+      preserveAspectRatio="xMidYMin slice"
+      aria-hidden="true"
+    >
       <defs>
         <linearGradient id="tkSlit" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.9"/>
-          <stop offset="100%" stop-color="#8FA3FF" stop-opacity="0.25"/>
+          <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.9" />
+          <stop offset="100%" stop-color="#8FA3FF" stop-opacity="0.25" />
         </linearGradient>
       </defs>
-      <g stroke="#8FA3FF" stroke-width="2" opacity="0.15" stroke-linecap="round">
-        <line x1="195" y1="52" x2="-30" y2="-40"/>
-        <line x1="195" y1="52" x2="420" y2="-40"/>
-        <line x1="195" y1="52" x2="-40" y2="80"/>
-        <line x1="195" y1="52" x2="430" y2="80"/>
+      <g
+        stroke="#8FA3FF"
+        stroke-width="2"
+        opacity="0.15"
+        stroke-linecap="round"
+      >
+        <line x1="195" y1="52" x2="-30" y2="-40" />
+        <line x1="195" y1="52" x2="420" y2="-40" />
+        <line x1="195" y1="52" x2="-40" y2="80" />
+        <line x1="195" y1="52" x2="430" y2="80" />
       </g>
-      <path d="M36 -70 L98 38 L56 32 Z" fill="#02040F" opacity="0.5"/>
-      <path d="M354 -70 L292 38 L334 32 Z" fill="#02040F" opacity="0.5"/>
-      <path d="M-30 20 Q195 -30 420 20 L420 48 Q195 -2 -30 48 Z" fill="#02040F" opacity="0.4"/>
-      <path d="M12 54 Q86 26 170 46 L178 70 Q92 54 18 78 Z" fill="url(#tkSlit)" opacity="0.34"/>
-      <path d="M378 54 Q304 26 220 46 L212 70 Q298 54 372 78 Z" fill="url(#tkSlit)" opacity="0.34"/>
-      <path d="M195 42 L204 104 L195 116 L186 104 Z" fill="#02040F" opacity="0.3"/>
+      <path d="M36 -70 L98 38 L56 32 Z" fill="#02040F" opacity="0.5" />
+      <path d="M354 -70 L292 38 L334 32 Z" fill="#02040F" opacity="0.5" />
+      <path
+        d="M-30 20 Q195 -30 420 20 L420 48 Q195 -2 -30 48 Z"
+        fill="#02040F"
+        opacity="0.4"
+      />
+      <path
+        d="M12 54 Q86 26 170 46 L178 70 Q92 54 18 78 Z"
+        fill="url(#tkSlit)"
+        opacity="0.34"
+      />
+      <path
+        d="M378 54 Q304 26 220 46 L212 70 Q298 54 372 78 Z"
+        fill="url(#tkSlit)"
+        opacity="0.34"
+      />
+      <path
+        d="M195 42 L204 104 L195 116 L186 104 Z"
+        fill="#02040F"
+        opacity="0.3"
+      />
     </svg>
 
     <div class="hero-bar">
@@ -28,17 +53,19 @@
         <ion-icon name="arrow-back-outline"></ion-icon>
       </button>
       <h1>E-Ticket</h1>
-      <button class="icon-btn" (click)="shareTicket()" aria-label="Share ticket">
+      <button
+        class="icon-btn"
+        (click)="shareTicket()"
+        aria-label="Share ticket"
+      >
         <ion-icon name="share-social-outline"></ion-icon>
       </button>
     </div>
   </div>
 
   <div class="ticket-wrap" *ngIf="booking as b">
-
     <!-- BOARDING PASS -->
     <div class="pass" [class.void]="b.status === 'cancelled'">
-
       <!-- top half -->
       <div class="pass-top">
         <div class="pass-head">
@@ -49,7 +76,9 @@
               <span>Byahero verified operator</span>
             </div>
           </div>
-          <span class="status-chip" [ngClass]="b.status">{{ statusLabel() }}</span>
+          <span class="status-chip" [ngClass]="b.status"
+            >{{ statusLabel() }}</span
+          >
         </div>
 
         <div class="leg">
@@ -72,19 +101,27 @@
 
         <div class="detail-grid">
           <div class="detail">
-            <span class="d-label"><ion-icon name="calendar-outline"></ion-icon>Date</span>
+            <span class="d-label"
+              ><ion-icon name="calendar-outline"></ion-icon>Date</span
+            >
             <span class="d-value">{{ b.date }}</span>
           </div>
           <div class="detail">
-            <span class="d-label"><ion-icon name="time-outline"></ion-icon>Departure</span>
+            <span class="d-label"
+              ><ion-icon name="time-outline"></ion-icon>Departure</span
+            >
             <span class="d-value">{{ b.time }}</span>
           </div>
           <div class="detail">
-            <span class="d-label"><ion-icon name="person-outline"></ion-icon>Passenger</span>
+            <span class="d-label"
+              ><ion-icon name="person-outline"></ion-icon>Passenger</span
+            >
             <span class="d-value">{{ passenger.name }}</span>
           </div>
           <div class="detail">
-            <span class="d-label"><ion-icon name="call-outline"></ion-icon>Contact</span>
+            <span class="d-label"
+              ><ion-icon name="call-outline"></ion-icon>Contact</span
+            >
             <span class="d-value">{{ passenger.phone }}</span>
           </div>
         </div>
@@ -110,8 +147,12 @@
 
       <!-- bottom half: scan block -->
       <div class="pass-bottom">
-        <span class="void-stamp" *ngIf="b.status === 'cancelled'">CANCELLED</span>
-        <span class="void-stamp used" *ngIf="b.status === 'completed'">USED</span>
+        <span class="void-stamp" *ngIf="b.status === 'cancelled'"
+          >CANCELLED</span
+        >
+        <span class="void-stamp used" *ngIf="b.status === 'completed'"
+          >USED</span
+        >
 
         <div class="qr-frame" *ngIf="b.status !== 'cancelled'">
           <span class="corner tl"></span>
@@ -120,7 +161,11 @@
           <span class="corner br"></span>
           <div class="qr">
             <div class="qr-row" *ngFor="let row of qrGrid">
-              <span class="qr-cell" *ngFor="let on of row" [class.on]="on"></span>
+              <span
+                class="qr-cell"
+                *ngFor="let on of row"
+                [class.on]="on"
+              ></span>
             </div>
           </div>
         </div>
@@ -136,7 +181,9 @@
 
     <!-- BOARDING NOTES -->
     <div class="note-card" *ngIf="isActive">
-      <div class="note-icon"><ion-icon name="information-circle-outline"></ion-icon></div>
+      <div class="note-icon">
+        <ion-icon name="information-circle-outline"></ion-icon>
+      </div>
       <div class="note-text">
         <h4>Before you board</h4>
         <ul>
@@ -146,7 +193,6 @@
         </ul>
       </div>
     </div>
-
   </div>
 
   <!-- ACTIONS -->

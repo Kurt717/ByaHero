@@ -5,9 +5,9 @@ export interface TripSummary {
   from: string;
   to: string;
   eta: string;
-  fare: string;       // base one-way fare per seat, e.g. '₱ 620'
-  seatsLeft: string;  // e.g. '18 seats left'
-  status: string;     // 'on-time' | 'delayed'
+  fare: string; // base one-way fare per seat, e.g. '₱ 620'
+  seatsLeft: string; // e.g. '18 seats left'
+  status: string; // 'on-time' | 'delayed'
 }
 
 export type FareClass = 'saver' | 'plus' | 'premium';
@@ -31,21 +31,25 @@ export interface PassengerEntry {
 export interface PassengerTypeMeta {
   label: string;
   short: string;
-  discount: number;      // 0.2 = 20% off, per RA 9994 / RA 10754
+  discount: number; // 0.2 = 20% off, per RA 9994 / RA 10754
   requiresId: boolean;
 }
 
 /** Single source of truth for discount rules — imported by every screen that touches fares. */
 export const PASSENGER_TYPE_META: Record<PassengerType, PassengerTypeMeta> = {
-  regular: { label: 'Regular',        short: 'REG', discount: 0,   requiresId: false },
-  student: { label: 'Student',        short: 'STU', discount: 0.2, requiresId: true },
-  senior:  { label: 'Senior Citizen', short: 'SC',  discount: 0.2, requiresId: true },
-  pwd:     { label: 'PWD',            short: 'PWD', discount: 0.2, requiresId: true },
+  regular: { label: 'Regular', short: 'REG', discount: 0, requiresId: false },
+  student: { label: 'Student', short: 'STU', discount: 0.2, requiresId: true },
+  senior: {
+    label: 'Senior Citizen',
+    short: 'SC',
+    discount: 0.2,
+    requiresId: true,
+  },
+  pwd: { label: 'PWD', short: 'PWD', discount: 0.2, requiresId: true },
 };
 
 @Injectable({ providedIn: 'root' })
 export class BookingService {
-
   trip: TripSummary | null = null;
   travelDate = '';
   passengers: PassengerEntry[] = [{ id: 'p1', type: 'regular' }];
@@ -57,13 +61,34 @@ export class BookingService {
   private counter = 1;
 
   readonly fareClasses: FareClassOption[] = [
-    { id: 'saver',   label: 'Saver',   tagline: 'Standard reclining seat',        icon: 'bus-outline',      multiplier: 1 },
-    { id: 'plus',    label: 'Plus',    tagline: 'Extra legroom, window priority', icon: 'flash-outline',    multiplier: 1.35 },
-    { id: 'premium', label: 'Premium', tagline: 'Wide seat + onboard snack',      icon: 'sparkles-outline', multiplier: 1.75 },
+    {
+      id: 'saver',
+      label: 'Saver',
+      tagline: 'Standard reclining seat',
+      icon: 'bus-outline',
+      multiplier: 1,
+    },
+    {
+      id: 'plus',
+      label: 'Plus',
+      tagline: 'Extra legroom, window priority',
+      icon: 'flash-outline',
+      multiplier: 1.35,
+    },
+    {
+      id: 'premium',
+      label: 'Premium',
+      tagline: 'Wide seat + onboard snack',
+      icon: 'sparkles-outline',
+      multiplier: 1.75,
+    },
   ];
 
   get selectedFareClass(): FareClassOption {
-    return this.fareClasses.find(f => f.id === this.fareClass) ?? this.fareClasses[0];
+    return (
+      this.fareClasses.find((f) => f.id === this.fareClass) ??
+      this.fareClasses[0]
+    );
   }
 
   get baseFare(): number {
@@ -92,15 +117,21 @@ export class BookingService {
   }
 
   get subtotal(): number {
-    return this.passengers.reduce((sum, p) => sum + this.fareForPassenger(p), 0);
+    return this.passengers.reduce(
+      (sum, p) => sum + this.fareForPassenger(p),
+      0,
+    );
   }
 
   get totalDiscount(): number {
-    return this.passengers.reduce((sum, p) => sum + (this.seatFare - this.fareForPassenger(p)), 0);
+    return this.passengers.reduce(
+      (sum, p) => sum + (this.seatFare - this.fareForPassenger(p)),
+      0,
+    );
   }
 
   get discountedCount(): number {
-    return this.passengers.filter(p => p.type !== 'regular').length;
+    return this.passengers.filter((p) => p.type !== 'regular').length;
   }
 
   get serviceFee(): number {
@@ -124,12 +155,12 @@ export class BookingService {
 
   removePassenger(id: string) {
     if (this.passengers.length <= 1) return;
-    this.passengers = this.passengers.filter(p => p.id !== id);
+    this.passengers = this.passengers.filter((p) => p.id !== id);
     this.selectedSeats = [];
   }
 
   setPassengerType(id: string, type: PassengerType) {
-    const p = this.passengers.find(p => p.id === id);
+    const p = this.passengers.find((p) => p.id === id);
     if (p) p.type = type;
   }
 

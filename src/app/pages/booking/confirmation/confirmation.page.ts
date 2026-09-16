@@ -4,15 +4,24 @@ import { IonContent, IonIcon } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
 import {
-  checkmarkOutline, qrCodeOutline, calendarOutline, timeOutline,
-  bus, listOutline, homeOutline
+  checkmarkOutline,
+  qrCodeOutline,
+  calendarOutline,
+  timeOutline,
+  bus,
+  listOutline,
+  homeOutline,
 } from 'ionicons/icons';
 import { BookingService } from '../booking.service';
 
 addIcons({
-  'checkmark-outline': checkmarkOutline, 'qr-code-outline': qrCodeOutline,
-  'calendar-outline': calendarOutline, 'time-outline': timeOutline,
-  'bus': bus, 'list-outline': listOutline, 'home-outline': homeOutline
+  'checkmark-outline': checkmarkOutline,
+  'qr-code-outline': qrCodeOutline,
+  'calendar-outline': calendarOutline,
+  'time-outline': timeOutline,
+  bus: bus,
+  'list-outline': listOutline,
+  'home-outline': homeOutline,
 });
 
 @Component({
@@ -20,12 +29,22 @@ addIcons({
   standalone: true,
   imports: [CommonModule, IonContent, IonIcon],
   templateUrl: './confirmation.page.html',
-  styleUrls: ['./confirmation.page.scss']
+  styleUrls: ['./confirmation.page.scss'],
 })
 export class ConfirmationPage implements OnInit {
-
-  constructor(public booking: BookingService, private router: Router) {
-      addIcons({checkmarkOutline,bus,calendarOutline,qrCodeOutline,listOutline,homeOutline});}
+  constructor(
+    public booking: BookingService,
+    private router: Router,
+  ) {
+    addIcons({
+      checkmarkOutline,
+      bus,
+      calendarOutline,
+      qrCodeOutline,
+      listOutline,
+      homeOutline,
+    });
+  }
 
   ngOnInit() {
     if (!this.booking.trip || !this.booking.bookingRef) {

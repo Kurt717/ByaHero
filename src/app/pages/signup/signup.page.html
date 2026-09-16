@@ -8,28 +8,42 @@
 
   <!-- Bottom Sheet (Gray Card) -->
   <div class="bottom-sheet">
-    
     <!-- Overlapping Logo -->
     <div class="logo-circle">
       <svg class="logo-burst" viewBox="0 0 160 160" aria-hidden="true">
-        <g stroke="#151D48" stroke-width="3" opacity="0.14" stroke-linecap="round">
-          <line x1="80" y1="4" x2="80" y2="22"/>
-          <line x1="80" y1="138" x2="80" y2="156"/>
-          <line x1="4" y1="80" x2="22" y2="80"/>
-          <line x1="138" y1="80" x2="156" y2="80"/>
-          <line x1="24" y1="24" x2="37" y2="37"/>
-          <line x1="123" y1="123" x2="136" y2="136"/>
-          <line x1="24" y1="136" x2="37" y2="123"/>
-          <line x1="123" y1="37" x2="136" y2="24"/>
+        <g
+          stroke="#151D48"
+          stroke-width="3"
+          opacity="0.14"
+          stroke-linecap="round"
+        >
+          <line x1="80" y1="4" x2="80" y2="22" />
+          <line x1="80" y1="138" x2="80" y2="156" />
+          <line x1="4" y1="80" x2="22" y2="80" />
+          <line x1="138" y1="80" x2="156" y2="80" />
+          <line x1="24" y1="24" x2="37" y2="37" />
+          <line x1="123" y1="123" x2="136" y2="136" />
+          <line x1="24" y1="136" x2="37" y2="123" />
+          <line x1="123" y1="37" x2="136" y2="24" />
         </g>
       </svg>
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" class="logo-svg">
-        <rect x="100" y="70" width="200" height="260" rx="50" fill="#151D48"/>
-        <path d="M 115 150 Q 150 130 200 150 Q 250 130 285 150 L 270 190 Q 200 170 130 190 Z" fill="#FFFFFF"/>
-        <path d="M 100 220 L 300 220 L 300 280 Q 200 350 100 280 Z" fill="#DC2626"/>
-        <circle cx="200" cy="265" r="18" fill="#FFFFFF"/>
-        <circle cx="200" cy="265" r="8" fill="#151D48"/>
-        <rect x="196" y="340" width="8" height="40" rx="4" fill="#151D48"/>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 400 400"
+        class="logo-svg"
+      >
+        <rect x="100" y="70" width="200" height="260" rx="50" fill="#151D48" />
+        <path
+          d="M 115 150 Q 150 130 200 150 Q 250 130 285 150 L 270 190 Q 200 170 130 190 Z"
+          fill="#FFFFFF"
+        />
+        <path
+          d="M 100 220 L 300 220 L 300 280 Q 200 350 100 280 Z"
+          fill="#DC2626"
+        />
+        <circle cx="200" cy="265" r="18" fill="#FFFFFF" />
+        <circle cx="200" cy="265" r="8" fill="#151D48" />
+        <rect x="196" y="340" width="8" height="40" rx="4" fill="#151D48" />
       </svg>
     </div>
 
@@ -42,7 +56,6 @@
     </div>
 
     <form class="auth-form">
-      
       <!-- Input 1 -->
       <div class="input-group">
         <label>Full name</label>
@@ -53,7 +66,8 @@
             placeholder="e.g. Juan Dela Cruz"
             [(ngModel)]="fullName"
             name="fullName"
-            autocomplete="name">
+            autocomplete="name"
+          >
           </ion-input>
         </div>
       </div>
@@ -68,7 +82,8 @@
             placeholder="juan@example.com"
             [(ngModel)]="email"
             name="email"
-            autocomplete="email">
+            autocomplete="email"
+          >
           </ion-input>
         </div>
       </div>
@@ -83,7 +98,8 @@
             placeholder="+63 900 000 0000"
             [(ngModel)]="mobile"
             name="mobile"
-            autocomplete="tel">
+            autocomplete="tel"
+          >
           </ion-input>
         </div>
       </div>
@@ -98,19 +114,24 @@
             placeholder="Create a strong password"
             [(ngModel)]="password"
             name="password"
-            autocomplete="new-password">
+            autocomplete="new-password"
+          >
           </ion-input>
           <ion-icon
             class="toggle-icon"
             [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"
-            (click)="showPassword = !showPassword">
+            (click)="showPassword = !showPassword"
+          >
           </ion-icon>
         </div>
       </div>
 
       <!-- Terms Checkbox -->
       <div class="terms-row">
-        <ion-checkbox [(ngModel)]="agreedToTerms" name="agreedToTerms"></ion-checkbox>
+        <ion-checkbox
+          [(ngModel)]="agreedToTerms"
+          name="agreedToTerms"
+        ></ion-checkbox>
         <span class="terms-label">
           I agree to the <a>Terms of Service</a> & <a>Privacy Policy</a>
         </span>
@@ -130,15 +151,20 @@
     </div>
 
     <div class="social-row">
-      <button class="social-btn"><ion-icon name="logo-google"></ion-icon></button>
-      <button class="social-btn"><ion-icon name="logo-apple"></ion-icon></button>
-      <button class="social-btn"><ion-icon name="logo-facebook"></ion-icon></button>
+      <button class="social-btn">
+        <ion-icon name="logo-google"></ion-icon>
+      </button>
+      <button class="social-btn">
+        <ion-icon name="logo-apple"></ion-icon>
+      </button>
+      <button class="social-btn">
+        <ion-icon name="logo-facebook"></ion-icon>
+      </button>
     </div>
 
     <!-- Login Link -->
     <p class="switch-auth">
       Already have an account? <a routerLink="/login">Log in</a>
     </p>
-
   </div>
 </ion-content>

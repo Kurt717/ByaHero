@@ -1,42 +1,90 @@
-import { Component, OnInit, AfterViewInit, OnDestroy, ViewChild, ElementRef, NgZone } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  AfterViewInit,
+  OnDestroy,
+  ViewChild,
+  ElementRef,
+  NgZone,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonIcon, IonAvatar } from '@ionic/angular';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { addIcons } from 'ionicons';
 import {
-  navigateOutline, ticketOutline, notificationsOutline, timeOutline, mapOutline,
-  arrowForwardOutline, busOutline, peopleOutline, home, personOutline, radioButtonOn,
-  swapVerticalOutline, listOutline, alertCircle, checkmarkCircle, chevronForwardOutline,
-  carSportOutline, compassOutline, bus, search, locateOutline, starSharp
+  navigateOutline,
+  ticketOutline,
+  notificationsOutline,
+  timeOutline,
+  mapOutline,
+  arrowForwardOutline,
+  busOutline,
+  peopleOutline,
+  home,
+  personOutline,
+  radioButtonOn,
+  swapVerticalOutline,
+  listOutline,
+  alertCircle,
+  checkmarkCircle,
+  chevronForwardOutline,
+  carSportOutline,
+  compassOutline,
+  bus,
+  search,
+  locateOutline,
+  starSharp,
 } from 'ionicons/icons';
 import { BookingService, TripSummary } from '../booking/booking.service';
 import * as L from 'leaflet';
 
 addIcons({
-  'navigate-outline': navigateOutline, 'ticket-outline': ticketOutline,
-  'notifications-outline': notificationsOutline, 'time-outline': timeOutline,
-  'map-outline': mapOutline, 'arrow-forward-outline': arrowForwardOutline,
-  'bus-outline': busOutline, 'people-outline': peopleOutline,
-  'home': home, 'person-outline': personOutline,
-  'radio-button-on': radioButtonOn, 'swap-vertical-outline': swapVerticalOutline,
-  'list-outline': listOutline, 'alert-circle': alertCircle,
-  'checkmark-circle': checkmarkCircle, 'chevron-forward-outline': chevronForwardOutline,
-  'car-sport-outline': carSportOutline, 'compass-outline': compassOutline, 'bus': bus,
-  'search': search, 'locate-outline': locateOutline, 'star-sharp': starSharp
+  'navigate-outline': navigateOutline,
+  'ticket-outline': ticketOutline,
+  'notifications-outline': notificationsOutline,
+  'time-outline': timeOutline,
+  'map-outline': mapOutline,
+  'arrow-forward-outline': arrowForwardOutline,
+  'bus-outline': busOutline,
+  'people-outline': peopleOutline,
+  home: home,
+  'person-outline': personOutline,
+  'radio-button-on': radioButtonOn,
+  'swap-vertical-outline': swapVerticalOutline,
+  'list-outline': listOutline,
+  'alert-circle': alertCircle,
+  'checkmark-circle': checkmarkCircle,
+  'chevron-forward-outline': chevronForwardOutline,
+  'car-sport-outline': carSportOutline,
+  'compass-outline': compassOutline,
+  bus: bus,
+  search: search,
+  'locate-outline': locateOutline,
+  'star-sharp': starSharp,
 });
 
-interface FocusPin { lat: number; lng: number; label: string; }
+interface FocusPin {
+  lat: number;
+  lng: number;
+  label: string;
+}
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, FormsModule, IonContent, IonIcon, IonAvatar, RouterLink],
+  imports: [
+    CommonModule,
+    FormsModule,
+    IonContent,
+    IonIcon,
+    IonAvatar,
+    RouterLink,
+  ],
   templateUrl: './home.page.html',
-  styleUrls: ['./home.page.scss']
+  styleUrls: ['./home.page.scss'],
 })
 export class HomePage implements OnInit, AfterViewInit, OnDestroy {
-
   @ViewChild('mapEl') mapEl?: ElementRef<HTMLDivElement>;
 
   selectedView: 'list' | 'map' = 'list';
@@ -48,14 +96,46 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
     operator: 'Victory Liner',
     busNo: '402',
     eta: '8 min',
-    route: 'Baguio → Tuguegarao'
+    route: 'Baguio → Tuguegarao',
   };
 
   nearbyRoutes = [
-    { operator: 'Florida Bus Line', from: 'Tuguegarao', to: 'Manila (PITX)', eta: '4 min away', fare: '₱ 620', seats: '18 seats left', status: 'on-time' },
-    { operator: 'Victory Liner', from: 'Santiago City', to: 'Cubao, QC', eta: '11 min away', fare: '₱ 480', seats: '6 seats left', status: 'delayed' },
-    { operator: 'GV Florida UV Express', from: 'Cauayan', to: 'Ilagan', eta: '2 min away', fare: '₱ 95', seats: '3 seats left', status: 'on-time' },
-    { operator: 'Baliwag Transit', from: 'Solano', to: 'Cabanatuan', eta: '19 min away', fare: '₱ 210', seats: '22 seats left', status: 'on-time' },
+    {
+      operator: 'Florida Bus Line',
+      from: 'Tuguegarao',
+      to: 'Manila (PITX)',
+      eta: '4 min away',
+      fare: '₱ 620',
+      seats: '18 seats left',
+      status: 'on-time',
+    },
+    {
+      operator: 'Victory Liner',
+      from: 'Santiago City',
+      to: 'Cubao, QC',
+      eta: '11 min away',
+      fare: '₱ 480',
+      seats: '6 seats left',
+      status: 'delayed',
+    },
+    {
+      operator: 'GV Florida UV Express',
+      from: 'Cauayan',
+      to: 'Ilagan',
+      eta: '2 min away',
+      fare: '₱ 95',
+      seats: '3 seats left',
+      status: 'on-time',
+    },
+    {
+      operator: 'Baliwag Transit',
+      from: 'Solano',
+      to: 'Cabanatuan',
+      eta: '19 min away',
+      fare: '₱ 210',
+      seats: '22 seats left',
+      status: 'on-time',
+    },
   ];
 
   /** Real map state */
@@ -75,29 +155,55 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
   /** Fixed lookup table standing in for a geocoder — swap for a real geocoding
    *  service once the backend exists. Coordinates are real city centers. */
   private readonly CITY_COORDS: Record<string, [number, number]> = {
-    baguio: [16.4023, 120.5960], tuguegarao: [17.6132, 121.7270],
-    pitx: [14.4930, 120.9860], manila: [14.5995, 120.9842], cubao: [14.6220, 121.0533],
-    cauayan: [16.9333, 121.7667], ilagan: [17.1487, 121.8895], solano: [16.5167, 121.1833],
-    cabanatuan: [15.4864, 120.9679], santiago: [16.6864, 121.5490], vigan: [17.5747, 120.3869],
-    laoag: [18.1960, 120.5936], sagada: [17.0928, 120.9008], banaue: [16.9107, 121.0594]
+    baguio: [16.4023, 120.596],
+    tuguegarao: [17.6132, 121.727],
+    pitx: [14.493, 120.986],
+    manila: [14.5995, 120.9842],
+    cubao: [14.622, 121.0533],
+    cauayan: [16.9333, 121.7667],
+    ilagan: [17.1487, 121.8895],
+    solano: [16.5167, 121.1833],
+    cabanatuan: [15.4864, 120.9679],
+    santiago: [16.6864, 121.549],
+    vigan: [17.5747, 120.3869],
+    laoag: [18.196, 120.5936],
+    sagada: [17.0928, 120.9008],
+    banaue: [16.9107, 121.0594],
   };
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private bookingService: BookingService,
-    private zone: NgZone
+    private zone: NgZone,
   ) {
-      addIcons({notificationsOutline,chevronForwardOutline,busOutline,carSportOutline,peopleOutline,compassOutline,listOutline,mapOutline,starSharp,bus,locateOutline});}
+    addIcons({
+      notificationsOutline,
+      chevronForwardOutline,
+      busOutline,
+      carSportOutline,
+      peopleOutline,
+      compassOutline,
+      listOutline,
+      mapOutline,
+      starSharp,
+      bus,
+      locateOutline,
+    });
+  }
 
   ngOnInit() {
     // Search / terminal cards can deep-link here with ?lat=&lng=&label=
     // to jump straight to the map and drop a pin — see search.page.ts.
-    this.route.queryParamMap.subscribe(params => {
+    this.route.queryParamMap.subscribe((params) => {
       const lat = params.get('lat');
       const lng = params.get('lng');
       if (lat && lng) {
-        this.pendingFocus = { lat: Number(lat), lng: Number(lng), label: params.get('label') || 'Selected stop' };
+        this.pendingFocus = {
+          lat: Number(lat),
+          lng: Number(lng),
+          label: params.get('label') || 'Selected stop',
+        };
         this.selectedView = 'map';
         setTimeout(() => this.ensureMap(), 60);
       }
@@ -127,7 +233,7 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
       eta: route.eta,
       fare: route.fare,
       seatsLeft: route.seats,
-      status: route.status
+      status: route.status,
     };
     this.bookingService.startBooking(trip);
     this.router.navigateByUrl('/booking/trip');
@@ -150,17 +256,26 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
 
     const originCoords = this.resolveCoords(this.origin);
     const destCoords = this.resolveCoords(this.destination);
-    const start = this.pendingFocus ? [this.pendingFocus.lat, this.pendingFocus.lng] as [number, number] : originCoords;
+    const start = this.pendingFocus
+      ? ([this.pendingFocus.lat, this.pendingFocus.lng] as [number, number])
+      : originCoords;
 
-    this.map = L.map(this.mapEl.nativeElement, { zoomControl: false }).setView(start, this.pendingFocus ? 15 : 8);
+    this.map = L.map(this.mapEl.nativeElement, { zoomControl: false }).setView(
+      start,
+      this.pendingFocus ? 15 : 8,
+    );
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
-      attribution: '&copy; OpenStreetMap contributors'
+      attribution: '&copy; OpenStreetMap contributors',
     }).addTo(this.map);
 
     this.routeLine = L.polyline([originCoords, destCoords], {
-      color: '#151D48', weight: 4, opacity: 0.55, dashArray: '1, 10', lineCap: 'round'
+      color: '#151D48',
+      weight: 4,
+      opacity: 0.55,
+      dashArray: '1, 10',
+      lineCap: 'round',
     }).addTo(this.map);
 
     this.addPin(originCoords, '#151D48', 'A');
@@ -171,7 +286,9 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
       const frac = Math.min(0.15 + i * 0.18, 0.9);
       const pos = this.interpolate(originCoords, destCoords, frac);
       const marker = this.busDivMarker(pos, route.status === 'delayed');
-      marker.bindPopup(`<strong>${route.operator}</strong><br/>${route.eta} · ${route.fare}`);
+      marker.bindPopup(
+        `<strong>${route.operator}</strong><br/>${route.eta} · ${route.fare}`,
+      );
       marker.addTo(this.map!);
     });
 
@@ -179,7 +296,10 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
     // Replace with a real position feed (websocket/poll) once operators share GPS.
     this.busMarker = this.busDivMarker(originCoords, false, true);
     this.busMarker.addTo(this.map);
-    this.busInterval = setInterval(() => this.stepBus(originCoords, destCoords), 900);
+    this.busInterval = setInterval(
+      () => this.stepBus(originCoords, destCoords),
+      900,
+    );
 
     if (this.pendingFocus) {
       this.focusOn(this.pendingFocus);
@@ -191,20 +311,32 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
   private focusOn(f: FocusPin) {
     if (!this.map) return;
     if (this.focusMarker) this.map.removeLayer(this.focusMarker);
-    this.focusMarker = L.marker([f.lat, f.lng], { icon: this.pinIcon('#D32F2F', '★') }).addTo(this.map);
+    this.focusMarker = L.marker([f.lat, f.lng], {
+      icon: this.pinIcon('#D32F2F', '★'),
+    }).addTo(this.map);
     this.focusMarker.bindPopup(`<strong>${f.label}</strong>`).openPopup();
     this.map.flyTo([f.lat, f.lng], 15, { duration: 0.8 });
     this.pendingFocus = null;
   }
 
-  private interpolate(a: [number, number], b: [number, number], t: number): [number, number] {
+  private interpolate(
+    a: [number, number],
+    b: [number, number],
+    t: number,
+  ): [number, number] {
     return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
   }
 
   private stepBus(origin: [number, number], dest: [number, number]) {
     this.busProgress += 0.02 * this.busDirection;
-    if (this.busProgress >= 1) { this.busProgress = 1; this.busDirection = -1; }
-    if (this.busProgress <= 0) { this.busProgress = 0; this.busDirection = 1; }
+    if (this.busProgress >= 1) {
+      this.busProgress = 1;
+      this.busDirection = -1;
+    }
+    if (this.busProgress <= 0) {
+      this.busProgress = 0;
+      this.busDirection = 1;
+    }
     this.busMarker?.setLatLng(this.interpolate(origin, dest, this.busProgress));
   }
 
@@ -223,7 +355,11 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
     L.marker(coords, { icon: this.pinIcon(color, glyph) }).addTo(this.map!);
   }
 
-  private busDivMarker(coords: [number, number], delayed: boolean, animated = false): L.Marker {
+  private busDivMarker(
+    coords: [number, number],
+    delayed: boolean,
+    animated = false,
+  ): L.Marker {
     const bg = delayed ? '#D32F2F' : '#151D48';
     const pulse = animated
       ? `<span style="position:absolute;inset:-6px;border-radius:50%;border:2px solid ${bg};opacity:0.5;animation:byaheroPulse 1.6s ease-out infinite;"></span>`
@@ -235,12 +371,19 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
           <svg width="15" height="15" viewBox="0 0 24 24" fill="#fff"><path d="M4 16c0 .88.39 1.67 1 2.22V20a1 1 0 001 1h1a1 1 0 001-1v-1h8v1a1 1 0 001 1h1a1 1 0 001-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm9 0a1.5 1.5 0 110-3 1.5 1.5 0 010 3zM18 11H6V6h12v5z"/></svg>
         </div>
       </div>`;
-    return L.marker(coords, { icon: L.divIcon({ className: '', html, iconSize: [30, 30], iconAnchor: [15, 15] }) });
+    return L.marker(coords, {
+      icon: L.divIcon({
+        className: '',
+        html,
+        iconSize: [30, 30],
+        iconAnchor: [15, 15],
+      }),
+    });
   }
 
   private resolveCoords(place: string): [number, number] {
     const p = place.toLowerCase();
-    const key = Object.keys(this.CITY_COORDS).find(k => p.includes(k));
+    const key = Object.keys(this.CITY_COORDS).find((k) => p.includes(k));
     return key ? this.CITY_COORDS[key] : this.CITY_COORDS['baguio'];
   }
 
@@ -252,30 +395,38 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
     }
     this.locating = true;
     navigator.geolocation.getCurrentPosition(
-      (pos) => this.zone.run(() => {
-        this.locating = false;
-        const coords: [number, number] = [pos.coords.latitude, pos.coords.longitude];
-        if (!this.map) return;
-        if (this.userMarker) this.map.removeLayer(this.userMarker);
-        this.userMarker = L.marker(coords, {
-          icon: L.divIcon({
-            className: '',
-            html: `<div style="width:18px;height:18px;border-radius:50%;background:#151D48;border:3px solid #fff;box-shadow:0 0 0 4px rgba(21,29,72,0.25);"></div>`,
-            iconSize: [18, 18], iconAnchor: [9, 9]
-          })
-        }).addTo(this.map);
-        this.map.flyTo(coords, 14, { duration: 0.8 });
-      }),
-      () => this.zone.run(() => {
-        this.locating = false;
-        this.locateMessage = 'Location permission denied';
-        this.clearLocateMessage();
-      }),
-      { enableHighAccuracy: true, timeout: 8000 }
+      (pos) =>
+        this.zone.run(() => {
+          this.locating = false;
+          const coords: [number, number] = [
+            pos.coords.latitude,
+            pos.coords.longitude,
+          ];
+          if (!this.map) return;
+          if (this.userMarker) this.map.removeLayer(this.userMarker);
+          this.userMarker = L.marker(coords, {
+            icon: L.divIcon({
+              className: '',
+              html: `<div style="width:18px;height:18px;border-radius:50%;background:#151D48;border:3px solid #fff;box-shadow:0 0 0 4px rgba(21,29,72,0.25);"></div>`,
+              iconSize: [18, 18],
+              iconAnchor: [9, 9],
+            }),
+          }).addTo(this.map);
+          this.map.flyTo(coords, 14, { duration: 0.8 });
+        }),
+      () =>
+        this.zone.run(() => {
+          this.locating = false;
+          this.locateMessage = 'Location permission denied';
+          this.clearLocateMessage();
+        }),
+      { enableHighAccuracy: true, timeout: 8000 },
     );
   }
 
   private clearLocateMessage() {
-    setTimeout(() => { this.locateMessage = ''; }, 3000);
+    setTimeout(() => {
+      this.locateMessage = '';
+    }, 3000);
   }
 }

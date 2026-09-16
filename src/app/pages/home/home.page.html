@@ -4,40 +4,78 @@
     <svg class="visor-arc" viewBox="0 0 150 150" aria-hidden="true">
       <defs>
         <linearGradient id="visorWash" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#5B7CFF" stop-opacity="0.45"/>
-          <stop offset="100%" stop-color="#5B7CFF" stop-opacity="0"/>
+          <stop offset="0%" stop-color="#5B7CFF" stop-opacity="0.45" />
+          <stop offset="100%" stop-color="#5B7CFF" stop-opacity="0" />
         </linearGradient>
       </defs>
       <!-- Manga-style focus lines, kept faint -->
       <g stroke="#8FA3FF" stroke-width="1.5" opacity="0.28">
-        <line x1="75" y1="75" x2="8" y2="140"/>
-        <line x1="75" y1="75" x2="140" y2="132"/>
-        <line x1="75" y1="75" x2="142" y2="18"/>
-        <line x1="75" y1="75" x2="26" y2="4"/>
+        <line x1="75" y1="75" x2="8" y2="140" />
+        <line x1="75" y1="75" x2="140" y2="132" />
+        <line x1="75" y1="75" x2="142" y2="18" />
+        <line x1="75" y1="75" x2="26" y2="4" />
       </g>
       <!-- The logo's route-line curve, zoomed in and layered like a visor/windshield glint -->
-      <rect x="8" y="8" width="134" height="134" rx="38" fill="url(#visorWash)"/>
-      <path d="M18 58 Q75 18 132 58 Q75 96 18 58 Z" fill="#02040F" opacity="0.45"/>
-      <path d="M27 52 Q75 27 123 52 Q75 70 27 52 Z" fill="#8FA3FF" opacity="0.55"/>
-      <path d="M40 46 Q75 34 110 46 Q75 55 40 46 Z" fill="#FFFFFF" opacity="0.32"/>
+      <rect
+        x="8"
+        y="8"
+        width="134"
+        height="134"
+        rx="38"
+        fill="url(#visorWash)"
+      />
+      <path
+        d="M18 58 Q75 18 132 58 Q75 96 18 58 Z"
+        fill="#02040F"
+        opacity="0.45"
+      />
+      <path
+        d="M27 52 Q75 27 123 52 Q75 70 27 52 Z"
+        fill="#8FA3FF"
+        opacity="0.55"
+      />
+      <path
+        d="M40 46 Q75 34 110 46 Q75 55 40 46 Z"
+        fill="#FFFFFF"
+        opacity="0.32"
+      />
     </svg>
-    <svg class="header-seam" viewBox="0 0 340 60" preserveAspectRatio="none" aria-hidden="true">
-      <path d="M0,42 Q42.5,14 85,42 Q127.5,14 170,42 Q212.5,14 255,42 Q297.5,14 340,42 L340,60 L0,60 Z" fill="var(--bg-page)"/>
+    <svg
+      class="header-seam"
+      viewBox="0 0 340 60"
+      preserveAspectRatio="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M0,42 Q42.5,14 85,42 Q127.5,14 170,42 Q212.5,14 255,42 Q297.5,14 340,42 L340,60 L0,60 Z"
+        fill="var(--bg-page)"
+      />
       <g fill="#AFC0FF" opacity="0.9">
-        <polygon points="6,0 7.32,4.2 12,6 7.32,7.8 6,12 4.68,7.8 0,6 4.68,4.2" transform="translate(80,16) scale(0.9)"/>
-        <polygon points="6,0 7.32,4.2 12,6 7.32,7.8 6,12 4.68,7.8 0,6 4.68,4.2" transform="translate(165,14) scale(0.7)"/>
-        <polygon points="6,0 7.32,4.2 12,6 7.32,7.8 6,12 4.68,7.8 0,6 4.68,4.2" transform="translate(250,16) scale(0.9)"/>
+        <polygon
+          points="6,0 7.32,4.2 12,6 7.32,7.8 6,12 4.68,7.8 0,6 4.68,4.2"
+          transform="translate(80,16) scale(0.9)"
+        />
+        <polygon
+          points="6,0 7.32,4.2 12,6 7.32,7.8 6,12 4.68,7.8 0,6 4.68,4.2"
+          transform="translate(165,14) scale(0.7)"
+        />
+        <polygon
+          points="6,0 7.32,4.2 12,6 7.32,7.8 6,12 4.68,7.8 0,6 4.68,4.2"
+          transform="translate(250,16) scale(0.9)"
+        />
       </g>
     </svg>
   </div>
 
   <div class="home-wrap">
-
     <!-- 1. HEADER -->
     <div class="page-header">
       <div class="user-profile">
         <ion-avatar class="avatar">
-          <img src="https://ionicframework.com/docs/img/demos/avatar.svg" alt="User" />
+          <img
+            src="https://ionicframework.com/docs/img/demos/avatar.svg"
+            alt="User"
+          />
         </ion-avatar>
         <div class="greeting">
           <span class="greeting-sub">Good morning,</span>
@@ -65,7 +103,11 @@
         </div>
         <div class="input-half">
           <div class="route-dot dest-dot"></div>
-          <input type="text" [(ngModel)]="destination" placeholder="Destination" />
+          <input
+            type="text"
+            [(ngModel)]="destination"
+            placeholder="Destination"
+          />
         </div>
       </div>
 
@@ -75,7 +117,10 @@
           <div class="status-indicator"></div>
           <span>View Active Trip</span>
         </div>
-        <ion-icon name="chevron-forward-outline" class="forward-icon"></ion-icon>
+        <ion-icon
+          name="chevron-forward-outline"
+          class="forward-icon"
+        ></ion-icon>
       </div>
     </div>
 
@@ -86,7 +131,9 @@
         <span class="cat-label">Bus</span>
       </div>
       <div class="cat-item">
-        <div class="squircle"><ion-icon name="car-sport-outline"></ion-icon></div>
+        <div class="squircle">
+          <ion-icon name="car-sport-outline"></ion-icon>
+        </div>
         <span class="cat-label">UV Exp</span>
       </div>
       <div class="cat-item">
@@ -105,14 +152,16 @@
         <button
           class="seg-btn"
           [class.active]="selectedView === 'list'"
-          (click)="toggleMapView('list')">
+          (click)="toggleMapView('list')"
+        >
           <ion-icon name="list-outline"></ion-icon>
           <span>List View</span>
         </button>
         <button
           class="seg-btn"
           [class.active]="selectedView === 'map'"
-          (click)="toggleMapView('map')">
+          (click)="toggleMapView('map')"
+        >
           <ion-icon name="map-outline"></ion-icon>
           <span>Map View</span>
         </button>
@@ -161,7 +210,10 @@
     </div>
 
     <!-- 5B. MAP VIEW (real Leaflet + OpenStreetMap) -->
-    <div class="content-viewport map-viewport" [hidden]="selectedView !== 'map'">
+    <div
+      class="content-viewport map-viewport"
+      [hidden]="selectedView !== 'map'"
+    >
       <div class="map-shell">
         <div #mapEl class="leaflet-host"></div>
 
@@ -170,13 +222,19 @@
           <span class="legend-dot red"></span>Delayed
         </div>
 
-        <button class="fab-locate" [class.loading]="locating" (click)="locateMe()" aria-label="Find my location">
+        <button
+          class="fab-locate"
+          [class.loading]="locating"
+          (click)="locateMe()"
+          aria-label="Find my location"
+        >
           <ion-icon name="locate-outline"></ion-icon>
         </button>
 
-        <span class="locate-toast" *ngIf="locateMessage">{{ locateMessage }}</span>
+        <span class="locate-toast" *ngIf="locateMessage"
+          >{{ locateMessage }}</span
+        >
       </div>
     </div>
-
   </div>
 </ion-content>

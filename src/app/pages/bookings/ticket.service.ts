@@ -1,6 +1,10 @@
 import { Injectable } from '@angular/core';
 
-export type BookingStatus = 'confirmed' | 'boarding' | 'completed' | 'cancelled';
+export type BookingStatus =
+  | 'confirmed'
+  | 'boarding'
+  | 'completed'
+  | 'cancelled';
 
 export interface Booking {
   operator: string;
@@ -18,6 +22,10 @@ export interface Booking {
 export class TicketService {
   selected: Booking | null = null;
 
-  open(booking: Booking) { this.selected = booking; }
-  clear() { this.selected = null; }
+  open(booking: Booking) {
+    this.selected = booking;
+  }
+  clear() {
+    this.selected = null;
+  }
 }
