@@ -916,6 +916,177 @@ ion-content.home-content {
   text-align: right;
 }
 
+/* --- 5B-i. MAP MARKER INFO CARD ---
+   Compact echo of the List View .trip-card (5A) — same colors, radius,
+   shadow language and button styling, just smaller, so a marker tap
+   feels like part of the same design system. */
+.map-info-card {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 16px;
+  z-index: 600;
+  background: var(--bg-white);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+  opacity: 0;
+  animation: revealCard 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.map-info-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--bg-page);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  ion-icon {
+    font-size: 15px;
+  }
+
+  &:active {
+    transform: scale(0.88);
+  }
+}
+
+.map-info-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding-right: 26px;
+  margin-bottom: 14px;
+
+  .operator-info {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+
+    .op-logo {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: #eef2ff;
+      color: var(--primary-navy);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      ion-icon {
+        font-size: 18px;
+      }
+    }
+    .op-text {
+      h4 {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--primary-navy);
+      }
+      p {
+        margin: 2px 0 0;
+        font-size: 11px;
+        font-weight: 500;
+        color: var(--text-muted);
+      }
+    }
+  }
+
+  .fare {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--primary-navy);
+    background: var(--pop-yellow);
+    padding: 3px 9px;
+    border-radius: 6px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+}
+
+.map-info-route {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--primary-navy);
+
+  .dot.origin {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: 2px solid var(--primary-navy);
+    background: #fff;
+    flex-shrink: 0;
+  }
+
+  ion-icon {
+    font-size: 12px;
+    color: #9ca3af;
+    flex-shrink: 0;
+  }
+
+  .route-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .route-text.dest {
+    color: var(--accent-red);
+  }
+}
+
+.map-info-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 12px;
+  border-top: 1px dashed var(--border-color);
+
+  .seats {
+    font-size: 11px;
+    font-weight: 700;
+    color: #059669;
+    background: #d1fae5;
+    padding: 6px 12px;
+    border-radius: 8px;
+  }
+
+  .book-btn {
+    background: var(--primary-navy);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 22px;
+    font-family: var(--font-family);
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    transition:
+      transform 0.15s cubic-bezier(0.16, 1, 0.3, 1),
+      background-color 0.2s ease;
+
+    &:active {
+      transform: scale(0.93);
+      background-color: #0e1638;
+    }
+  }
+}
+
 /* --- 6. FLOATING BOTTOM NAVIGATION --- */
 .floating-nav-container {
   position: fixed;

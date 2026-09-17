@@ -251,6 +251,45 @@
         <span class="locate-toast" *ngIf="locateMessage"
           >{{ locateMessage }}</span
         >
+
+        <!-- Compact info card for the marker the user just tapped.
+             The View button reuses the exact same bookTrip() handler and
+             route object as List Mode's Select button — same detail page,
+             same booking flow, no separate Map Mode flow. -->
+        <div class="map-info-card" *ngIf="selectedMapRoute">
+          <button
+            class="map-info-close"
+            (click)="closeMapCard()"
+            aria-label="Close"
+          >
+            <ion-icon name="close-outline"></ion-icon>
+          </button>
+
+          <div class="map-info-top">
+            <div class="operator-info">
+              <div class="op-logo"><ion-icon name="bus"></ion-icon></div>
+              <div class="op-text">
+                <h4>{{ selectedMapRoute.operator }}</h4>
+                <p>{{ selectedMapRoute.eta }} • {{ selectedMapRoute.status }}</p>
+              </div>
+            </div>
+            <span class="fare">{{ selectedMapRoute.fare }}</span>
+          </div>
+
+          <div class="map-info-route">
+            <span class="dot origin"></span>
+            <span class="route-text">{{ selectedMapRoute.from }}</span>
+            <ion-icon name="arrow-forward-outline"></ion-icon>
+            <span class="route-text dest">{{ selectedMapRoute.to }}</span>
+          </div>
+
+          <div class="map-info-bottom">
+            <span class="seats">{{ selectedMapRoute.seats }}</span>
+            <button class="book-btn" (click)="bookTrip(selectedMapRoute)">
+              View
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>

@@ -35,6 +35,7 @@ import {
   search,
   locateOutline,
   starSharp,
+  closeOutline,
 } from 'ionicons/icons';
 import { BookingService, TripSummary } from '../booking/booking.service';
 import * as L from 'leaflet';
@@ -62,12 +63,26 @@ addIcons({
   search: search,
   'locate-outline': locateOutline,
   'star-sharp': starSharp,
+  'close-outline': closeOutline,
 });
 
 interface FocusPin {
   lat: number;
   lng: number;
   label: string;
+}
+
+/** Shape shared by every nearby-route item — used by both List Mode's
+ *  trip cards and Map Mode's marker info card, so the two views always
+ *  carry the exact same data. */
+interface NearbyRoute {
+  operator: string;
+  from: string;
+  to: string;
+  eta: string;
+  fare: string;
+  seats: string;
+  status: string;
 }
 
 @Component({
@@ -99,7 +114,7 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
     route: 'Baguio → Tuguegarao',
   };
 
-  nearbyRoutes = [
+  nearbyRoutes: NearbyRoute[] = [
     {
       operator: 'Florida Bus Line',
       from: 'Tuguegarao',
@@ -148,6 +163,12 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
   private busProgress = 0;
   private busDirection = 1;
   private pendingFocus: FocusPin | null = null;
+
+  /** The nearby route whose marker was last tapped on the Live Map —
+   *  drives the compact info card and its View button. Same object
+   *  shape/reference as the items List Mode renders, so View reuses
+   *  bookTrip() exactly as List Mode's Select button does. */
+  selectedMapRoute: NearbyRoute | null = null;
 
   locating = false;
   locateMessage = '';
@@ -249,6 +270,11 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
     if (view === 'map') setTimeout(() => this.ensureMap(), 60);
   }
 
+  /** Dismisses the Map Mode marker info card (X button / tap outside). */
+  closeMapCard() {
+    this.selectedMapRoute = null;
+  }
+
   private ensureMap() {
     if (!this.mapEl) return;
 
@@ -286,14 +312,33 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
     this.addPin(destCoords, '#D32F2F', 'B');
 
     // Static markers for the other nearby routes, spread along the line.
+    // Tapping one selects that exact route (never a default/first item)
+    // and opens the compact info card, whose View button reuses the
+    // same bookTrip() flow as List Mode.
     this.nearbyRoutes.forEach((route, i) => {
       const frac = Math.min(0.15 + i * 0.18, 0.9);
       const pos = this.interpolate(originCoords, destCoords, frac);
       const marker = this.busDivMarker(pos, route.status === 'delayed');
-      marker.bindPopup(
-        `<strong>${route.operator}</strong><br/>${route.eta} · ${route.fare}`,
-      );
+      marker.on('click', (e) => {
+        // Leaflet markers bubble clicks up to the map by default
+        // (bubblingMouseEvents). Without stopping it here, the map's own
+        // "tap empty area to dismiss" click handler below fires right
+        // after this one and immediately nulls the card back out.
+        L.DomEvent.stopPropagation(e);
+        this.zone.run(() => {
+          this.selectedMapRoute = route;
+        });
+      });
       marker.addTo(this.map!);
+    });
+
+    // Tapping empty map area dismisses the info card. (Marker clicks are
+    // explicitly stopped from bubbling here — see stopPropagation above —
+    // so this only ever fires for genuine empty-area taps.)
+    this.map.on('click', () => {
+      this.zone.run(() => {
+        this.selectedMapRoute = null;
+      });
     });
 
     // SIMULATED: the "fastest pick" bus animating along the route.
