@@ -90,7 +90,7 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
   selectedView: 'list' | 'map' = 'list';
   origin = 'Baguio City, Benguet';
   destination = 'Tuguegarao City, Cagayan';
-  userName = 'Juan';
+  userName = 'Nonie';
 
   liveTrip = {
     operator: 'Victory Liner',

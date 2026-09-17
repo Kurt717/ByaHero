@@ -123,7 +123,7 @@ export class ProfilePage {
   }
 
   user = {
-    name: 'Keilah Fye',
+    name: 'Nonie',
     tier: 'Gold',
     memberSince: '2024',
     heroId: 'BYH-KF-0482',
