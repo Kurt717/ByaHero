@@ -15,7 +15,7 @@ import { addIcons } from 'ionicons';
 import {
   navigateOutline,
   ticketOutline,
-  notificationsOutline,
+  heartOutline,
   timeOutline,
   mapOutline,
   arrowForwardOutline,
@@ -42,7 +42,7 @@ import * as L from 'leaflet';
 addIcons({
   'navigate-outline': navigateOutline,
   'ticket-outline': ticketOutline,
-  'notifications-outline': notificationsOutline,
+  'heart-outline': heartOutline,
   'time-outline': timeOutline,
   'map-outline': mapOutline,
   'arrow-forward-outline': arrowForwardOutline,
@@ -178,7 +178,7 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
     private zone: NgZone,
   ) {
     addIcons({
-      notificationsOutline,
+      heartOutline,
       chevronForwardOutline,
       busOutline,
       carSportOutline,
@@ -223,6 +223,10 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
 
   viewLiveTrip() {
     console.log('Viewing live trip:', this.liveTrip);
+  }
+
+  goToFavorites() {
+    this.router.navigateByUrl('/favorites');
   }
 
   bookTrip(route: any) {

@@ -4,6 +4,7 @@ import { IonContent, IonIcon } from '@ionic/angular';
 import { Router, RouterLink } from '@angular/router';
 import { addIcons } from 'ionicons';
 import {
+  arrowForward,
   arrowForwardOutline,
   locationOutline,
   navigateCircleOutline,

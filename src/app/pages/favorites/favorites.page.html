@@ -1,0 +1,24 @@
+<ion-content fullscreen class="favorites-content">
+  <div class="favorites-wrap">
+    <!-- HEADER -->
+    <div class="page-header">
+      <button class="icon-btn" (click)="goBack()" aria-label="Go back">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </button>
+      <h1>Favorites</h1>
+    </div>
+
+    <!-- EMPTY STATE -->
+    <div class="empty-state" *ngIf="!favoriteRoutes.length">
+      <div class="empty-heart-outline">
+        <ion-icon name="heart-outline"></ion-icon>
+      </div>
+      <h3>No favorites yet</h3>
+      <p>Tap the heart on a route or trip to save it here for quick access.</p>
+      <button class="empty-cta" (click)="goToSearch()">
+        Find a Route
+        <ion-icon name="arrow-forward-outline"></ion-icon>
+      </button>
+    </div>
+  </div>
+</ion-content>

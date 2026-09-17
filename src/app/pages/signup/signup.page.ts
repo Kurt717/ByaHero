@@ -74,9 +74,11 @@ export class SignupPage {
       logoFacebook,
     });
   }
+
   createAccount() {
     this.router.navigateByUrl('/home');
   }
+
   goBack() {
     this.location.back();
   }

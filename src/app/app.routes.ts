@@ -61,6 +61,13 @@ export const routes: Routes = [
       import('./pages/bookings/ticket/ticket.page').then((m) => m.TicketPage),
   },
   {
+    path: 'favorites',
+    loadComponent: () =>
+      import('./pages/favorites/favorites.page').then(
+        (m) => m.FavoritesPage,
+      ),
+  },
+  {
     path: '',
     loadComponent: () => import('./tabs/tabs.page').then((m) => m.TabsPage),
     children: [

@@ -84,7 +84,7 @@ ion-content.home-content {
   z-index: 1;
   display: flex;
   flex-direction: column;
-  padding: env(safe-area-inset-top, 16px) 16px 120px;
+  padding: calc(env(safe-area-inset-top, 20px) + 24px) 16px 120px;
   max-width: 480px;
   margin: 0 auto;
 }
@@ -98,6 +98,15 @@ ion-content.home-content {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes burstSpin {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
   }
 }
 
@@ -131,18 +140,6 @@ ion-content.home-content {
   to {
     opacity: 1;
     transform: translateY(0);
-  }
-}
-
-@keyframes badgePulse {
-  0%,
-  100% {
-    transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(211, 47, 47, 0.55);
-  }
-  50% {
-    transform: scale(1.15);
-    box-shadow: 0 0 0 5px rgba(211, 47, 47, 0);
   }
 }
 
@@ -183,21 +180,42 @@ ion-content.home-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
-  padding-top: 8px;
+  margin-bottom: 20px;
   opacity: 0;
   animation: revealUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 
   .user-profile {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
 
-    .avatar {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    .avatar-wrap {
+      position: relative;
+      width: 46px;
+      height: 46px;
+      flex-shrink: 0;
+
+      .avatar-burst {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 84px;
+        height: 84px;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+        /* Slow rotation for that dynamic comic-book feel */
+        animation: burstSpin 18s linear infinite; 
+      }
+
+      .avatar {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        border: 2px solid rgba(255, 255, 255, 0.85);
+        z-index: 2;
+        transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
     }
 
     &:active .avatar {
@@ -226,7 +244,7 @@ ion-content.home-content {
     }
   }
 
-  .notif-btn {
+  .favorites-btn {
     background: rgba(255, 255, 255, 0.15);
     border: none;
     width: 44px;
@@ -245,23 +263,9 @@ ion-content.home-content {
       background: rgba(255, 255, 255, 0.25);
     }
 
-    .notif-icon-wrap {
-      position: relative;
-      ion-icon {
-        font-size: 22px;
-        color: #ffffff;
-      }
-      .badge {
-        position: absolute;
-        top: -2px;
-        right: 0px;
-        width: 10px;
-        height: 10px;
-        background: var(--accent-red);
-        border: 2px solid var(--primary-navy-bg);
-        border-radius: 50%;
-        animation: badgePulse 2.2s ease-in-out infinite;
-      }
+    ion-icon {
+      font-size: 22px;
+      color: #ffffff;
     }
   }
 }

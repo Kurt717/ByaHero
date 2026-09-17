@@ -41,17 +41,17 @@ ion-content.bookings-content {
   }
 }
 
-@keyframes markPulse {
+@keyframes beaconPing {
   0% {
-    transform: scale(1);
-    opacity: 0.5;
+    transform: scale(0.9);
+    opacity: 0.6;
   }
   70% {
-    transform: scale(1.35);
+    transform: scale(1.6);
     opacity: 0;
   }
   100% {
-    transform: scale(1.35);
+    transform: scale(1.6);
     opacity: 0;
   }
 }
@@ -65,62 +65,41 @@ ion-content.bookings-content {
   opacity: 0;
   animation: revealUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 
-  .header-mark {
-    position: relative;
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    border: 2px dashed var(--accent-red);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    ion-icon {
-      font-size: 22px;
-      color: var(--accent-red);
-      z-index: 2;
-    }
-
-    .mark-burst {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 76px;
-      height: 76px;
-      transform: translate(-50%, -50%);
-      pointer-events: none;
-    }
-
-    .mark-ring {
-      position: absolute;
-      inset: -2px;
+  .beacon {
+      position: relative;
+      width: 48px;
+      height: 48px;
       border-radius: 50%;
-      border: 2px solid var(--accent-red);
-      animation: markPulse 2.4s ease-out infinite;
-      pointer-events: none;
-    }
+      background: var(--primary-navy);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
 
-    &::after {
-      content: "";
-      position: absolute;
-      top: -2px;
-      right: -2px;
-      width: 9px;
-      height: 9px;
-      background: var(--accent-red);
-      clip-path: polygon(
-        50% 0%,
-        61% 35%,
-        100% 50%,
-        61% 65%,
-        50% 100%,
-        39% 65%,
-        0% 50%,
-        39% 35%
-      );
-      z-index: 3;
+      .beacon-burst {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 80px;
+        height: 80px;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+      }
+
+      .beacon-ring {
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        border: 2px solid var(--accent-red);
+        animation: beaconPing 2.4s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+      }
+
+      ion-icon {
+        font-size: 20px;
+        color: #ffffff;
+        z-index: 1;
+      }
     }
-  }
 
   .header-text {
     h1 {

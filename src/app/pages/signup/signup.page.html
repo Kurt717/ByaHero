@@ -5,7 +5,6 @@
       <ion-icon slot="icon-only" name="chevron-back-outline"></ion-icon>
     </ion-button> -->
   </div>
-
   <!-- Bottom Sheet (Gray Card) -->
   <div class="bottom-sheet">
     <!-- Overlapping Logo -->
@@ -46,15 +45,12 @@
         <rect x="196" y="340" width="8" height="40" rx="4" fill="#151D48" />
       </svg>
     </div>
-
     <!-- Wireframe Drag Handle -->
     <div class="drag-handle"></div>
-
     <div class="header-text">
       <h1>Create Account</h1>
       <p>Join commuters riding smarter across North Luzon.</p>
     </div>
-
     <form class="auth-form">
       <!-- Input 1 -->
       <div class="input-group">
@@ -71,7 +67,6 @@
           </ion-input>
         </div>
       </div>
-
       <!-- Input 2 -->
       <div class="input-group">
         <label>Email address</label>
@@ -87,7 +82,6 @@
           </ion-input>
         </div>
       </div>
-
       <!-- Input 3 -->
       <div class="input-group">
         <label>Mobile number</label>
@@ -103,7 +97,6 @@
           </ion-input>
         </div>
       </div>
-
       <!-- Input 4 -->
       <div class="input-group">
         <label>Password</label>
@@ -125,12 +118,13 @@
           </ion-icon>
         </div>
       </div>
-
+      
       <!-- Terms Checkbox -->
       <div class="terms-row">
         <ion-checkbox
           [(ngModel)]="agreedToTerms"
           name="agreedToTerms"
+          class="custom-checkbox"
         ></ion-checkbox>
         <span class="terms-label">
           I agree to the <a>Terms of Service</a> & <a>Privacy Policy</a>
@@ -142,14 +136,13 @@
         Create Account
       </button>
     </form>
-
+    
     <!-- Social Login Section matching the wireframe -->
     <div class="divider">
       <div class="line"></div>
       <span>or sign up with</span>
       <div class="line"></div>
     </div>
-
     <div class="social-row">
       <button class="social-btn">
         <ion-icon name="logo-google"></ion-icon>
@@ -161,7 +154,6 @@
         <ion-icon name="logo-facebook"></ion-icon>
       </button>
     </div>
-
     <!-- Login Link -->
     <p class="switch-auth">
       Already have an account? <a routerLink="/login">Log in</a>

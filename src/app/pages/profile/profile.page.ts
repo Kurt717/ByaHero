@@ -32,6 +32,7 @@ import {
   flashOutline,
   trendingUpOutline,
   locationOutline,
+  personOutline,
 } from 'ionicons/icons';
 
 addIcons({
@@ -63,6 +64,7 @@ addIcons({
   'flash-outline': flashOutline,
   'trending-up-outline': trendingUpOutline,
   'location-outline': locationOutline,
+  'person-outline': personOutline,
 });
 
 interface MenuItem {
@@ -104,6 +106,7 @@ export class ProfilePage {
       chevronBackOutline,
       createOutline,
       cameraOutline,
+      personOutline,
       shieldCheckmarkOutline,
       star,
       callOutline,

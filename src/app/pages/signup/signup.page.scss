@@ -7,7 +7,6 @@
   --bg-gray: #f8fafc;
   --text-black: #1f1f1f;
   --text-muted: #64748b;
-
   --font-family:
     "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "SF Pro Display",
     sans-serif;
@@ -36,7 +35,6 @@ ion-content.auth-content {
   transition:
     transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
     opacity 0.2s ease;
-
   &:active {
     transform: scale(0.9);
     opacity: 0.7;
@@ -54,7 +52,6 @@ ion-content.auth-content {
   flex-direction: column;
   align-items: center;
   box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.04);
-
   /* Smooth sheet entry animation */
   animation: slideUpSheet 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
@@ -248,6 +245,10 @@ ion-content.auth-content {
   ion-input {
     --padding-start: 0;
     --background: transparent;
+    --placeholder-color: var(--text-muted);
+    --placeholder-font-weight: 500;
+    --placeholder-opacity: 0.8;
+    font-family: var(--font-family);
     font-size: 15px;
     font-weight: 500;
     color: var(--text-black);
@@ -275,11 +276,20 @@ ion-content.auth-content {
   opacity: 0;
   animation: fadeUpStagger 0.5s 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 
-  ion-checkbox {
+  ion-checkbox.custom-checkbox {
     --size: 20px;
+    --checkbox-background: transparent; /* Forces it to not default to black */
     --checkbox-background-checked: var(--primary-navy);
+    --border-color: #cbd5e1;
     --border-color-checked: var(--primary-navy);
+    --checkmark-color: #ffffff;
+    --border-width: 2px;
+    --border-radius: 6px;
     margin-right: 12px;
+    
+    &::part(container) {
+      border-radius: 6px;
+    }
   }
 
   .terms-label {
@@ -292,6 +302,7 @@ ion-content.auth-content {
       font-weight: 600;
       text-decoration: none;
       transition: opacity 0.2s;
+      cursor: pointer;
 
       &:hover {
         opacity: 0.8;

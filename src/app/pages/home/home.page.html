@@ -71,22 +71,39 @@
     <!-- 1. HEADER -->
     <div class="page-header">
       <div class="user-profile">
-        <ion-avatar class="avatar">
-          <img
-            src="https://ionicframework.com/docs/img/demos/avatar.svg"
-            alt="User"
-          />
-        </ion-avatar>
+        <div class="avatar-wrap">
+          <!-- Pop-art action burst behind the avatar -->
+          <svg class="avatar-burst" viewBox="0 0 100 100" aria-hidden="true">
+            <g stroke="#FFE066" stroke-width="2.5" opacity="0.6" stroke-linecap="round">
+              <line x1="50" y1="4" x2="50" y2="16" />
+              <line x1="50" y1="84" x2="50" y2="96" />
+              <line x1="4" y1="50" x2="16" y2="50" />
+              <line x1="84" y1="50" x2="96" y2="50" />
+              <line x1="17" y1="17" x2="26" y2="26" />
+              <line x1="74" y1="74" x2="83" y2="83" />
+              <line x1="17" y1="83" x2="26" y2="74" />
+              <line x1="74" y1="26" x2="83" y2="17" />
+            </g>
+          </svg>
+          <ion-avatar class="avatar">
+            <img
+              src="https://ionicframework.com/docs/img/demos/avatar.svg"
+              alt="User"
+            />
+          </ion-avatar>
+        </div>
+        
         <div class="greeting">
           <span class="greeting-sub">Good morning,</span>
           <h2 class="greeting-name">{{ userName }}</h2>
         </div>
       </div>
-      <button class="notif-btn" aria-label="Notifications">
-        <div class="notif-icon-wrap">
-          <ion-icon name="notifications-outline"></ion-icon>
-          <span class="badge"></span>
-        </div>
+      <button
+        class="favorites-btn"
+        (click)="goToFavorites()"
+        aria-label="Favorites"
+      >
+        <ion-icon name="heart-outline"></ion-icon>
       </button>
     </div>
 

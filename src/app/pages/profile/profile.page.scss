@@ -32,30 +32,91 @@ ion-content.profile-content {
   }
 }
 
+@keyframes beaconPing {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.6;
+  }
+  70% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+
 .profile-wrap {
   display: flex;
   flex-direction: column;
-  padding: calc(env(safe-area-inset-top, 20px) + 16px) 16px 150px;
+  padding: calc(env(safe-area-inset-top, 20px) + 24px) 16px 120px;
   max-width: 480px;
   margin: 0 auto;
 }
 
-/* --- 1. HEADER --- */
+/* --- 1. HEADER (beacon mark, matches Bookings/Alerts) --- */
 .page-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  gap: 14px;
+
   margin-bottom: 20px;
   opacity: 0;
   animation: revealUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 
-  .hero-title {
-    margin: 0;
-    font-size: 18px;
-    font-weight: 800;
-    color: var(--primary-navy);
-    letter-spacing: -0.02em;
+ .beacon {
+      position: relative;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--primary-navy);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+
+      .beacon-burst {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 80px;
+        height: 80px;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+      }
+
+      .beacon-ring {
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        border: 2px solid var(--accent-red);
+        animation: beaconPing 2.4s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+      }
+
+      ion-icon {
+        font-size: 20px;
+        color: #ffffff;
+        z-index: 1;
+      }
+    }
+
+  .header-text {
+    flex: 1;
+    min-width: 0;
+    h1 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--primary-navy);
+      letter-spacing: -0.02em;
+    }
+    p {
+      margin: 2px 0 0;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
   }
 
   .icon-btn {
