@@ -198,19 +198,7 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
     private bookingService: BookingService,
     private zone: NgZone,
   ) {
-    addIcons({
-      heartOutline,
-      chevronForwardOutline,
-      busOutline,
-      carSportOutline,
-      peopleOutline,
-      compassOutline,
-      listOutline,
-      mapOutline,
-      starSharp,
-      bus,
-      locateOutline,
-    });
+    addIcons({heartOutline,chevronForwardOutline,busOutline,carSportOutline,peopleOutline,compassOutline,listOutline,mapOutline,starSharp,bus,locateOutline,closeOutline,arrowForwardOutline,});
   }
 
   ngOnInit() {
