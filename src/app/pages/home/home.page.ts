@@ -1,3 +1,6 @@
+
+import * as L from 'leaflet';
+
 import {
   Component,
   OnInit,
@@ -38,7 +41,6 @@ import {
   closeOutline,
 } from 'ionicons/icons';
 import { BookingService, TripSummary } from '../booking/booking.service';
-import * as L from 'leaflet';
 
 addIcons({
   'navigate-outline': navigateOutline,
