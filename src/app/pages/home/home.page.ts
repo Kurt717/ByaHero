@@ -331,7 +331,18 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
 
     // SIMULATED: the "fastest pick" bus animating along the route.
     // Replace with a real position feed (websocket/poll) once operators share GPS.
+    // It represents nearbyRoutes[0] (today's fastest-arriving pick), so tapping
+    // it opens the exact same info card/booking flow as tapping its static
+    // marker below — this was previously missing a click handler entirely,
+    // which made the moving bus look tappable but do nothing.
+    const featuredRoute = this.nearbyRoutes[0];
     this.busMarker = this.busDivMarker(originCoords, false, true);
+    this.busMarker.on('click', (e) => {
+      L.DomEvent.stopPropagation(e);
+      this.zone.run(() => {
+        this.selectedMapRoute = featuredRoute;
+      });
+    });
     this.busMarker.addTo(this.map);
     this.busInterval = setInterval(
       () => this.stepBus(originCoords, destCoords),
