@@ -233,7 +233,7 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
   }
 
   viewLiveTrip() {
-    console.log('Viewing live trip:', this.liveTrip);
+    this.router.navigateByUrl('/active-trip');
   }
 
   goToFavorites() {

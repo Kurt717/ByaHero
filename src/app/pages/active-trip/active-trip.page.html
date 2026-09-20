@@ -1,0 +1,102 @@
+<ion-content fullscreen class="trip-content">
+  <div class="trip-wrap">
+    <!-- HEADER -->
+    <div class="trip-header">
+      <button class="icon-btn" (click)="goBack()" aria-label="Go back">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </button>
+      <div class="header-mid">
+        <span class="eyebrow">Live Tracking</span>
+        <h1>{{ trip.from }} <ion-icon name="chevron-forward-outline"></ion-icon> {{ trip.to }}</h1>
+      </div>
+      <button class="icon-btn" (click)="shareTrip()" aria-label="Share trip">
+        <ion-icon name="share-social-outline"></ion-icon>
+      </button>
+    </div>
+
+    <!-- TRIP STAGE -->
+    <div class="stage-toggle">
+      <span [class.active]="stage === 'boarding'">Boarding</span>
+      <span [class.active]="stage === 'enroute'">En Route</span>
+      <span [class.active]="stage === 'arriving'">Arriving</span>
+    </div>
+    <p class="stage-caption">{{ progressPercent }}% of the trip completed</p>
+
+    <!-- LIVE MAP -->
+    <div class="map-shell">
+      <div #mapEl class="leaflet-host"></div>
+
+      <div class="eta-badge">
+        <ion-icon name="navigate-outline"></ion-icon>
+        <div>
+          <span class="eta-value">{{ etaLabel }}</span>
+          <span class="eta-label">to next stop</span>
+        </div>
+      </div>
+
+      <button class="fab-recenter" (click)="recenter()" aria-label="Recenter map">
+        <ion-icon name="locate-outline"></ion-icon>
+      </button>
+    </div>
+
+    <!-- DRIVER / VEHICLE CARD -->
+    <div class="driver-card">
+      <div class="driver-avatar">{{ trip.driver.charAt(0) }}</div>
+      <div class="driver-info">
+        <h4>{{ trip.driver }}</h4>
+        <p>
+          <ion-icon name="star"></ion-icon> {{ trip.rating }} &nbsp;•&nbsp;
+          {{ trip.operator }} {{ trip.busNo }} &nbsp;•&nbsp; {{ trip.plate }}
+        </p>
+      </div>
+      <div class="driver-actions">
+        <button class="action-btn" (click)="messageDriver()" aria-label="Message driver">
+          <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
+        </button>
+        <button class="action-btn primary" (click)="callDriver()" aria-label="Call driver">
+          <ion-icon name="call-outline"></ion-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- TRIP PROGRESS TIMELINE -->
+    <div class="section">
+      <p class="section-title">Trip Progress</p>
+      <div class="timeline-card">
+        <div class="timeline-row" *ngFor="let s of stops" [ngClass]="s.status">
+          <div class="timeline-marker">
+            <ion-icon
+              *ngIf="s.status === 'done'"
+              name="checkmark-circle"
+              class="dot done"
+            ></ion-icon>
+            <span *ngIf="s.status !== 'done'" class="dot" [class.current]="s.status === 'current'"></span>
+            <span class="tline"></span>
+          </div>
+          <div class="timeline-text">
+            <h5>{{ s.name }}</h5>
+            <p>{{ s.sub }}</p>
+          </div>
+        </div>
+
+        <div class="timeline-footer-link">
+          <ion-icon name="ticket-outline"></ion-icon>
+          <span>View ticket &amp; fare details</span>
+          <ion-icon name="chevron-forward-outline" class="chev"></ion-icon>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STICKY FOOTER -->
+  <div class="trip-footer">
+    <button class="footer-sos" (click)="sosAlert()" aria-label="Emergency SOS">
+      <ion-icon name="alert-outline"></ion-icon>
+      SOS
+    </button>
+    <button class="footer-cta" (click)="shareTrip()">
+      Share Live Location
+      <ion-icon name="share-social-outline"></ion-icon>
+    </button>
+  </div>
+</ion-content>

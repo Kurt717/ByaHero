@@ -61,11 +61,16 @@ export const routes: Routes = [
       import('./pages/bookings/ticket/ticket.page').then((m) => m.TicketPage),
   },
   {
+    path: 'active-trip',
+    loadComponent: () =>
+      import('./pages/active-trip/active-trip.page').then(
+        (m) => m.ActiveTripPage,
+      ),
+  },
+  {
     path: 'favorites',
     loadComponent: () =>
-      import('./pages/favorites/favorites.page').then(
-        (m) => m.FavoritesPage,
-      ),
+      import('./pages/favorites/favorites.page').then((m) => m.FavoritesPage),
   },
   {
     path: '',
