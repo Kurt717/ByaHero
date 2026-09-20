@@ -1175,6 +1175,140 @@ ion-content.home-content {
   }
 }
 
+/* --- 6. HAIL (flag down a bus / PUV) --- */
+.card-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-bottom,
+.map-info-bottom {
+  gap: 8px;
+
+  .seats {
+    white-space: nowrap;
+  }
+}
+
+.hail-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-white);
+  color: var(--primary-navy);
+  border: 1.5px solid var(--primary-navy);
+  border-radius: 12px;
+  padding: 10.5px 16px;
+  font-family: var(--font-family);
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    transform 0.15s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.2s ease,
+    opacity 0.2s ease;
+
+  ion-icon {
+    font-size: 16px;
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.93);
+    background-color: var(--bg-page);
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+}
+
+.map-info-bottom .hail-btn {
+  padding: 7.5px 14px;
+  font-size: 13px;
+
+  ion-icon {
+    font-size: 15px;
+  }
+}
+
+.hail-sheet {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: calc(108px + env(safe-area-inset-bottom));
+  z-index: 900;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--bg-white);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+  opacity: 0;
+  animation: revealCard 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+
+  .hail-sheet-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: #eef2ff;
+    color: var(--primary-navy);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    ion-icon {
+      font-size: 18px;
+    }
+  }
+
+  &.accepted .hail-sheet-icon {
+    background: #d1fae5;
+    color: #059669;
+  }
+
+  .hail-sheet-text {
+    flex: 1;
+    min-width: 0;
+
+    h4 {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--primary-navy);
+    }
+
+    p {
+      margin: 2px 0 0;
+      font-size: 11px;
+      font-weight: 500;
+      line-height: 1.4;
+      color: var(--text-muted);
+    }
+  }
+
+  .hail-cancel {
+    background: var(--bg-page);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 8px 12px;
+    font-family: var(--font-family);
+    font-weight: 700;
+    font-size: 12px;
+    cursor: pointer;
+    flex-shrink: 0;
+
+    &:active {
+      transform: scale(0.94);
+    }
+  }
+}
+
 /* --- ACCESSIBILITY --- */
 @media (prefers-reduced-motion: reduce) {
   *,

@@ -221,7 +221,17 @@
         </div>
         <div class="card-bottom">
           <span class="seats">{{ route.seats }}</span>
-          <button class="book-btn" (click)="bookTrip(route)">Select</button>
+          <div class="card-actions">
+            <button
+              class="hail-btn"
+              [disabled]="hail !== null"
+              (click)="startHail(route)"
+            >
+              <ion-icon name="hand-left-outline"></ion-icon>
+              <span>{{ hail?.route === route ? 'Hailed' : 'Hail' }}</span>
+            </button>
+            <button class="book-btn" (click)="bookTrip(route)">Select</button>
+          </div>
         </div>
       </div>
     </div>
@@ -285,12 +295,58 @@
 
           <div class="map-info-bottom">
             <span class="seats">{{ selectedMapRoute.seats }}</span>
-            <button class="book-btn" (click)="bookTrip(selectedMapRoute)">
-              View
-            </button>
+            <div class="card-actions">
+              <button
+                class="hail-btn"
+                [disabled]="hail !== null"
+                (click)="startHail(selectedMapRoute)"
+              >
+                <ion-icon name="hand-left-outline"></ion-icon>
+                <span>Hail</span>
+              </button>
+              <button class="book-btn" (click)="bookTrip(selectedMapRoute)">
+                View
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- HAIL STATUS SHEET (shows in both List and Map views while a hail is active) -->
+  <div
+    class="hail-sheet"
+    slot="fixed"
+    *ngIf="hail"
+    [class.accepted]="hail.status === 'accepted'"
+  >
+    <div class="hail-sheet-icon">
+      <ion-icon
+        [name]="hail.status === 'accepted' ? 'checkmark-circle' : 'hand-left-outline'"
+      ></ion-icon>
+    </div>
+
+    <div class="hail-sheet-text">
+      <h4 *ngIf="hail.status === 'locating'">Finding your pickup point...</h4>
+      <h4 *ngIf="hail.status === 'sent'">
+        Hail sent to {{ hail.route.operator }}
+      </h4>
+      <h4 *ngIf="hail.status === 'accepted'">Driver acknowledged your hail</h4>
+
+      <p *ngIf="hail.status === 'locating'">
+        Getting your location so the driver knows where to stop.
+      </p>
+      <p *ngIf="hail.status === 'sent'">
+        Waiting for the driver to confirm. Stay where you are.
+      </p>
+      <p *ngIf="hail.status === 'accepted'">
+        {{ hail.route.operator }} will stop for you at {{ hail.pickupLabel }}
+        in about {{ hail.etaMin }} min. Wait by the roadside and keep your phone
+        ready.
+      </p>
+    </div>
+
+    <button class="hail-cancel" (click)="cancelHail()">Cancel</button>
   </div>
 </ion-content>

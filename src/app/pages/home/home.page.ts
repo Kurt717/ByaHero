@@ -1,4 +1,3 @@
-
 import * as L from 'leaflet';
 
 import {
@@ -39,6 +38,7 @@ import {
   locateOutline,
   starSharp,
   closeOutline,
+  handLeftOutline,
 } from 'ionicons/icons';
 import { BookingService, TripSummary } from '../booking/booking.service';
 
@@ -66,6 +66,7 @@ addIcons({
   'locate-outline': locateOutline,
   'star-sharp': starSharp,
   'close-outline': closeOutline,
+  'hand-left-outline': handLeftOutline,
 });
 
 interface FocusPin {
@@ -85,6 +86,16 @@ interface NearbyRoute {
   fare: string;
   seats: string;
   status: string;
+}
+
+type HailStatus = 'locating' | 'sent' | 'accepted';
+
+/** One active hail (flag-down) request. Only one can be active at a time. */
+interface HailRequest {
+  route: NearbyRoute;
+  status: HailStatus;
+  etaMin: number;
+  pickupLabel: string;
 }
 
 @Component({
@@ -175,6 +186,13 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
   locating = false;
   locateMessage = '';
 
+  /** Active hail request (null when the commuter isn't hailing anything).
+   *  Rendered as a bottom sheet in both List and Map views. */
+  hail: HailRequest | null = null;
+  private hailCoords: [number, number] | null = null;
+  private hailMarker: L.Marker | null = null;
+  private hailTimer: any = null;
+
   /** Fixed lookup table standing in for a geocoder — swap for a real geocoding
    *  service once the backend exists. Coordinates are real city centers. */
   private readonly CITY_COORDS: Record<string, [number, number]> = {
@@ -200,7 +218,7 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
     private bookingService: BookingService,
     private zone: NgZone,
   ) {
-    addIcons({heartOutline,chevronForwardOutline,busOutline,carSportOutline,peopleOutline,compassOutline,listOutline,mapOutline,starSharp,bus,locateOutline,closeOutline,arrowForwardOutline,});
+    addIcons({heartOutline,chevronForwardOutline,busOutline,carSportOutline,peopleOutline,compassOutline,listOutline,mapOutline,starSharp,bus,handLeftOutline,locateOutline,closeOutline,arrowForwardOutline,});
   }
 
   ngOnInit() {
@@ -229,6 +247,7 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy() {
     if (this.busInterval) clearInterval(this.busInterval);
+    if (this.hailTimer) clearTimeout(this.hailTimer);
     this.map?.remove();
   }
 
@@ -265,12 +284,99 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
     this.selectedMapRoute = null;
   }
 
+  /** HAIL: the commuter flags down a nearby bus/PUV from where they're
+   *  standing. Works from both the List cards and the Map info card. */
+  startHail(route: NearbyRoute) {
+    if (this.hail) return;
+
+    const minutes = Number(/\d+/.exec(route.eta)?.[0]);
+    this.hail = {
+      route,
+      status: 'locating',
+      etaMin: isNaN(minutes) ? 5 : minutes,
+      pickupLabel: '',
+    };
+    this.selectedMapRoute = null;
+
+    this.resolvePickup((coords, usedFallback) => {
+      // Commuter cancelled while we were still locating them
+      if (!this.hail) return;
+
+      this.hailCoords = coords;
+      this.hail.pickupLabel = usedFallback
+        ? `${this.origin} (GPS unavailable)`
+        : 'your current location';
+      this.hail.status = 'sent';
+      this.syncHailMarker();
+
+      if (this.map && this.selectedView === 'map') {
+        this.map.flyTo(coords, 13, { duration: 0.8 });
+      }
+
+      // SIMULATED: the driver acknowledging the hail.
+      // Replace with a real push (websocket/FCM) from the operator's driver app.
+      this.hailTimer = setTimeout(() => {
+        this.zone.run(() => {
+          if (this.hail) this.hail.status = 'accepted';
+        });
+      }, 2200);
+    });
+  }
+
+  cancelHail() {
+    if (this.hailTimer) {
+      clearTimeout(this.hailTimer);
+      this.hailTimer = null;
+    }
+    this.hail = null;
+    this.hailCoords = null;
+    this.syncHailMarker();
+  }
+
+  /** Uses GPS for the pickup point; falls back to the selected origin
+   *  city if location is unsupported or permission is denied. */
+  private resolvePickup(
+    done: (coords: [number, number], usedFallback: boolean) => void,
+  ) {
+    const fallback = () =>
+      this.zone.run(() => done(this.resolveCoords(this.origin), true));
+
+    if (!navigator.geolocation) {
+      fallback();
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (pos) =>
+        this.zone.run(() =>
+          done([pos.coords.latitude, pos.coords.longitude], false),
+        ),
+      () => fallback(),
+      { enableHighAccuracy: true, timeout: 6000 },
+    );
+  }
+
+  /** Keeps the hail pin on the map in sync with the hail state.
+   *  Safe to call before the map exists (ensureMap calls it again). */
+  private syncHailMarker() {
+    if (!this.map) return;
+    if (this.hailMarker) {
+      this.map.removeLayer(this.hailMarker);
+      this.hailMarker = null;
+    }
+    if (this.hail && this.hailCoords) {
+      this.hailMarker = L.marker(this.hailCoords, {
+        icon: this.hailPinIcon(),
+      }).addTo(this.map);
+    }
+  }
+
   private ensureMap() {
     if (!this.mapEl) return;
 
     if (this.map) {
       this.map.invalidateSize();
       if (this.pendingFocus) this.focusOn(this.pendingFocus);
+      this.syncHailMarker();
       return;
     }
 
@@ -356,6 +462,8 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
     } else {
       this.map.fitBounds(this.routeLine.getBounds(), { padding: [40, 40] });
     }
+
+    this.syncHailMarker();
   }
 
   private focusOn(f: FocusPin) {
@@ -395,6 +503,19 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
       className: '',
       html: `<div style="width:30px;height:30px;border-radius:50% 50% 50% 0;background:${color};transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,0.3);border:2px solid #fff;">
                <span style="transform:rotate(45deg);color:#fff;font-size:12px;font-weight:800;">${glyph}</span>
+             </div>`,
+      iconSize: [30, 30],
+      iconAnchor: [15, 30],
+    });
+  }
+
+  /** Same drop-pin shape as pinIcon(), but with the ionicons "hand-left"
+   *  icon (inline SVG) instead of a text glyph. */
+  private hailPinIcon(): L.DivIcon {
+    return L.divIcon({
+      className: '',
+      html: `<div style="width:30px;height:30px;border-radius:50% 50% 50% 0;background:#059669;transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,0.3);border:2px solid #fff;">
+               <svg style="transform:rotate(45deg);" width="14" height="14" viewBox="0 0 512 512" fill="#fff"><path d="M432.8 211.44c-15.52-8.82-34.91-2.28-43.31 13.68l-41.38 84.41a7 7 0 01-8.93 3.43 7 7 0 01-4.41-6.52V72c0-13.91-12.85-24-26.77-24s-26 10.09-26 24v156.64A11.24 11.24 0 01271.21 240 11 11 0 01260 229V24c0-13.91-10.94-24-24.86-24S210 10.09 210 24v204.64A11.24 11.24 0 01199.21 240 11 11 0 01188 229V56c0-13.91-12.08-24-26-24s-26 11.09-26 25v187.64A11.24 11.24 0 01125.21 256 11 11 0 01114 245V120c0-13.91-11.08-24-25-24s-25.12 10.22-25 24v216c0 117.41 72 176 160 176h16c88 0 115.71-39.6 136-88l68.71-169c6.62-18 3.6-34.75-11.91-43.56z"/></svg>
              </div>`,
       iconSize: [30, 30],
       iconAnchor: [15, 30],
