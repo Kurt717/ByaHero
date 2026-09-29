@@ -1,0 +1,1039 @@
+/* search.page.scss — redesigned Search Routes dashboard.
+   Desktop-first 1440×900, max content ~1280px, 12-col grid, 8pt spacing.
+   Hierarchy: navy = structure, red = primary actions, yellow = tags,
+   gray = secondary info. Single discovery column; results live
+   in Search Mode instead of a permanent sidebar. */
+
+:host {
+  --primary-navy: #151d48;
+  --primary-navy-bg: #1a237e;
+  --accent-red: #d32f2f;
+  --bg-page: #f8fafc;
+  --bg-white: #ffffff;
+  --text-main: #1f2937;
+  --text-muted: #6b7280;
+  --border-color: #e2e8f0;
+  --ink: rgba(21, 29, 72, 0.14);
+  --pop-yellow: #ffe066;
+  --font-family:
+    "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "SF Pro Display",
+    sans-serif;
+  --s-2: 8px;
+  --s-3: 16px;
+  --s-4: 24px;
+  --s-6: 48px;
+}
+
+ion-content.search-content {
+  --background: var(--bg-page);
+  font-family: var(--font-family);
+  -webkit-font-smoothing: antialiased;
+}
+
+.search-wrap {
+  position: relative;
+  z-index: 1;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: calc(env(safe-area-inset-top, 20px) + 24px) 16px 120px;
+}
+
+@keyframes revealUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+@keyframes recordBounce {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.25);
+  }
+}
+
+/* ------------------------------------------------------------------
+   1. HEADER — compact horizontal: brand (left), GO badge (far right)
+   ------------------------------------------------------------------ */
+.search-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+  opacity: 0;
+  animation: revealUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+    flex: 1;
+  }
+
+  /* search logo: navy badge + red ping ring */
+  .beacon {
+    position: relative;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--primary-navy);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border: 1.5px solid var(--primary-navy);
+    box-shadow: 3px 3px 0 var(--ink);
+
+    .beacon-burst {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 76px;
+      height: 76px;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .beacon-ring {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 1.5px solid var(--accent-red);
+      animation: beaconPing 2.4s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+      opacity: 0;
+    }
+
+    ion-icon {
+      font-size: 21px;
+      color: #ffffff;
+      z-index: 1;
+    }
+  }
+
+  .brand-text {
+    min-width: 0;
+    h1 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--primary-navy);
+      letter-spacing: -0.01em;
+      line-height: 1.15;
+    }
+    p {
+      margin: 2px 0 0;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+  }
+
+  .go-badge {
+    flex-shrink: 0;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    color: #ffffff;
+    background: var(--accent-red);
+    border-radius: 8px;
+    padding: 4px 12px;
+    transform: rotate(6deg);
+    border: 1px solid #b71c1c;
+    box-shadow: 2px 2px 0 var(--ink);
+  }
+}
+
+/* ------------------------------------------------------------------
+   2. SEARCH BAND — dominant destination input + inline action
+   ------------------------------------------------------------------ */
+.search-band {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: var(--bg-page);
+  margin: 0 -16px 24px;
+  padding: 8px 16px 12px;
+  opacity: 0;
+  animation: revealUp 0.5s 0.05s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background-color: var(--bg-white);
+  background-image: radial-gradient(rgba(21, 29, 72, 0.05) 1px, transparent 1.3px);
+  background-size: 6px 6px;
+  border: 1.5px solid var(--primary-navy);
+  border-radius: 16px;
+  height: 58px;
+  padding: 0 8px 0 18px;
+  box-shadow: none;
+  transition: box-shadow 0.2s ease, transform 0.15s ease;
+
+  &:focus-within {
+    box-shadow: none;
+  }
+
+  .bar-leading {
+    font-size: 21px;
+    color: var(--primary-navy);
+    flex-shrink: 0;
+  }
+
+  input {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    background: transparent;
+    font-family: var(--font-family);
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-main);
+    outline: none;
+    &::placeholder {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+  }
+
+  .bar-clear {
+    background: transparent;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 6px;
+    color: var(--text-muted);
+    flex-shrink: 0;
+    &:active {
+      transform: scale(0.85);
+    }
+    ion-icon {
+      font-size: 20px;
+    }
+  }
+
+  .bar-mic {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: transparent;
+    border: 1.5px solid var(--primary-navy);
+    color: var(--primary-navy);
+    cursor: pointer;
+    flex-shrink: 0;
+    padding: 0;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease,
+      transform 0.15s ease;
+    ion-icon {
+      font-size: 17px;
+    }
+    &:active {
+      transform: scale(0.9);
+    }
+    &.listening {
+      background: var(--primary-navy);
+      color: #ffffff;
+      box-shadow: 0 0 0 3px rgba(21, 29, 72, 0.15);
+      ion-icon {
+        animation: recordBounce 0.9s ease-in-out infinite;
+      }
+    }
+  }
+
+  /* Primary action — large, flush beside the input (Fitts's Law) */
+  .bar-submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 44px;
+    padding: 0 24px;
+    border-radius: 12px;
+    background: var(--accent-red);
+    border: 1.5px solid var(--accent-red);
+    box-shadow: 2px 2px 0 rgba(21, 29, 72, 0.35);
+    color: #ffffff;
+    font-family: var(--font-family);
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+    &:active {
+      transform: translateY(1px);
+      box-shadow: 1px 1px 0 rgba(21, 29, 72, 0.35);
+      filter: brightness(0.94);
+    }
+    ion-icon {
+      font-size: 17px;
+    }
+  }
+}
+
+.search-feedback {
+  margin: 14px 4px 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary-navy);
+  background: var(--pop-yellow);
+  border: 1.5px solid var(--primary-navy);
+  border-radius: 10px;
+  padding: 10px 14px;
+  position: relative;
+  box-shadow: 2px 2px 0 var(--ink);
+  display: inline-block;
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 22px;
+    bottom: -7px;
+    width: 10px;
+    height: 10px;
+    background: var(--pop-yellow);
+    border-right: 1.5px solid var(--primary-navy);
+    border-bottom: 1.5px solid var(--primary-navy);
+    transform: rotate(45deg);
+  }
+}
+
+/* ------------------------------------------------------------------
+   3. TRANSPORT FILTERS — category tiles (same as Home for consistency)
+   ------------------------------------------------------------------ */
+.categories-grid {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  opacity: 0;
+  animation: revealUp 0.5s 0.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+
+  .cat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: opacity 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+
+    .squircle {
+      width: 58px;
+      height: 58px;
+      background: var(--bg-white);
+      border: 1.5px solid var(--ink);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary-navy);
+      box-shadow: 2px 2px 0 var(--ink);
+      transition:
+        background-color 0.25s ease,
+        border-color 0.25s ease,
+        color 0.25s ease,
+        transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1),
+        box-shadow 0.15s ease;
+      ion-icon {
+        font-size: 23px;
+      }
+    }
+
+    .cat-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      transition: color 0.25s ease;
+      white-space: nowrap;
+    }
+
+    &:active .squircle {
+      transform: scale(0.9);
+      box-shadow: 0 0 0 var(--ink);
+    }
+
+    &.active {
+      .squircle {
+        background-color: var(--primary-navy);
+        background-image: radial-gradient(
+          rgba(255, 255, 255, 0.14) 1px,
+          transparent 1.3px
+        );
+        background-size: 6px 6px;
+        border-color: var(--primary-navy);
+        color: #ffffff;
+        box-shadow: 3px 3px 0 rgba(211, 47, 47, 0.55);
+      }
+      .cat-label {
+        color: var(--primary-navy);
+        font-weight: 800;
+      }
+    }
+  }
+}
+
+/* ------------------------------------------------------------------
+   4. TWO-COLUMN DASHBOARD LAYOUT (12-col grid; 8 / 4 split)
+   ------------------------------------------------------------------ */
+.search-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+  opacity: 0;
+  animation: revealUp 0.5s 0.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.main-col,
+.side-col {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  min-width: 0;
+}
+
+/* Desktop: single discovery column (shelves stack full width) */
+@media (min-width: 900px) {
+  .search-wrap {
+    padding: 32px 32px 96px;
+  }
+  .search-band {
+    margin: 0 -32px 24px;
+    padding: 8px 32px 12px;
+  }
+  .search-layout {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 32px;
+  }
+  .main-col {
+    grid-column: 1 / -1;
+  }
+  .side-col {
+    display: none;
+  }
+}
+
+/* ------------------------------------------------------------------
+   SHARED SECTION CARDS (common region)
+   ------------------------------------------------------------------ */
+.dash-section {
+  background: var(--bg-white);
+  border: 1.5px solid var(--primary-navy);
+  border-radius: 18px;
+  box-shadow: 3px 3px 0 var(--ink);
+  padding: 20px;
+
+  .dash-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+
+    .dash-title {
+      margin: 0;
+      font-size: 12.5px;
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--primary-navy);
+      &::before {
+        content: "★ ";
+        color: var(--accent-red);
+        font-size: 12px;
+      }
+    }
+  }
+
+  .sort-control {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    position: relative;
+
+    span {
+      font-size: 12.5px;
+      font-weight: 800;
+      color: var(--primary-navy);
+    }
+
+    ion-icon {
+      font-size: 15px;
+      color: var(--primary-navy);
+      transition: transform 0.25s ease;
+      &.flipped {
+        transform: rotate(180deg);
+      }
+    }
+
+    .sort-menu {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      z-index: 20;
+      background: var(--bg-white);
+      border: 1.5px solid var(--primary-navy);
+      border-radius: 12px;
+      box-shadow: 3px 3px 0 var(--ink);
+      overflow: hidden;
+      min-width: 140px;
+
+      button {
+        width: 100%;
+        text-align: left;
+        padding: 10px 14px;
+        background: transparent;
+        border: none;
+        font-family: var(--font-family);
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-main);
+        cursor: pointer;
+        &:active {
+          background: var(--bg-page);
+        }
+        &.selected {
+          color: var(--primary-navy);
+          font-weight: 800;
+          &::after {
+            content: " ✓";
+          }
+        }
+      }
+    }
+  }
+}
+
+/* ------------------------------------------------------------------
+   MOST VISITED — strict 2×2 destination cards
+   ------------------------------------------------------------------ */
+.dest-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+
+  .dest-card {
+    background: var(--bg-white);
+    border: 1.5px solid var(--primary-navy);
+    box-shadow: 2px 2px 0 var(--ink);
+    border-radius: 14px;
+    padding: 12px;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    text-align: left;
+
+    &:active {
+      transform: scale(0.97);
+      box-shadow: 1px 1px 0 var(--ink);
+    }
+
+    /* identical thumbnail height across all four cards */
+    .dest-thumb {
+      height: 88px;
+      border-radius: 10px;
+      background-color: var(--primary-navy);
+      background-image: radial-gradient(
+        rgba(255, 255, 255, 0.14) 1px,
+        transparent 1.3px
+      );
+      background-size: 7px 7px;
+      border: 1px solid var(--primary-navy);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 12px;
+      ion-icon {
+        font-size: 28px;
+        color: rgba(255, 255, 255, 0.9);
+      }
+    }
+
+    h3 {
+      margin: 0 0 8px;
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text-main);
+      letter-spacing: -0.01em;
+    }
+
+    .dest-tag {
+      display: inline-block;
+      font-size: 10.5px;
+      font-weight: 800;
+      color: var(--primary-navy);
+      background: var(--pop-yellow);
+      border: 1px solid rgba(21, 29, 72, 0.2);
+      padding: 3px 9px;
+      border-radius: 999px;
+    }
+  }
+}
+
+/* ------------------------------------------------------------------
+   POPULAR ROUTES — compact horizontal route cards (scannable)
+   ------------------------------------------------------------------ */
+.route-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  .route-card {
+    background-color: #f8fafc;
+    background-image: radial-gradient(
+      rgba(21, 29, 72, 0.045) 1px,
+      transparent 1.3px
+    );
+    background-size: 6px 6px;
+    border: 1.5px solid var(--primary-navy);
+    border-radius: 14px;
+    box-shadow: 2px 2px 0 var(--ink);
+    padding: 14px 16px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+    &:active {
+      transform: translateY(1px);
+      box-shadow: 1px 1px 0 var(--ink);
+    }
+
+    .rc-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+
+      .rc-op {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 0;
+
+        .rc-logo {
+          width: 40px;
+          height: 40px;
+          border-radius: 12px;
+          background-color: var(--primary-navy);
+          background-image: radial-gradient(
+            rgba(255, 255, 255, 0.14) 1px,
+            transparent 1.3px
+          );
+          background-size: 6px 6px;
+          border: 1px solid var(--primary-navy);
+          color: #ffffff;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+          ion-icon {
+            font-size: 19px;
+          }
+        }
+
+        .rc-op-text {
+          display: flex;
+          flex-direction: column;
+          gap: 3px;
+          min-width: 0;
+
+          h3 {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--primary-navy);
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+          }
+
+          .rc-mode {
+            font-size: 9.5px;
+            font-weight: 900;
+            letter-spacing: 0.06em;
+            color: var(--accent-red);
+            background: #fef2f2;
+            border: 1px solid rgba(211, 47, 47, 0.4);
+            border-radius: 5px;
+            padding: 1px 6px;
+            text-transform: uppercase;
+            align-self: flex-start;
+          }
+        }
+      }
+
+      .rc-head-right {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-shrink: 0;
+
+        /* price: prominent but secondary to the route line */
+        .rc-fare {
+          font-size: 16px;
+          font-weight: 900;
+          color: var(--primary-navy);
+          background-color: var(--pop-yellow);
+          background-image: radial-gradient(
+            rgba(21, 29, 72, 0.1) 1px,
+            transparent 1.3px
+          );
+          background-size: 5px 5px;
+          border: 1px solid var(--primary-navy);
+          padding: 4px 10px;
+          border-radius: 8px;
+          transform: rotate(1.5deg);
+          box-shadow: 1.5px 1.5px 0 var(--ink);
+          white-space: nowrap;
+        }
+
+        .rc-fav {
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          border: 1.5px solid var(--primary-navy);
+          background: var(--bg-white);
+          box-shadow: 1.5px 1.5px 0 var(--ink);
+          color: var(--primary-navy);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          padding: 0;
+          transition: transform 0.15s ease, background-color 0.15s ease;
+          ion-icon {
+            font-size: 16px;
+          }
+          &:active {
+            transform: scale(0.88);
+          }
+          &.saved {
+            background: var(--accent-red);
+            border-color: var(--accent-red);
+            color: #ffffff;
+          }
+        }
+      }
+    }
+
+    /* origin → destination, visually connected by an arrow */
+    .rc-route {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 14px 0;
+      min-width: 0;
+
+      .rc-from,
+      .rc-to {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--primary-navy);
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        letter-spacing: -0.01em;
+      }
+
+      .rc-arrow {
+        display: flex;
+        align-items: center;
+        color: var(--accent-red);
+        flex-shrink: 0;
+        ion-icon {
+          font-size: 18px;
+        }
+      }
+    }
+
+    .rc-foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding-top: 12px;
+      border-top: 1.5px dashed var(--ink);
+
+      .rc-meta {
+        font-size: 12.5px;
+        font-weight: 700;
+        color: var(--text-muted);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .rc-foot-right {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-shrink: 0;
+
+        .rc-rating {
+          display: inline-flex;
+          align-items: center;
+          gap: 3px;
+          font-size: 12.5px;
+          font-weight: 800;
+          color: var(--primary-navy);
+          background: var(--bg-white);
+          border: 1px solid var(--ink);
+          border-radius: 999px;
+          padding: 5px 9px;
+          white-space: nowrap;
+          ion-icon {
+            font-size: 12px;
+            color: var(--pop-yellow);
+            text-shadow: 0 0 1px var(--primary-navy);
+          }
+        }
+
+        /* consistent, large, right-aligned action (Fitts's Law) */
+        .rc-view {
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          background: var(--accent-red);
+          color: #ffffff;
+          border: 1.5px solid var(--accent-red);
+          box-shadow: 2px 2px 0 rgba(21, 29, 72, 0.3);
+          border-radius: 10px;
+          padding: 8px 16px;
+          min-height: 38px;
+          font-family: var(--font-family);
+          font-size: 13px;
+          font-weight: 800;
+          cursor: pointer;
+          white-space: nowrap;
+          transition: transform 0.15s ease, filter 0.15s ease;
+          &:active {
+            transform: scale(0.95);
+            filter: brightness(0.94);
+          }
+          ion-icon {
+            font-size: 14px;
+          }
+        }
+      }
+    }
+  }
+}
+
+/* Landscape/tablet: two route cards per row when width allows */
+@media (min-width: 900px) {
+  .route-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+    gap: 16px;
+  }
+}
+
+.empty-state {
+  background: var(--bg-white);
+  border: 1.5px dashed var(--ink);
+  border-radius: 14px;
+  padding: 24px 18px;
+  text-align: center;
+
+  h3 {
+    margin: 0 0 6px;
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--text-main);
+  }
+  p {
+    margin: 0;
+    font-size: 12.5px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+}
+
+.side-empty {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+/* ------------------------------------------------------------------
+   SCOPE FILTERS — terminals / routes / places shelves
+   ------------------------------------------------------------------ */
+.scope-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+
+  .scope-chip {
+    min-height: 40px;
+    padding: 8px 18px;
+    border-radius: 999px;
+    background: var(--bg-white);
+    border: 1.5px solid var(--primary-navy);
+    box-shadow: 2px 2px 0 var(--ink);
+    font-family: var(--font-family);
+    font-size: 12.5px;
+    font-weight: 800;
+    color: var(--primary-navy);
+    cursor: pointer;
+    &:active {
+      transform: scale(0.95);
+    }
+    &.active {
+      background: var(--primary-navy);
+      color: #ffffff;
+      box-shadow: 2px 2px 0 var(--accent-red);
+    }
+  }
+}
+
+/* ------------------------------------------------------------------
+   TERMINALS — rich hub cards (tap opens the digital terminal)
+   ------------------------------------------------------------------ */
+.term-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  .term-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    background: var(--bg-white);
+    border: 1.5px solid var(--primary-navy);
+    border-radius: 16px;
+    box-shadow: 2px 2px 0 var(--ink);
+    padding: 12px 14px;
+    font-family: var(--font-family);
+    cursor: pointer;
+    text-align: left;
+    &:active {
+      transform: scale(0.98);
+      box-shadow: 1px 1px 0 var(--ink);
+    }
+
+    .term-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: var(--primary-navy);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      ion-icon {
+        font-size: 20px;
+        color: #ffffff;
+      }
+    }
+
+    .term-text {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      strong {
+        font-size: 13.5px;
+        font-weight: 800;
+        color: var(--text-main);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      small {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--text-muted);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+
+    .term-view {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--accent-red);
+      white-space: nowrap;
+      flex-shrink: 0;
+      ion-icon {
+        font-size: 14px;
+      }
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scope-row .scope-chip,
+  .term-list .term-card {
+    transition: none;
+  }
+}
+
+/* ------------------------------------------------------------------
+   PHONE — the search band stacks so the action stays large
+   ------------------------------------------------------------------ */
+@media (max-width: 640px) {
+  .search-bar {
+    flex-wrap: wrap;
+    height: auto;
+    padding: 12px;
+    row-gap: 10px;
+    border-radius: 14px;
+
+    .bar-leading {
+      order: 0;
+    }
+    input {
+      order: 1;
+    }
+    .bar-clear {
+      order: 2;
+    }
+    .bar-mic {
+      order: 3;
+    }
+    .bar-submit {
+      order: 4;
+      width: 100%;
+      height: 48px;
+      justify-content: center;
+    }
+  }
+
+  .search-header .brand-text h1 {
+    font-size: 18px;
+  }
+  .search-header .brand-text p {
+    font-size: 12px;
+  }
+  .categories-grid .squircle {
+    width: 54px;
+    height: 54px;
+  }
+}
+
+/* ------------------------------------------------------------------
+   ACCESSIBILITY
+   ------------------------------------------------------------------ */

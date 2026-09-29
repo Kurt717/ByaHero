@@ -1,0 +1,176 @@
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap");
+
+:host {
+  --primary-navy: #151d48;
+  --accent-red: #dc2626;
+  --bg-color: #f8fafc;
+  --text-muted: #64748b;
+  --font-family:
+    "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "SF Pro Display",
+    sans-serif;
+}
+
+ion-content.splash-content {
+  --background: var(--bg-color);
+  font-family: var(--font-family);
+  -webkit-font-smoothing: antialiased;
+}
+
+.splash-container {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 0 24px;
+  background-image: radial-gradient(
+    rgba(30, 58, 138, 0.04) 1px,
+    transparent 1.3px
+  );
+  background-size: 12px 12px;
+}
+
+/* --- LOGO: appears with the reveal, then holds still (vision: static hold) --- */
+.logo-wrapper {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  margin-bottom: 0;
+  filter: drop-shadow(0 12px 24px rgba(30, 58, 138, 0.15));
+  opacity: 0;
+
+  .logo-burst {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 210px;
+    height: 210px;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  .logo-svg-main {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+/* --- TYPOGRAPHY --- */
+.brand-text {
+  text-align: center;
+
+  h1 {
+    font-size: 34px;
+    font-weight: 800;
+    color: var(--primary-navy);
+    margin: 0 0 6px 0;
+    letter-spacing: -0.04em;
+    font-weight: bold;
+
+    span {
+      color: var(--accent-red);
+    }
+  }
+
+  p {
+    color: var(--text-muted);
+    font-size: 15px;
+    font-weight: 500;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+}
+
+/* --- ANIMATIONS --- */
+
+/* Initial Spring Scale-In for Logo */
+@keyframes springIn {
+  from {
+    opacity: 0;
+    transform: scale(0.6) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Staggered Fade & Slide Up for Title */
+.title-anim {
+  opacity: 0;
+}
+
+/* Staggered Fade & Slide Up for Subtitle */
+.subtitle-anim {
+  opacity: 0;
+}
+
+@keyframes fadeInUpSmooth {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* --- INTRO: hero -> bus -> logo morph (splash-intro.ts) --- */
+.logo-slot { position: relative; width: 150px; height: 150px; margin-bottom: 28px; }
+.intro {
+  position: absolute; left: 50%; top: 50%;
+  width: 390px; height: 400px; margin: -200px 0 0 -195px;
+  overflow: visible; pointer-events: none; z-index: 2;
+}
+/* the real logo takes over the instant the morph ends (identical pixels, no fade) */
+.splash-container.ready {
+  .logo-wrapper { opacity: 1; }
+  .title-anim { animation: fadeInUpSmooth 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+  .subtitle-anim { animation: fadeInUpSmooth 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.15s forwards; }
+  &::before { animation: cornerPop 0.6s cubic-bezier(0.3, 1.4, 0.5, 1) 0.1s both; }
+  &::after { animation: cornerPop 0.6s cubic-bezier(0.3, 1.4, 0.5, 1) 0.25s both; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .intro { display: none; }
+  .splash-container .logo-wrapper { opacity: 1; animation: none; }
+  .splash-container .title-anim, .splash-container .subtitle-anim { animation: none; opacity: 1; }
+}
+
+/* --- POP-ART HALFTONE CORNERS (Ben-Day dots) ---
+ * Hidden during the flight; they pop in with the logo reveal (under .ready). */
+.splash-container::before,
+.splash-container::after {
+  content: '';
+  position: absolute;
+  width: 280px;
+  height: 280px;
+  pointer-events: none;
+  background-size: 11px 11px;
+  transform: scale(0);
+}
+.splash-container::before {
+  top: -80px;
+  right: -80px;
+  background-image: radial-gradient(circle, rgba(220, 38, 38, 0.38) 2.6px, transparent 3px);
+  -webkit-mask-image: radial-gradient(circle at 71% 29%, #000 0%, transparent 70%);
+  mask-image: radial-gradient(circle at 71% 29%, #000 0%, transparent 70%);
+  transform-origin: 71% 29%;
+}
+.splash-container::after {
+  bottom: -80px;
+  left: -80px;
+  background-image: radial-gradient(circle, rgba(21, 29, 72, 0.28) 2.6px, transparent 3px);
+  -webkit-mask-image: radial-gradient(circle at 29% 71%, #000 0%, transparent 70%);
+  mask-image: radial-gradient(circle at 29% 71%, #000 0%, transparent 70%);
+  transform-origin: 29% 71%;
+}
+@keyframes cornerPop {
+  from { transform: scale(0); }
+  to { transform: scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .splash-container::before, .splash-container::after { animation: none; transform: scale(1); }
+}

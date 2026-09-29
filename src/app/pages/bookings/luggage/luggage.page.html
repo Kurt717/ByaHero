@@ -1,0 +1,127 @@
+<!-- luggage.page.html — BYAHERO travel-preparation panel -->
+<ion-content fullscreen class="luggage-content">
+  <div class="luggage-wrap">
+    @if (booking; as b) {
+      <div class="page-header">
+        <button class="back-btn" (click)="goBack()" aria-label="Go back">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+        </button>
+        <div class="header-text">
+          <span class="kicker">Trip preparation · {{ b.bookingRef }}</span>
+          <h1>Luggage</h1>
+          <p>{{ b.from }} → {{ b.to }} · {{ b.date }}</p>
+        </div>
+        <span class="ref-chip">{{ b.seat }}</span>
+      </div>
+
+      <!-- HERO PANEL -->
+      <section class="hero-panel" aria-label="Luggage summary">
+        <span class="hero-burst" aria-hidden="true">
+          <svg viewBox="0 0 100 100"><path d="M50 0 59 41 100 50 59 59 50 100 41 59 0 50 41 41 Z" fill="#ffe066" /></svg>
+        </span>
+        <div class="hero-copy">
+          <span class="hero-kicker">Ready for the road?</span>
+          <p class="hero-total" aria-live="polite">
+            <strong>{{ total }}</strong>
+            <span>piece{{ total === 1 ? '' : 's' }}</span>
+          </p>
+          <p class="hero-sub">
+            @if (isEmpty) {
+              Nothing recorded yet — add your bags below.
+            } @else {
+              {{ counts.carryOn }} carry-on · {{ counts.checked }} stored · {{ counts.other }} other
+            }
+          </p>
+        </div>
+        <span class="hero-tag">Tara na!</span>
+      </section>
+
+      @if (!isActive) {
+        <div class="readonly-note" role="note">
+          <ion-icon name="information-circle-outline"></ion-icon>
+          <p>This trip is {{ b.status }} — luggage is read-only.</p>
+        </div>
+      }
+
+      @if (isEmpty) {
+        <div class="empty-state">
+          <div class="empty-icon"><ion-icon name="ticket-outline"></ion-icon></div>
+          <h2>No luggage added</h2>
+          <p>Add your luggage so your trip information stays complete. Counts are saved per booking — other trips are never affected.</p>
+        </div>
+      }
+
+      <!-- STEPPERS -->
+      <section class="step-list" aria-label="Your luggage">
+        @for (row of meta; track row.key) {
+          <div class="step-card">
+            <span class="step-icon"><ion-icon [name]="row.icon"></ion-icon></span>
+            <div class="step-text">
+              <h3>{{ row.label }}</h3>
+              <p>{{ row.hint }}</p>
+            </div>
+            <div class="stepper" role="group" [attr.aria-label]="row.label + ' quantity'">
+              <button
+                type="button"
+                class="step-btn"
+                (click)="step(row.key, -1)"
+                [disabled]="!isActive || countFor(row.key) <= 0"
+                [attr.aria-label]="'Decrease ' + row.label"
+              >−</button>
+              <input
+                class="step-val"
+                type="number"
+                inputmode="numeric"
+                min="0"
+                [max]="maxPerType"
+                [value]="countFor(row.key)"
+                [disabled]="!isActive"
+                [attr.aria-label]="row.label + ' count'"
+                [attr.aria-live]="'polite'"
+                (change)="setCount(row.key, $any($event.target).value)"
+              />
+              <button
+                type="button"
+                class="step-btn plus"
+                (click)="step(row.key, 1)"
+                [disabled]="!isActive || countFor(row.key) >= maxPerType"
+                [attr.aria-label]="'Increase ' + row.label"
+              >+</button>
+            </div>
+          </div>
+        }
+      </section>
+      <p class="limit-note">Max {{ maxPerType }} per type. Stored per booking {{ b.bookingRef }}.</p>
+
+      <div class="cta-row">
+        @if (isActive) {
+          <button type="button" class="save-cta" (click)="save()" [disabled]="!canSave">
+            <ion-icon name="checkmark-outline"></ion-icon>
+            {{ saving ? 'Saving…' : 'Save luggage' }}
+          </button>
+          @if (!isEmpty) {
+            <button type="button" class="ghost-cta" (click)="clearAll()">
+              <ion-icon name="trash-outline"></ion-icon>
+              Clear
+            </button>
+          }
+          <button type="button" class="ghost-cta" (click)="openPrep()">
+            Back to checklist
+            <ion-icon name="chevron-forward-outline"></ion-icon>
+          </button>
+        } @else {
+          <button type="button" class="save-cta" (click)="openPrep()">
+            Back to checklist
+            <ion-icon name="chevron-forward-outline"></ion-icon>
+          </button>
+        }
+      </div>
+    } @else {
+      <div class="empty-state">
+        <h2>Trip not found</h2>
+        <p>We couldn't find that booking on this device.</p>
+        <button class="save-cta" (click)="goBack()">Go back</button>
+      </div>
+    }
+  </div>
+</ion-content>

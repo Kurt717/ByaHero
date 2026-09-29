@@ -1,0 +1,46 @@
+<ion-content fullscreen class="sub-content">
+  <div class="page">
+    <div class="top-bar">
+      <button class="round-btn" (click)="goBack()" aria-label="Go back">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </button>
+      <div class="bar-text">
+        <h1>Invite a Kabyahe</h1>
+        <p>Padala ng libreng biyahe</p>
+      </div>
+      <span class="beacon"><ion-icon name="gift-outline"></ion-icon></span>
+    </div>
+
+    <!-- REWARD CARD -->
+    <section class="reward-card">
+      <span class="rw-icon"><ion-icon name="gift-outline"></ion-icon></span>
+      <div class="rw-text">
+        <h2>&#8369;50 for you</h2>
+        <p>for every friend who books their first trip</p>
+      </div>
+    </section>
+
+    <!-- CODE -->
+    <section class="block">
+      <div class="section-head">
+        <h3>Your invite code</h3>
+        <span class="rule"></span>
+      </div>
+      <div class="code-card">
+        <span class="code-text">{{ code }}</span>
+        <button class="copy-btn" (click)="copyCode()" aria-label="Copy code">
+          <ion-icon name="copy-outline"></ion-icon>
+        </button>
+      </div>
+      <button class="cta" (click)="invite()">
+        <ion-icon name="share-social-outline"></ion-icon>
+        Invite friends
+      </button>
+    </section>
+
+    <p class="hint">
+      <ion-icon name="people-outline"></ion-icon>
+      Your friends get &#8369;25 off their first ride too.
+    </p>
+  </div>
+</ion-content>

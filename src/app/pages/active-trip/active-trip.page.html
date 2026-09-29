@@ -1,0 +1,163 @@
+<ion-content fullscreen class="trip-content">
+  <div class="trip-wrap">
+    <!-- HEADER -->
+    <div class="trip-header">
+      <button class="icon-btn" (click)="goBack()" aria-label="Go back">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </button>
+      <div class="header-mid">
+        <span class="eyebrow">Live Tracking</span>
+        <h1>{{ trip.from }} <ion-icon name="chevron-forward-outline"></ion-icon> {{ trip.to }}</h1>
+      </div>
+      <button class="icon-btn" (click)="shareTrip()" aria-label="Share trip">
+        <ion-icon name="share-social-outline"></ion-icon>
+      </button>
+    </div>
+
+    <!-- TRIP STAGE -->
+    <div class="stage-toggle">
+      <span [class.active]="stage === 'boarding'">Boarding</span>
+      <span [class.active]="stage === 'enroute'">En Route</span>
+      <span [class.active]="stage === 'arriving'">Arriving</span>
+    </div>
+    <p class="stage-caption">{{ progressPercent }}% of the trip completed</p>
+    <p class="next-stop">
+      <ion-icon name="navigate-outline"></ion-icon>
+      <span>{{ nextStopLabel }}</span>
+    </p>
+
+    <!-- RIDE IDENTITY (shared vehicle + driver cards) -->
+    <app-ride-cards [booking]="booking"></app-ride-cards>
+
+    <!-- MAP + ROUTE STOPS: stacked in portrait, side-by-side in landscape -->
+    <div class="trip-grid">
+      <div class="trip-map-col">
+        <!-- LIVE MAP -->
+        <div class="map-shell">
+          <div #mapEl class="leaflet-host"></div>
+
+          <div class="eta-badge">
+            <ion-icon name="navigate-outline"></ion-icon>
+            <div>
+              @if (etaLabel) {
+                <span class="eta-value">{{ etaLabel }}</span>
+                <span class="eta-label">Estimated arrival</span>
+              } @else {
+                <span class="eta-value">{{ trip.to }}</span>
+                <span class="eta-label">Destination</span>
+              }
+            </div>
+          </div>
+
+          <button class="fab-recenter" (click)="recenter()" aria-label="Recenter map">
+            <ion-icon name="locate-outline"></ion-icon>
+          </button>
+        </div>
+
+        <!-- CONDITIONS (slim sample indicator — the map stays the hero) -->
+        @if (corridorConditions; as cond) {
+          <button
+            type="button"
+            class="cond-strip"
+            [ngClass]="cond.impact"
+            (click)="openConditions()"
+            [attr.aria-label]="'Travel conditions: ' + cond.line + '. View details.'"
+          >
+            <ion-icon [name]="cond.icon" aria-hidden="true"></ion-icon>
+            <span>{{ cond.line }}</span>
+            <ion-icon name="chevron-forward-outline" class="chev" aria-hidden="true"></ion-icon>
+          </button>
+        }
+      </div>
+
+      <!-- ROUTE STOP TIMELINE (canonical stops + ETAs + states) -->
+      <div class="section trip-timeline-col">
+        <p class="section-title">Route Stops · {{ stops.length }} stops</p>
+        <div class="timeline-card">
+          @if (booking?.status === 'cancelled') {
+            <app-route-stop-timeline
+              [stops]="stops"
+              mode="cancelled"
+              variant="full"
+              [headline]="trip.from + ' → ' + trip.to"
+            ></app-route-stop-timeline>
+          } @else {
+            <app-route-stop-timeline
+              [stops]="stops"
+              [mode]="timelineView.mode"
+              variant="full"
+              [segmentProgress]="timelineView.segmentProgress"
+              [headline]="trip.from + ' → ' + trip.to + ' · simulated position'"
+            ></app-route-stop-timeline>
+          }
+
+          <div class="timeline-footer-link" (click)="viewTicket()">
+            <ion-icon name="ticket-outline"></ion-icon>
+            <span>View ticket &amp; fare details</span>
+            <ion-icon name="chevron-forward-outline" class="chev"></ion-icon>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ARRIVAL CONFIRMATION -->
+    @if (arrived && booking) {
+      <div class="section">
+        <p class="section-title">Arrival</p>
+        <div class="arrival-card">
+          @if (!isCompleted) {
+            <div class="arrival-hero">
+              <ion-icon name="checkmark-circle" class="arrival-check"></ion-icon>
+              <div>
+                <h4>You've arrived!</h4>
+                <p>{{ trip.from }} → {{ trip.to }}</p>
+              </div>
+            </div>
+            <div class="arrival-meta">
+              <span>{{ booking.date }} · {{ booking.time }}</span>
+              <span>{{ booking.bookingRef }} · {{ booking.seat }}</span>
+            </div>
+            <button class="confirm-btn" (click)="confirmArrival()" aria-label="Confirm arrival at destination">
+              Confirm Arrival
+            </button>
+          } @else {
+            <div class="arrival-hero">
+              <ion-icon name="checkmark-circle" class="arrival-check done"></ion-icon>
+              <div>
+                <h4>Trip completed</h4>
+                <p>{{ trip.from }} → {{ trip.to }} · {{ booking.bookingRef }}</p>
+              </div>
+            </div>
+            @if (review) {
+              <div class="arrival-review" aria-label="Your saved rating: {{ review.rating }} out of 5 stars">
+                <span class="stars" aria-hidden="true">
+                  @for (n of [1, 2, 3, 4, 5]; track n) {
+                    <ion-icon name="star" [class.lit]="n <= review.rating"></ion-icon>
+                  }
+                </span>
+                <span class="review-note">Ride reviewed · Thanks, Kabyahe!</span>
+              </div>
+            } @else {
+              <button class="confirm-btn outline" (click)="openReview()" aria-label="Rate your ride">
+                <ion-icon name="star"></ion-icon>
+                Rate Your Ride
+              </button>
+            }
+          }
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- STICKY FOOTER -->
+  <div class="trip-footer">
+    <button class="footer-sos" (click)="openEmergency()" aria-label="Open Emergency Mode">
+      <ion-icon name="alert-outline"></ion-icon>
+      Emergency
+    </button>
+    <button class="footer-cta" (click)="shareTrip()">
+      Share Live Location
+      <ion-icon name="share-social-outline"></ion-icon>
+    </button>
+  </div>
+</ion-content>

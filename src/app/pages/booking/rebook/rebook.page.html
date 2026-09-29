@@ -1,0 +1,230 @@
+<!-- rebook.page.html — same journey, different ride (BYAHERO design language) -->
+<ion-content fullscreen class="rebook-content">
+  <div class="rebook-wrap">
+    @if (original) {
+      <!-- HEADER -->
+      <div class="page-header">
+        <button class="back-btn" (click)="goBack()" aria-label="Go back">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+        </button>
+        <div class="beacon" aria-hidden="true">
+          <span class="beacon-ring"></span>
+          <ion-icon name="swap-horizontal-outline"></ion-icon>
+        </div>
+        <div class="header-text">
+          <h1>Find Alternatives</h1>
+          <p>Keep your journey, change the ride</p>
+        </div>
+      </div>
+
+      <!-- ORIGINAL TRIP REMINDER -->
+      <section class="original-card" aria-label="Original trip">
+        <div class="original-main">
+          <span class="pow-label">YOUR ORIGINAL RIDE</span>
+          <p class="original-route">{{ original.from }} → {{ original.to }}</p>
+          <p class="original-meta">
+            {{ original.date }} · {{ original.time }} · {{ original.operator }}
+          </p>
+          <p class="original-meta dim">
+            {{ original.bookingRef }} · {{ paxCount }} passenger{{ paxCount === 1 ? '' : 's' }} · {{ original.fare }}
+          </p>
+          @if (originalVoucherNote) {
+            <p class="voucher-note">
+              <ion-icon name="ticket-outline" aria-hidden="true"></ion-icon>
+              {{ originalVoucherNote }}
+            </p>
+          }
+        </div>
+        <div class="original-stub" aria-hidden="true">
+          <span class="route-motif">
+            <span class="rnode origin"></span>
+            <span class="rdash"></span>
+            <ion-icon name="bus" class="rbus"></ion-icon>
+            <span class="rdash"></span>
+            <span class="rnode dest"></span>
+          </span>
+          <span class="stub-cap">kept as-is</span>
+        </div>
+      </section>
+
+      <!-- DATE -->
+      <div class="section-head">
+        <p class="section-title">Travel date</p>
+        <span class="section-rule"></span>
+      </div>
+      <div class="day-scroll" role="group" aria-label="Travel date">
+        @for (d of days; track d.iso) {
+          <button
+            type="button"
+            class="day-pill"
+            [class.active]="selectedDate === d.iso"
+            [attr.aria-pressed]="selectedDate === d.iso"
+            (click)="selectDay(d.iso)"
+          >
+            <span class="dow">{{ d.dow }}</span>
+            <span class="day">{{ d.day }}</span>
+          </button>
+        }
+      </div>
+
+      <!-- FILTERS -->
+      <div class="filter-row" role="group" aria-label="Sort alternatives">
+        @for (s of sortOptions; track s.id) {
+          <button
+            type="button"
+            class="filter-pill"
+            [class.active]="sort === s.id"
+            [attr.aria-pressed]="sort === s.id"
+            (click)="setSort(s.id)"
+          >
+            {{ s.label }}
+          </button>
+        }
+        @if (terminal) {
+          <button type="button" class="filter-pill compare-pill" (click)="openCompare()">
+            <ion-icon name="swap-horizontal-outline" aria-hidden="true"></ion-icon>
+            Compare
+          </button>
+        }
+      </div>
+
+      @if (operators.length > 1) {
+        <div class="chip-row" role="group" aria-label="Filter by operator">
+          <button
+            type="button"
+            class="chip"
+            [class.on]="operatorFilter === 'all'"
+            [attr.aria-pressed]="operatorFilter === 'all'"
+            (click)="setOperator('all')"
+          >
+            All operators
+          </button>
+          @for (op of operators; track op) {
+            <button
+              type="button"
+              class="chip"
+              [class.on]="operatorFilter === op"
+              [attr.aria-pressed]="operatorFilter === op"
+              (click)="setOperator(op)"
+            >
+              {{ op }}
+            </button>
+          }
+        </div>
+      }
+
+      @if (destinations.length > 1) {
+        <div class="chip-row" role="group" aria-label="Filter by destination">
+          <button
+            type="button"
+            class="chip"
+            [class.on]="destFilter === 'all'"
+            [attr.aria-pressed]="destFilter === 'all'"
+            (click)="setDest('all')"
+          >
+            All destinations
+          </button>
+          @for (dest of destinations; track dest) {
+            <button
+              type="button"
+              class="chip"
+              [class.on]="destFilter === dest"
+              [attr.aria-pressed]="destFilter === dest"
+              (click)="setDest(dest)"
+            >
+              {{ dest }}
+            </button>
+          }
+        </div>
+      }
+
+      <!-- RESULTS -->
+      <div class="section-head split">
+        <p class="section-title">
+          @if (reservableCount) {
+            {{ reservableCount }} alternative{{ reservableCount === 1 ? '' : 's' }}
+          } @else {
+            Alternatives
+          }
+        </p>
+        <span class="section-rule"></span>
+      </div>
+
+      @if (options.length) {
+        <div class="alt-list">
+          @for (o of options; track o.dep.id + selectedDate) {
+            <article
+              class="alt-card"
+              [class.blocked]="o.soldOut || o.shortBy > 0"
+              [attr.aria-label]="o.dep.time + ' ' + o.dep.operator + ', ' + formatFare(o.fareValue)"
+            >
+              <div class="alt-main">
+                <div class="alt-times">
+                  <span class="dep-time">{{ o.dep.time }}</span>
+                  <span class="arr-time">{{ o.arrival }} arrival</span>
+                </div>
+                <p class="alt-route">{{ o.dep.from }} → {{ o.dep.to }}</p>
+                <p class="alt-operator">
+                  <ion-icon name="bus" aria-hidden="true"></ion-icon>
+                  {{ o.dep.operator }}
+                </p>
+                <p class="alt-meta">{{ o.dep.duration }} · {{ o.seatsAvailable }} seat{{ o.seatsAvailable === 1 ? '' : 's' }} left</p>
+                @if (o.tags.length) {
+                  <div class="tag-row">
+                    @for (t of o.tags; track t) {
+                      <span class="diff-tag">{{ t }}</span>
+                    }
+                  </div>
+                }
+                @if (o.soldOut) {
+                  <p class="blocked-note">
+                    <ion-icon name="information-circle-outline" aria-hidden="true"></ion-icon>
+                    Sold out for this date.
+                  </p>
+                } @else if (o.shortBy > 0) {
+                  <p class="blocked-note">
+                    <ion-icon name="information-circle-outline" aria-hidden="true"></ion-icon>
+                    Only {{ o.seatsAvailable }} seat{{ o.seatsAvailable === 1 ? '' : 's' }} remain. You need {{ paxCount }}.
+                  </p>
+                }
+              </div>
+              <div class="alt-stub" aria-hidden="true">
+                <span class="fare">{{ formatFare(o.fareValue) }}</span>
+                @if (!o.soldOut && o.shortBy === 0) {
+                  <span class="stamp">NEW RIDE</span>
+                }
+              </div>
+              <div class="alt-actions">
+                @if (!o.soldOut && o.shortBy === 0) {
+                  <button
+                    type="button"
+                    class="rebook-btn"
+                    (click)="select(o)"
+                    [attr.aria-label]="'Rebook on the ' + o.dep.time + ' ' + o.dep.operator + ' trip'"
+                  >
+                    Rebook
+                    <ion-icon name="arrow-forward-outline" aria-hidden="true"></ion-icon>
+                  </button>
+                }
+              </div>
+            </article>
+          }
+        </div>
+        <p class="list-end-note">Your original trip stays untouched until you decide otherwise.</p>
+      } @else {
+        <div class="empty-state">
+          <div class="empty-ticket-outline">
+            <ion-icon name="calendar-outline"></ion-icon>
+          </div>
+          <span class="pow-label">NO RIDES</span>
+          <h3>No alternative trips found</h3>
+          <p>Try another date, operator, or destination — or browse fresh routes.</p>
+          <button class="empty-cta" (click)="bookFresh()">
+            Browse Routes
+            <ion-icon name="arrow-forward-outline"></ion-icon>
+          </button>
+        </div>
+      }
+    }
+  </div>
+</ion-content>

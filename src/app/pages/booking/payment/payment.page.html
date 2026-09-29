@@ -1,0 +1,199 @@
+<ion-content fullscreen class="flow-content">
+  @if (booking.trip; as trip) {
+    <div class="flow-wrap">
+      <div class="flow-header">
+        <button class="icon-btn" (click)="goBack()" aria-label="Go back">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+        </button>
+        <div class="flow-progress-track">
+          <div class="flow-progress-fill" [style.width]="booking.hailMode ? '75%' : '80%'"></div>
+        </div>
+        <span class="step-count">{{ booking.hailMode ? '3/4' : '4/5' }}</span>
+      </div>
+      <h1 class="flow-title">Payment</h1>
+      <p class="flow-sub">Review your fare and choose how to pay</p>
+      <!-- FARE BREAKDOWN -->
+      <div class="receipt-card">
+        <div class="receipt-row heading">
+          <span>{{ trip.operator }}</span>
+          <span>{{ trip.from }} → {{ trip.to }}</span>
+        </div>
+        @for (p of booking.passengers; track p; let i = $index) {
+          <div
+            class="passenger-fare-row"
+            >
+            <span>
+              Passenger {{ i + 1 }} · {{ typeLabel(p.type) }}
+              @if (booking.selectedSeats[i]) {
+                <span class="seat-tag"
+                  >{{ booking.selectedSeats[i] }}</span
+                  >
+                }
+              </span>
+              <span class="fare-amount">
+                @if (p.type !== 'regular') {
+                  <s
+                    >{{ booking.formatCurrency(booking.seatFare) }}</s
+                    >
+                  }
+                  {{ booking.formatCurrency(booking.fareForPassenger(p)) }}
+                </span>
+              </div>
+            }
+            @if (booking.totalDiscount) {
+              <div class="receipt-row">
+                <span>Passenger discount</span>
+                <span class="discount-value"
+                  >− {{ booking.formatCurrency(booking.totalDiscount) }}</span
+                  >
+              </div>
+            }
+            @if (booking.voucherDiscount) {
+              <div class="receipt-row">
+                <span>Voucher ({{ booking.voucher!.code }})</span>
+                <span class="discount-value"
+                  >− {{ booking.formatCurrency(booking.voucherDiscount) }}</span
+                  >
+              </div>
+            }
+            <div class="receipt-row">
+              <span>Subtotal</span>
+              <span>{{ booking.formatCurrency(booking.subtotal) }}</span>
+            </div>
+            <div class="receipt-divider"></div>
+            <div class="receipt-row total">
+              <span>Total</span>
+              <span>{{ booking.formatCurrency(booking.total) }}</span>
+            </div>
+          </div>
+
+          <!-- VOUCHER / PROMO CODE (Shopee-style picker) -->
+          <div class="section voucher-section">
+            <button class="voucher-entry" (click)="openVouchers()">
+              <span class="voucher-icon">
+                <ion-icon name="pricetag-outline"></ion-icon>
+              </span>
+              <span class="voucher-text">
+                <strong>
+                  @if (booking.voucher) {
+                    {{ booking.voucher!.code }} · {{ booking.voucher!.title }}
+                  } @else {
+                    Select voucher or enter promo code
+                  }
+                </strong>
+                <small>
+                  @if (booking.voucher) {
+                    {{ booking.formatCurrency(booking.voucherDiscount) }} off — tap to change
+                  } @else {
+                    Up to {{ voucherHint }} off
+                  }
+                </small>
+              </span>
+              <ion-icon name="chevron-forward-outline" class="voucher-chev"></ion-icon>
+            </button>
+          </div>
+
+          @if (booking.discountedCount) {
+              <p class="id-reminder">
+                <ion-icon name="information-circle-outline"></ion-icon>
+                {{ booking.discountedCount }} discounted fare{{ booking.discountedCount >
+                1 ? 's' : '' }} — the conductor will ask to see a valid ID before
+                boarding.
+              </p>
+            }
+            <!-- PAYMENT METHODS -->
+            <div class="section">
+              <p class="section-title">Payment Method</p>
+              <div class="method-list">
+                @for (m of methods; track m) {
+                  <button
+                    class="method-card"
+                    [class.active]="booking.paymentMethod === m.id"
+                    (click)="selectMethod(m.id)"
+                    >
+                    <div class="m-icon"><ion-icon [name]="m.icon"></ion-icon></div>
+                    <div class="m-text">
+                      <h4>{{ m.label }}</h4>
+                      <p>{{ m.sub }}</p>
+                    </div>
+                    <div
+                      class="m-radio"
+                      [class.checked]="booking.paymentMethod === m.id"
+                    ></div>
+                  </button>
+                }
+              </div>
+            </div>
+            <!-- CARD DETAILS (only if card selected) -->
+            @if (booking.paymentMethod === 'card') {
+              <div class="section card-fields">
+                <p class="section-title">Card Details</p>
+                <div class="field-group">
+                  <label>Card Number</label>
+                  <input
+                    type="text"
+                    [(ngModel)]="cardNumber"
+                    placeholder="1234 5678 9012 3456"
+                    maxlength="19"
+                    />
+                  </div>
+                  <div class="field-row">
+                    <div class="field-group">
+                      <label>Expiry</label>
+                      <input
+                        type="text"
+                        [(ngModel)]="cardExpiry"
+                        placeholder="MM/YY"
+                        maxlength="5"
+                        />
+                      </div>
+                      <div class="field-group">
+                        <label>CVV</label>
+                        <input
+                          type="text"
+                          [(ngModel)]="cardCvv"
+                          placeholder="123"
+                          maxlength="3"
+                          />
+                        </div>
+                      </div>
+                      <p class="secure-note">
+                        <ion-icon name="lock-closed-outline"></ion-icon> Demo checkout — card
+                        details are only validated on this device and never saved.
+                      </p>
+                    </div>
+                  }
+                  @if (paymentHint) {
+                    <p class="payment-hint">
+                      <ion-icon name="information-circle-outline"></ion-icon>
+                      {{ paymentHint }}
+                    </p>
+                  }
+                  <!-- TERMS -->
+                  <label class="terms-row">
+                    <input type="checkbox" [(ngModel)]="agreed" />
+                    <span class="checkbox-box" [class.checked]="agreed">
+                      @if (agreed) {
+                        <ion-icon name="checkmark-circle"></ion-icon>
+                      }
+                    </span>
+                    <span class="terms-text"
+                      >I agree to Byahero's fare and cancellation policy</span
+                      >
+                    </label>
+                  </div>
+                }
+
+                <!-- STICKY FOOTER -->
+                @if (booking.trip) {
+                  <div class="flow-footer">
+                    <div class="footer-price">
+                      <span class="label">Total to pay</span>
+                      <span class="value">{{ booking.formatCurrency(booking.total) }}</span>
+                    </div>
+                    <button class="footer-cta" [disabled]="!canPay" (click)="pay()">
+                      {{ processing ? 'Processing…' : booking.paymentMethod === 'cash' ? 'Reserve Seat' : 'Pay Now' }}
+                    </button>
+                  </div>
+                }
+              </ion-content>

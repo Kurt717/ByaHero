@@ -1,0 +1,157 @@
+<!-- boarding-pass.page.html — simplified boarding screen, same ticket codes as E-Ticket -->
+<ion-content fullscreen class="board-content">
+  @if (booking; as b) {
+    <div class="board-wrap">
+      <header class="board-bar">
+        <button class="icon-btn" (click)="goBack()" aria-label="Go back">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+        </button>
+        <div class="board-title">
+          <h1>Boarding Pass</h1>
+          <p>{{ b.bookingRef }}</p>
+        </div>
+        <span class="status-chip" [ngClass]="b.status">{{ statusLabel() }}</span>
+      </header>
+
+      <article class="pass">
+        @if (offlineReady) {
+          <div class="offline-strip" role="status" aria-label="Boarding pass offline availability">
+            <span class="offline-badge">
+              <ion-icon name="cloud-offline-outline"></ion-icon>
+              Available offline
+            </span>
+            <span class="conn-pill" [class.off]="!online">
+              <ion-icon name="wifi-outline"></ion-icon>
+              {{ online ? 'Online' : 'Offline — saved pass still viewable' }}
+            </span>
+          </div>
+        }
+        <div class="pass-route">
+          <div class="rl-end">
+            <span class="rl-label">Origin</span>
+            <span class="rl-city">{{ b.from }}</span>
+          </div>
+          <div class="rl-mid">
+            <span class="rl-dot"></span>
+            <span class="rl-track"></span>
+            <span class="rl-bus"><ion-icon name="bus"></ion-icon></span>
+            <span class="rl-track"></span>
+            <span class="rl-dot dest"></span>
+          </div>
+          <div class="rl-end right">
+            <span class="rl-label">Destination</span>
+            <span class="rl-city">{{ b.to }}</span>
+          </div>
+        </div>
+
+        <div class="pass-meta">
+          <div class="cell">
+            <span class="cell-lbl">Operator</span>
+            <span class="cell-val">{{ b.operator }}</span>
+          </div>
+          <div class="cell">
+            <span class="cell-lbl">Seat</span>
+            <span class="cell-val">{{ b.seat }}</span>
+          </div>
+          <div class="cell">
+            <span class="cell-lbl">Date</span>
+            <span class="cell-val">{{ b.date }}</span>
+          </div>
+          <div class="cell">
+            <span class="cell-lbl">Departure</span>
+            <span class="cell-val">{{ b.time }}</span>
+          </div>
+          <div class="cell wide">
+            <span class="cell-lbl">Passenger</span>
+            <span class="cell-val">{{ passengerName }}</span>
+          </div>
+          @if (b.pickup) {
+            <div class="cell wide">
+              <span class="cell-lbl">Pickup point</span>
+              <span class="cell-val">{{ b.pickup }}</span>
+            </div>
+          }
+          <div class="cell">
+            <span class="cell-lbl">Fare</span>
+            <span class="cell-val">{{ b.fare }}</span>
+          </div>
+          @if (rideAssigned) {
+            <div class="cell wide">
+              <span class="cell-lbl">Your ride</span>
+              <span class="cell-val">{{ rideLine() }}</span>
+            </div>
+          }
+          <div class="cell wide luggage-cell">
+            <span class="cell-lbl">Luggage</span>
+            <span class="cell-val luggage-val">
+              <ion-icon name="briefcase-outline" aria-hidden="true"></ion-icon>
+              @if (luggageTotal > 0) {
+                {{ luggageTotal }} piece{{ luggageTotal === 1 ? '' : 's' }} of luggage
+              } @else {
+                No luggage added
+              }
+            </span>
+          </div>
+        </div>
+
+        <div class="qr-zone">
+          <div class="qr">
+            @if (qrSize > 0) {
+              <svg
+                class="qr-svg"
+                [attr.viewBox]="'0 0 ' + qrSize + ' ' + qrSize"
+                shape-rendering="crispEdges"
+                role="img"
+                aria-label="Boarding QR code"
+              >
+                <rect x="0" y="0" [attr.width]="qrSize" [attr.height]="qrSize" fill="#ffffff"></rect>
+                @for (row of qrMatrix; track row; let r = $index) {
+                  @for (on of row; track on; let c = $index) {
+                    @if (on) {
+                      <rect [attr.x]="c" [attr.y]="r" width="1" height="1" fill="#0b1026"></rect>
+                    }
+                  }
+                }
+              </svg>
+            }
+          </div>
+          <span class="ref-code">{{ ticketCode }}</span>
+          <span class="ref-note">Show this screen to the conductor</span>
+        </div>
+
+        <div class="barcode-wrap">
+          <svg
+            class="barcode"
+            [attr.viewBox]="'0 0 ' + eanTotal + ' 44'"
+            preserveAspectRatio="xMidYMid meet"
+            aria-hidden="true"
+          >
+            <rect x="0" y="0" [attr.width]="eanTotal" height="44" fill="#ffffff"></rect>
+            @for (bar of eanBars; track $index) {
+              <rect [attr.x]="bar.x" y="0" [attr.width]="bar.w" height="44" fill="#0b1026"></rect>
+            }
+          </svg>
+          <p class="barcode-cap">{{ ticketCode }} &middot; Scan to verify</p>
+        </div>
+      </article>
+
+      <div class="board-actions">
+        <button class="primary-cta" (click)="viewTicket()">
+          <ion-icon name="ticket-outline"></ion-icon>
+          View full e-ticket
+        </button>
+      </div>
+    </div>
+  } @else {
+    <div class="board-wrap">
+      <div class="empty-state">
+        <div class="empty-ticket-outline">
+          <ion-icon name="ticket-outline"></ion-icon>
+        </div>
+        <h3>Pass not found</h3>
+        <p>We couldn't find that booking on this device.</p>
+        <button class="empty-cta" (click)="goBack()">Go back</button>
+      </div>
+    </div>
+  }
+</ion-content>

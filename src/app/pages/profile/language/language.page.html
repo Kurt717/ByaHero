@@ -1,0 +1,42 @@
+<ion-content fullscreen class="sub-content">
+  <div class="page">
+    <div class="top-bar">
+      <button class="round-btn" (click)="goBack()" aria-label="Go back">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </button>
+      <div class="bar-text">
+        <h1>Language</h1>
+        <p>Sa wika mong ikaw ang bahala</p>
+      </div>
+      <span class="beacon"><ion-icon name="language-outline"></ion-icon></span>
+    </div>
+
+    <!-- CURRENT -->
+    <section class="current-card">
+      <span class="cur-flag">{{ flagOf(selected) }}</span>
+      <div class="cur-text">
+        <h2>{{ selected }}</h2>
+        <p>Andito na lahat ng menu, madali na lahat.</p>
+      </div>
+    </section>
+
+    <!-- OPTIONS -->
+    <section class="block">
+      <div class="section-head">
+        <h3>Piling Wika</h3>
+        <span class="rule"></span>
+      </div>
+      @for (l of languages; track l.code) {
+        <button
+          class="lang-row"
+          [class.on]="selected === l.code"
+          (click)="choose(l)"
+        >
+          <span class="lg-flag">{{ l.flag }}</span>
+          <span class="lg-name">{{ l.native }}</span>
+          <span class="lg-tick"><i></i></span>
+        </button>
+      }
+    </section>
+  </div>
+</ion-content>

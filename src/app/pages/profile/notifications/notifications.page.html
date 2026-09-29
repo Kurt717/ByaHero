@@ -1,0 +1,89 @@
+<ion-content fullscreen class="sub-content">
+  <div class="page">
+    <div class="top-bar">
+      <button class="round-btn" (click)="goBack()" aria-label="Go back">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </button>
+      <div class="bar-text">
+        <h1>Notifications</h1>
+        <p>Choose how we reach you</p>
+      </div>
+      <span class="beacon"><ion-icon name="notifications-outline"></ion-icon></span>
+    </div>
+
+    <!-- MASTER SWITCH -->
+    <section class="switch-card">
+      <span class="sc-icon"><ion-icon name="notifications-outline"></ion-icon></span>
+      <div class="sc-text">
+        <h2>All notifications</h2>
+        <p>{{ on ? 'You are all set to hear from us' : 'Everything is muted' }}</p>
+      </div>
+      <button
+        class="switch"
+        [class.on]="on"
+        role="switch"
+        [attr.aria-checked]="on"
+        (click)="toggle(!on)"
+      >
+        <span class="knob"></span>
+      </button>
+    </section>
+
+    <!-- TRIP REMINDERS -->
+    <section class="block">
+      <div class="section-head">
+        <h3>Trip reminders</h3>
+        <span class="rule"></span>
+      </div>
+      <div class="chan-row">
+        <span class="ch-icon"><ion-icon name="alarm-outline"></ion-icon></span>
+        <div class="ch-text">
+          <strong>Trip Reminders</strong>
+          <span>Get reminders before your scheduled trips.</span>
+        </div>
+        <button
+          class="switch small"
+          [class.on]="tripReminders && on"
+          role="switch"
+          [attr.aria-checked]="tripReminders && on"
+          [attr.aria-label]="'Trip reminders, ' + (tripReminders && on ? 'on' : 'off')"
+          (click)="toggleTripReminders()"
+        >
+          <span class="knob"></span>
+        </button>
+      </div>
+      <p class="hint">
+        In-app only — ByaHero has no push server, so reminders appear inside the app.
+      </p>
+    </section>
+
+    <!-- CHANNELS -->
+    <section class="block">
+      <div class="section-head">
+        <h3>Channels</h3>
+        <span class="rule"></span>
+      </div>
+      @for (c of channels; track c.key) {
+        <div class="chan-row">
+          <span class="ch-icon"><ion-icon [name]="c.icon"></ion-icon></span>
+          <div class="ch-text">
+            <strong>{{ c.name }}</strong>
+            <span>{{ c.desc }}</span>
+          </div>
+          <button
+            class="switch small"
+            [class.on]="c.on && on"
+            role="switch"
+            [attr.aria-checked]="c.on && on"
+            (click)="toggleChannel(c)"
+          >
+            <span class="knob"></span>
+          </button>
+        </div>
+      }
+      <p class="hint">
+        Customize SMS alerts in your operator's booth for 100% accuracy.
+      </p>
+    </section>
+  </div>
+</ion-content>

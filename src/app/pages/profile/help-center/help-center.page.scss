@@ -1,0 +1,228 @@
+:host {
+  --primary-navy: #151d48;
+  --accent-red: #d32f2f;
+  --bg-page: #f8fafc;
+  --bg-white: #ffffff;
+  --text-main: #1f2937;
+  --text-muted: #6b7280;
+  --ink: rgba(21, 29, 72, 0.14);
+  --pop-yellow: #ffe066;
+  --success-green: #16a34a;
+  --font-family:
+    "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "SF Pro Display",
+    sans-serif;
+}
+
+ion-content.sub-content {
+  --background: var(--bg-page);
+  font-family: var(--font-family);
+  -webkit-font-smoothing: antialiased;
+}
+
+
+.page {
+  display: flex;
+  flex-direction: column;
+  padding: calc(env(safe-area-inset-top, 20px) + 24px) 16px 60px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.top-bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 20px;
+  opacity: 0;
+  animation: revealUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+
+  .round-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--bg-white);
+    border: 1.5px solid var(--primary-navy);
+    box-shadow: 2px 2px 0 var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+    ion-icon {
+      font-size: 18px;
+      color: var(--primary-navy);
+    }
+    &:active {
+      transform: scale(0.9);
+    }
+  }
+
+  .bar-text {
+    flex: 1;
+    min-width: 0;
+    h1 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--primary-navy);
+      letter-spacing: -0.02em;
+    }
+    p {
+      margin: 2px 0 0;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+  }
+
+  .beacon {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--primary-navy);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border: 1.5px solid var(--primary-navy);
+    box-shadow: 2px 2px 0 var(--ink);
+    ion-icon {
+      font-size: 18px;
+      color: var(--pop-yellow);
+    }
+  }
+}
+
+.block {
+  opacity: 0;
+  animation: revealUp 0.5s 0.08s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+
+  &.first {
+    animation-delay: 0.08s;
+  }
+
+  .section-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    h3 {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--primary-navy);
+    }
+    .rule {
+      flex: 1;
+      height: 2px;
+      border-radius: 2px;
+      background: linear-gradient(90deg, var(--pop-yellow), transparent);
+    }
+  }
+}
+
+.faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  .faq {
+    background: var(--bg-white);
+    border: 1.5px solid var(--primary-navy);
+    border-radius: 14px;
+    box-shadow: 2px 2px 0 var(--ink);
+
+    .faq-q {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 14px 16px;
+      border: none;
+      background: transparent;
+      font-family: var(--font-family);
+      text-align: left;
+      cursor: pointer;
+      span {
+        flex: 1;
+        font-size: 13.5px;
+        font-weight: 800;
+        color: var(--primary-navy);
+      }
+      ion-icon {
+        font-size: 17px;
+        color: var(--primary-navy);
+        transition: transform 0.2s ease;
+        flex-shrink: 0;
+      }
+    }
+
+    &.open .faq-q ion-icon {
+      transform: rotate(180deg);
+    }
+
+    .faq-a {
+      padding: 0 16px 14px;
+      font-size: 12.5px;
+      font-weight: 600;
+      line-height: 1.6;
+      color: var(--text-muted);
+      border-top: 1px dashed var(--border-color);
+      padding-top: 12px;
+      margin-left: 16px;
+      margin-right: 16px;
+    }
+  }
+}
+
+.contact-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 13px 14px;
+  margin-bottom: 10px;
+  background: var(--bg-white);
+  border: 1.5px solid var(--primary-navy);
+  border-radius: 14px;
+  box-shadow: 2px 2px 0 var(--ink);
+  cursor: pointer;
+  font-family: var(--font-family);
+  text-align: left;
+  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  .ct-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: var(--primary-navy);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    ion-icon {
+      font-size: 19px;
+      color: var(--pop-yellow);
+    }
+  }
+
+  .ct-text {
+    strong {
+      display: block;
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--primary-navy);
+    }
+    em {
+      font-style: normal;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+  }
+}

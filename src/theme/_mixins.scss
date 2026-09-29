@@ -1,0 +1,66 @@
+/* =====================================================================
+   BYAHERO shared SCSS mixins — canonical implementations of patterns
+   repeated across pages (sticky bars, beacon, pills, chips, cards).
+   Values preserve the approved design; pages `@include` these instead
+   of re-declaring the same rules. Component styles must `@import` this
+   file to use a mixin (Angular compiles page SCSS in isolation).
+   ===================================================================== */
+
+@mixin bh-sticky-bar($bleed: 16px, $pad-y-top: 8px, $pad-y-bottom: 12px) {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: var(--bg-page, var(--bh-bg));
+  margin: 0 (-$bleed) 12px;
+  padding: $pad-y-top $bleed $pad-y-bottom;
+}
+
+@mixin bh-sticky-header-row {
+  display: flex;
+  align-items: center;
+  gap: 10px 12px;
+  flex-wrap: wrap;
+}
+
+@mixin bh-beacon($size: 48px) {
+  position: relative;
+  width: $size;
+  height: $size;
+  border-radius: 50%;
+  background: var(--primary-navy, var(--bh-navy));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1.5px solid var(--primary-navy, var(--bh-navy));
+  box-shadow: 2px 2px 0 var(--ink, var(--bh-ink));
+}
+
+@mixin bh-segmented-pill {
+  display: flex;
+  background: #eef1f6;
+  border-radius: 999px;
+  padding: 4px;
+  margin-bottom: 0;
+}
+
+@mixin bh-card($radius: 18px) {
+  background: var(--bg-white, var(--bh-white));
+  border: 1.5px solid var(--ink, var(--bh-ink));
+  border-radius: $radius;
+  box-shadow: 2px 2px 0 var(--ink, var(--bh-ink));
+}
+
+@mixin bh-chip {
+  border-radius: 999px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+@mixin bh-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 48px 24px;
+}

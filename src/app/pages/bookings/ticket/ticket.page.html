@@ -1,0 +1,327 @@
+<ion-content fullscreen class="ticket-content">
+  <!-- COMIC HERO BAND -->
+  <div class="ticket-hero">
+    <svg class="hero-burst" viewBox="0 0 100 100" aria-hidden="true">
+      <path
+        d="M50 0 59 41 100 50 59 59 50 100 41 59 0 50 41 41 Z"
+        fill="#dc2626"
+        opacity="0.9"
+      />
+    </svg>
+    <svg class="hero-bolt" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M13 2 4 14h6l-2 8 10-13h-6z" fill="#ffe066" />
+    </svg>
+    <div class="hero-bar">
+      <button class="icon-btn" (click)="goBack()" aria-label="Go back">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </button>
+      <div class="hero-title">
+        <h1>Bus Ticket</h1>
+      </div>
+      <button class="icon-btn" (click)="shareTicket()" aria-label="Share ticket">
+        <ion-icon name="share-social-outline"></ion-icon>
+      </button>
+    </div>
+  </div>
+
+  @if (booking; as b) {
+    <div class="ticket-wrap">
+      <!-- OFFLINE AVAILABILITY (screen chrome — not part of the exported stub) -->
+      @if (offlineReady) {
+        <div class="offline-strip" role="status" aria-label="Ticket offline availability">
+          <span class="offline-badge">
+            <ion-icon name="cloud-offline-outline"></ion-icon>
+            Offline ready
+          </span>
+          <span class="conn-pill" [class.off]="!online">
+            <ion-icon name="wifi-outline"></ion-icon>
+            {{ online ? 'Online' : 'Offline — saved ticket still viewable' }}
+          </span>
+        </div>
+        <p class="offline-cap">Ticket, QR, barcode{{ hasLuggage ? ', luggage' : '' }} and passenger details are stored on this device. Live bus tracking needs a connection.</p>
+      }
+      <!-- THE STUB — one design, conductor + passenger copy -->
+      <article class="stub" #ticketPass [class.void]="b.status === 'cancelled'">
+        <span class="crease" aria-hidden="true"></span>
+
+        <!-- CONDUCTOR'S COPY / HEAD -->
+        <header class="stub-head">
+          <div class="head-brand">
+            <span class="hb-emblem"><ion-icon name="bus"></ion-icon></span>
+            <div class="hb-text">
+              <h2>{{ b.operator }}</h2>
+              <span class="hb-sub">ByaHero verified operator</span>
+            </div>
+          </div>
+          <div class="head-seq">
+            <span class="seq-lbl">Ticket No.</span>
+            <span class="seq-num">{{ b.bookingRef.replace('BYH-', '') }}</span>
+          </div>
+        </header>
+
+        <div class="stub-band">
+          <span class="band-title">Boarding Pass</span>
+          <span class="band-chip" [ngClass]="b.status">{{ statusLabel() }}</span>
+        </div>
+
+        <!-- ROUTE BANNER -->
+        <section class="stub-route">
+          <span class="route-burst" aria-hidden="true">
+            <svg viewBox="0 0 100 100">
+              <path d="M50 0 59 41 100 50 59 59 50 100 41 59 0 50 41 41 Z" fill="#151d48" />
+            </svg>
+          </span>
+          <svg class="speed-lines" viewBox="0 0 200 40" preserveAspectRatio="none" aria-hidden="true">
+            <g stroke="#151d48" stroke-width="2" opacity="0.16" stroke-linecap="round">
+              <line x1="14" y1="30" x2="74" y2="8" />
+              <line x1="66" y1="32" x2="126" y2="10" />
+              <line x1="118" y1="33" x2="178" y2="11" />
+            </g>
+          </svg>
+          <div class="route-line">
+            <div class="rl-end">
+              <span class="rl-label">Origin</span>
+              <span class="rl-city">{{ b.from }}</span>
+            </div>
+            <div class="rl-mid">
+              <span class="rl-dot"></span>
+              <span class="rl-track"></span>
+              <span class="rl-bus"><ion-icon name="bus"></ion-icon></span>
+              <span class="rl-track"></span>
+              <span class="rl-dot dest"></span>
+            </div>
+            <div class="rl-end right">
+              <span class="rl-label">Destination</span>
+              <span class="rl-city">{{ b.to }}</span>
+            </div>
+          </div>
+          <span class="route-tag">Tara na!</span>
+        </section>
+
+        <!-- DETAIL GRID -->
+        <section class="stub-grid">
+          <div class="cell">
+            <span class="cell-lbl">Date</span>
+            <span class="cell-val">{{ b.date }}</span>
+          </div>
+          <div class="cell">
+            <span class="cell-lbl">Departure</span>
+            <span class="cell-val">{{ b.time }}</span>
+          </div>
+          <div class="cell">
+            <span class="cell-lbl">Seat</span>
+            <span class="cell-val">
+              <span class="seat-burst">{{ b.seat.replace('Seat ', '').replace('Seats ', '') }}</span>
+              <span class="pow" aria-hidden="true">POW!</span>
+            </span>
+          </div>
+          <div class="cell">
+            <span class="cell-lbl">Voucher</span>
+            <span class="cell-val">
+              @if (b.voucherCode) {
+                {{ b.voucherCode }}
+                @if (b.voucherSavings) {
+                  <small class="voucher-save"
+                    >− {{ formatCurrency(b.voucherSavings) }}</small
+                    >
+                }
+              } @else {
+                —
+              }
+            </span>
+          </div>
+          <div class="cell wide">
+            <span class="cell-lbl">Passenger</span>
+            <span class="cell-val">{{ passenger.name }}</span>
+          </div>
+          <div class="cell wide">
+            <span class="cell-lbl">Contact</span>
+            <span class="cell-val">{{ passenger.phone }}</span>
+          </div>
+          @if (b.pickup) {
+            <div class="cell wide">
+              <span class="cell-lbl">Pickup point</span>
+              <span class="cell-val">{{ b.pickup }}</span>
+            </div>
+          }
+          <div class="cell">
+            <span class="cell-lbl">Pax</span>
+            <span class="cell-val">{{ paxCount }}</span>
+          </div>
+          <div class="cell">
+            <span class="cell-lbl">Fare paid</span>
+            <span class="cell-val fare-red">{{ b.fare }}</span>
+          </div>
+          <div class="cell wide luggage-cell">
+            <span class="cell-lbl">Luggage</span>
+            <span class="cell-val luggage-val">
+              <ion-icon name="briefcase-outline" aria-hidden="true"></ion-icon>
+              @if (hasLuggage) {
+                {{ luggageLabel() }}
+              } @else {
+                No luggage added
+              }
+            </span>
+          </div>
+          <div class="cell wide">
+            <span class="cell-lbl">Your ride</span>
+            <span class="cell-val">{{ rideLine() }} · {{ rideSub() }}</span>
+          </div>
+        </section>
+
+        <section class="stub-copy">
+          <div class="copy-head">
+            <span class="copy-tag">Boarding Code</span>
+            <span class="copy-eta">Departs {{ b.time }}</span>
+          </div>
+
+          <div class="code-row">
+            <div class="qr-zone">
+              <span class="qr-corn tl"></span>
+              <span class="qr-corn tr"></span>
+              <span class="qr-corn bl"></span>
+              <span class="qr-corn br"></span>
+              <div class="qr">
+                @if (qrSize > 0) {
+                  <svg
+                    class="qr-svg"
+                    [attr.viewBox]="'0 0 ' + qrSize + ' ' + qrSize"
+                    shape-rendering="crispEdges"
+                    role="img"
+                    aria-label="Boarding QR code"
+                  >
+                    <rect x="0" y="0" [attr.width]="qrSize" [attr.height]="qrSize" fill="#ffffff"></rect>
+                    @for (row of qrMatrix; track row; let r = $index) {
+                      @for (on of row; track on; let c = $index) {
+                        @if (on) {
+                          <rect [attr.x]="c" [attr.y]="r" width="1" height="1" fill="#0b1026"></rect>
+                        }
+                      }
+                    }
+                  </svg>
+                }
+              </div>
+            </div>
+
+            <div class="ref-zone">
+              <span class="ref-label">Booking Reference</span>
+              <span class="ref-code">{{ b.bookingRef }}</span>
+              <span class="ref-meta">{{ b.date }} &middot; {{ b.seat }}</span>
+              <span class="ref-note">
+                <ion-icon name="shield-checkmark-outline"></ion-icon>
+                Show this stub to the conductor
+              </span>
+            </div>
+          </div>
+
+          <!-- REAL CODE 128 BARCODE (canonical booking reference) -->
+          <div class="barcode-wrap">
+            <svg
+              class="barcode"
+              [attr.viewBox]="'0 0 ' + eanTotal + ' 44'"
+              preserveAspectRatio="xMidYMid meet"
+              aria-hidden="true"
+            >
+              <rect x="0" y="0" [attr.width]="eanTotal" height="44" fill="#ffffff"></rect>
+              @for (bar of eanBars; track $index) {
+                <rect [attr.x]="bar.x" y="0" [attr.width]="bar.w" height="44" fill="#0b1026"></rect>
+              }
+            </svg>
+            <p class="barcode-cap">{{ b.bookingRef }} &middot; Scan to verify</p>
+          </div>
+
+          <!-- OFFSET PRINT REGISTRATION MARKS -->
+          <div class="print-bar" aria-hidden="true">
+            <span class="pb-text">{{ b.operator }} print &middot; boletong pinoy</span>
+            <span class="pb-sw sw-k"></span>
+            <span class="pb-sw sw-c"></span>
+            <span class="pb-sw sw-m"></span>
+            <span class="pb-sw sw-y"></span>
+          </div>
+        </section>
+
+        <!-- STATUS STAMP -->
+        @if (booking) {
+          <span
+            class="stamp"
+            [class.ok]="isActive"
+            [class.used]="!isActive && b.status === 'completed'"
+            [class.void]="b.status === 'cancelled'"
+          >
+            <span class="stamp-caption">&starf; ByaHero &starf;</span>
+            <svg class="stamp-logo" viewBox="0 0 400 400" aria-hidden="true">
+              <rect x="100" y="70" width="200" height="260" rx="50" fill="#7f1d1d"></rect>
+              <path d="M115 150 Q150 130 200 150 Q250 130 285 150 L270 190 Q200 170 130 190 Z" fill="#ffffff"></path>
+              <path d="M100 220 L300 220 L300 280 Q200 350 100 280 Z" fill="#b25b53"></path>
+              <circle cx="200" cy="265" r="18" fill="#ffffff"></circle>
+              <circle cx="200" cy="265" r="8" fill="#8a4a45"></circle>
+              <rect x="196" y="340" width="8" height="32" rx="4" fill="#7f1d1d"></rect>
+            </svg>
+            <span class="stamp-word">{{ stampText }}</span>
+            <span class="stamp-foot">PH Bus &amp; Transit</span>
+          </span>
+        }
+      </article>
+
+      <!-- BOARDING NOTES -->
+      @if (isActive) {
+        <div class="note-card">
+          <div class="note-icon">
+            <ion-icon name="information-circle-outline"></ion-icon>
+          </div>
+          <div class="note-text">
+            <h4>Bago sumakay</h4>
+            <ul>
+              <li>Arrive at the terminal 20 minutes before departure.</li>
+              <li>Seats are released 5 minutes before the bus leaves.</li>
+              <li>Bring a valid ID matching the passenger name.</li>
+            </ul>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- SMART TRIP REMINDER (active bookings only; silent otherwise) -->
+  @if (booking && ticketReminderView) {
+    <div class="ticket-wrap reminder-slot">
+      <app-trip-reminder-card
+        [bookingRef]="booking.bookingRef"
+        [compact]="true"
+      ></app-trip-reminder-card>
+    </div>
+  }
+
+  <!-- ACTIONS -->
+  @if (booking) {
+    <div class="ticket-actions">
+      <button class="primary-cta" (click)="saveTicket()">
+        <ion-icon name="download-outline"></ion-icon>
+        Download Ticket
+      </button>
+      @if (isActive) {
+        <button class="prep-cta" (click)="openPrep()">
+          <ion-icon name="checkmark-circle-outline"></ion-icon>
+          Prepare for trip
+        </button>
+        <button class="board-cta" (click)="openBoardingPass()">
+          <ion-icon name="qr-code-outline"></ion-icon>
+          Show boarding pass
+        </button>
+        <button class="danger-cta" (click)="cancelBooking()">
+          <ion-icon name="close-circle-outline"></ion-icon>
+          Cancel Booking
+        </button>
+        <button class="alt-link" (click)="openRebook()">
+          Find alternatives for this trip
+        </button>
+      }
+      @if (booking.status === 'cancelled') {
+        <button class="primary-cta" (click)="openRebook()">
+          <ion-icon name="refresh-outline"></ion-icon>
+          Rebook this trip
+        </button>
+      }
+    </div>
+  }
+</ion-content>
