@@ -1,10 +1,5 @@
-<<<<<<< HEAD
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
-=======
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonIcon } from '@ionic/angular';
 import { Router } from '@angular/router';
@@ -14,67 +9,48 @@ import {
   calendarOutline,
   addOutline,
   busOutline,
-<<<<<<< HEAD
-=======
-  flashOutline,
-  sparklesOutline,
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   checkmarkCircle,
   timeOutline,
   chevronForwardOutline,
   closeOutline,
   idCardOutline,
   informationCircleOutline,
-<<<<<<< HEAD
   locationOutline,
   sunnyOutline,
   cloudyOutline,
   rainyOutline,
   thunderstormOutline,
   flagOutline,
-=======
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 } from 'ionicons/icons';
 import {
   BookingService,
   PassengerType,
   PASSENGER_TYPE_META,
 } from '../booking.service';
-<<<<<<< HEAD
 import {
   LocatedPoint,
   PickupService,
 } from '../../../services/pickup.service';
 import { TravelConditionsService } from '../../../services/travel-conditions.service';
 import { PickupSelectorComponent } from '../../../components/pickup-selector/pickup-selector.component';
-=======
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 
 addIcons({
   'arrow-back-outline': arrowBackOutline,
   'calendar-outline': calendarOutline,
   'add-outline': addOutline,
   'bus-outline': busOutline,
-<<<<<<< HEAD
-=======
-  'flash-outline': flashOutline,
-  'sparkles-outline': sparklesOutline,
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   'checkmark-circle': checkmarkCircle,
   'time-outline': timeOutline,
   'chevron-forward-outline': chevronForwardOutline,
   'close-outline': closeOutline,
   'id-card-outline': idCardOutline,
   'information-circle-outline': informationCircleOutline,
-<<<<<<< HEAD
   'location-outline': locationOutline,
   'sunny-outline': sunnyOutline,
   'cloudy-outline': cloudyOutline,
   'rainy-outline': rainyOutline,
   'thunderstorm-outline': thunderstormOutline,
   'flag-outline': flagOutline,
-=======
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 });
 
 interface DayOption {
@@ -91,16 +67,11 @@ interface TypeChip {
 @Component({
   selector: 'app-trip-details',
   standalone: true,
-<<<<<<< HEAD
   imports: [CommonModule, FormsModule, IonContent, IonIcon, PickupSelectorComponent],
-=======
-  imports: [CommonModule, FormsModule, IonContent, IonIcon],
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   templateUrl: './trip-details.page.html',
   styleUrls: ['./trip-details.page.scss'],
 })
 export class TripDetailsPage implements OnInit {
-<<<<<<< HEAD
   booking = inject(BookingService);
   private router = inject(Router);
   private location = inject(Location);
@@ -109,9 +80,6 @@ export class TripDetailsPage implements OnInit {
 
   days: DayOption[] = [];
   showPickupPicker = false;
-=======
-  days: DayOption[] = [];
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 
   readonly passengerTypes: TypeChip[] = (
     Object.keys(PASSENGER_TYPE_META) as PassengerType[]
@@ -121,14 +89,7 @@ export class TripDetailsPage implements OnInit {
     discount: PASSENGER_TYPE_META[id].discount,
   }));
 
-<<<<<<< HEAD
   constructor() {
-=======
-  constructor(
-    public booking: BookingService,
-    private router: Router,
-  ) {
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     addIcons({
       arrowBackOutline,
       busOutline,
@@ -138,15 +99,12 @@ export class TripDetailsPage implements OnInit {
       informationCircleOutline,
       checkmarkCircle,
       chevronForwardOutline,
-<<<<<<< HEAD
       locationOutline,
       sunnyOutline,
       cloudyOutline,
       rainyOutline,
       thunderstormOutline,
       flagOutline,
-=======
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     });
   }
 
@@ -164,30 +122,21 @@ export class TripDetailsPage implements OnInit {
   buildDays() {
     const names = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     const out: DayOption[] = [];
-<<<<<<< HEAD
     // Today + next 6 days: reservations made for today (from a terminal
     // board) must remain visible and selected here. Hailing sessions hide
     // this picker entirely via hailMode instead.
     for (let i = 0; i <= 6; i++) {
-=======
-    for (let i = 1; i <= 6; i++) {
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
       const d = new Date();
       d.setDate(d.getDate() + i);
       out.push({
         iso: d.toDateString(),
-<<<<<<< HEAD
         dow: i === 0 ? 'Today' : names[d.getDay()],
-=======
-        dow: names[d.getDay()],
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
         day: String(d.getDate()),
       });
     }
     this.days = out;
   }
 
-<<<<<<< HEAD
   requiresId(type: PassengerType): boolean {
     return PASSENGER_TYPE_META[type].requiresId;
   }  idPlaceholder(type: PassengerType): string {
@@ -258,32 +207,10 @@ export class TripDetailsPage implements OnInit {
       this.location.back();
       return;
     }
-=======
-  formatFcPrice(multiplier: number): string {
-    return this.booking.formatCurrency(
-      Math.round(this.booking.baseFare * multiplier),
-    );
-  }
-
-  requiresId(type: PassengerType): boolean {
-    return PASSENGER_TYPE_META[type].requiresId;
-  }
-
-  idPlaceholder(type: PassengerType): string {
-    return PASSENGER_TYPE_META[type].label;
-  }
-
-  selectFareClass(id: 'saver' | 'plus' | 'premium') {
-    this.booking.fareClass = id;
-  }
-
-  goBack() {
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     this.router.navigateByUrl('/home');
   }
 
   continue() {
-<<<<<<< HEAD
     // Reservations pass through the seat-preference step; hailing goes
     // straight to the seat map exactly as before (no date, no preference).
     if (this.booking.hailMode) {
@@ -295,8 +222,5 @@ export class TripDetailsPage implements OnInit {
 
   changePreference() {
     this.router.navigateByUrl('/booking/seat-preference');
-=======
-    this.router.navigateByUrl('/booking/seats');
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   }
 }

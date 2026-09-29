@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { Component, OnDestroy, inject } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import {
@@ -14,12 +13,6 @@ import { DEFAULT_PROFILE_USER, ProfileService } from './profile.service';
 import { AuthService } from '../../services/auth.service';
 import { TicketService } from '../bookings/ticket.service';
 import { VoucherService } from '../../services/voucher.service';
-=======
-import { Component } from '@angular/core';
-import { CommonModule, Location } from '@angular/common';
-import { IonContent, IonAvatar, IonIcon } from '@ionic/angular';
-import { Router } from '@angular/router';
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 import { addIcons } from 'ionicons';
 import {
   createOutline,
@@ -51,10 +44,7 @@ import {
   trendingUpOutline,
   locationOutline,
   personOutline,
-<<<<<<< HEAD
   pricetagOutline,
-=======
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 } from 'ionicons/icons';
 
 addIcons({
@@ -87,10 +77,7 @@ addIcons({
   'trending-up-outline': trendingUpOutline,
   'location-outline': locationOutline,
   'person-outline': personOutline,
-<<<<<<< HEAD
   'pricetag-outline': pricetagOutline,
-=======
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 });
 
 interface MenuItem {
@@ -123,7 +110,6 @@ interface QuickAction {
   templateUrl: './profile.page.html',
   styleUrls: ['./profile.page.scss'],
 })
-<<<<<<< HEAD
 export class ProfilePage implements OnDestroy {
   private router = inject(Router);
   private location = inject(Location);
@@ -140,13 +126,6 @@ export class ProfilePage implements OnDestroy {
   private readonly preferencesStorageKey = 'byahero.profile-preferences.v1';
 
   constructor() {
-=======
-export class ProfilePage {
-  constructor(
-    private router: Router,
-    private location: Location,
-  ) {
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     addIcons({
       chevronBackOutline,
       createOutline,
@@ -164,7 +143,6 @@ export class ProfilePage {
       addOutline,
       chevronForwardOutline,
       logOutOutline,
-<<<<<<< HEAD
       pricetagOutline,
     });
     this.loadProfile();
@@ -195,23 +173,6 @@ export class ProfilePage {
       ) + Math.round(savings);
     return { trips: bookings.length, points, saved: Math.round(savings) };
   }
-=======
-    });
-  }
-
-  user = {
-    name: 'Nonie',
-    tier: 'Gold',
-    memberSince: '2024',
-    heroId: 'BYH-KF-0482',
-    phone: '+63 917 123 4567',
-    email: 'keilah@email.com',
-    avatar: 'https://ionicframework.com/docs/img/demos/avatar.svg',
-    verified: true,
-  };
-
-  stats = { trips: 48, points: 1240, saved: 3820 };
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 
   /** Rank progress toward the next tier. */
   rank = { current: 'Gold', next: 'Platinum', points: 1240, target: 2000 };
@@ -234,41 +195,25 @@ export class ProfilePage {
       icon: 'add-outline',
       label: 'Top Up',
       tint: 'navy',
-<<<<<<< HEAD
       action: () => this.router.navigateByUrl('/wallet'),
-=======
-      action: () => console.log('Top up'),
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     },
     {
       icon: 'bookmark-outline',
       label: 'Saved',
       tint: 'red',
-<<<<<<< HEAD
       action: () => this.router.navigateByUrl('/favorites'),
-=======
-      action: () => console.log('Saved routes'),
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     },
     {
       icon: 'id-card-outline',
       label: 'Fare ID',
       tint: 'yellow',
-<<<<<<< HEAD
       action: () => this.router.navigateByUrl('/fare-id'),
-=======
-      action: () => console.log('Discount ID'),
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     },
     {
       icon: 'share-social-outline',
       label: 'Share Trip',
       tint: 'green',
-<<<<<<< HEAD
       action: () => this.router.navigateByUrl('/active-trip'),
-=======
-      action: () => console.log('Share live trip'),
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     },
   ];
 
@@ -280,36 +225,23 @@ export class ProfilePage {
           icon: 'wallet-outline',
           label: 'Byahero Wallet',
           value: '₱ 850.00',
-<<<<<<< HEAD
           action: () => this.openWallet(),
-=======
-          action: () => console.log('Wallet'),
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
         },
         {
           icon: 'card-outline',
           label: 'Payment Methods',
           value: '2 saved',
-<<<<<<< HEAD
           action: () => this.openPaymentMethods(),
-=======
-          action: () => console.log('Payment'),
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
         },
         {
           icon: 'id-card-outline',
           label: 'Discount Fare ID',
           badge: 'Verify',
-<<<<<<< HEAD
           action: () => this.router.navigateByUrl('/fare-id'),
-=======
-          action: () => console.log('Fare ID'),
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
         },
         {
           icon: 'time-outline',
           label: 'Ride History',
-<<<<<<< HEAD
           value: 'trips',
           action: () => this.viewTrips(),
         },
@@ -318,10 +250,6 @@ export class ProfilePage {
           label: 'Promo Wallet',
           value: 'promos',
           action: () => this.router.navigateByUrl('/promo-wallet?from=profile'),
-=======
-          value: '48 trips',
-          action: () => console.log('History'),
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
         },
       ],
     },
@@ -332,33 +260,19 @@ export class ProfilePage {
           icon: 'people-outline',
           label: 'Trusted Contacts',
           value: '2 added',
-<<<<<<< HEAD
           action: () => this.router.navigateByUrl('/trusted-contacts'),
-=======
-          action: () => console.log('Contacts'),
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
         },
         {
           icon: 'shield-checkmark-outline',
           label: 'Auto Share Live Trip',
-<<<<<<< HEAD
           value: 'On',
           action: () => this.router.navigateByUrl('/auto-share'),
-=======
-          toggle: true,
-          on: true,
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
         },
         {
           icon: 'location-outline',
           label: 'Arrival Alerts',
-<<<<<<< HEAD
           value: 'On',
           action: () => this.router.navigateByUrl('/arrival-alerts'),
-=======
-          toggle: true,
-          on: true,
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
         },
       ],
     },
@@ -368,19 +282,13 @@ export class ProfilePage {
         {
           icon: 'notifications-outline',
           label: 'Notifications',
-<<<<<<< HEAD
           value: 'On',
           action: () => this.router.navigateByUrl('/notifications'),
-=======
-          toggle: true,
-          on: true,
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
         },
         {
           icon: 'language-outline',
           label: 'Language',
           value: 'English',
-<<<<<<< HEAD
           action: () => this.router.navigateByUrl('/language'),
         },
         {
@@ -389,11 +297,6 @@ export class ProfilePage {
           value: 'Off',
           action: () => this.router.navigateByUrl('/dark-mode'),
         },
-=======
-          action: () => console.log('Language'),
-        },
-        { icon: 'moon-outline', label: 'Dark Mode', toggle: true, on: false },
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
       ],
     },
     {
@@ -403,49 +306,29 @@ export class ProfilePage {
           icon: 'gift-outline',
           label: 'Invite a Kabyahe',
           badge: '₱50',
-<<<<<<< HEAD
           action: () => this.router.navigateByUrl('/invite'),
-=======
-          action: () => console.log('Referral'),
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
         },
         {
           icon: 'help-circle-outline',
           label: 'Help Center',
-<<<<<<< HEAD
           action: () => this.router.navigateByUrl('/help-center'),
-=======
-          action: () => console.log('Help'),
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
         },
         {
           icon: 'document-text-outline',
           label: 'Terms & Privacy',
-<<<<<<< HEAD
           action: () => this.router.navigateByUrl('/terms-privacy'),
-=======
-          action: () => console.log('Terms'),
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
         },
       ],
     },
   ];
 
   handleItem(item: MenuItem) {
-<<<<<<< HEAD
-=======
-    if (item.toggle) {
-      item.on = !item.on;
-      return;
-    }
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     item.action?.();
   }
 
   goBack() {
     this.location.back();
   }
-<<<<<<< HEAD
 
   editProfile() {
     this.router.navigateByUrl('/edit-profile');
@@ -459,9 +342,8 @@ export class ProfilePage {
     this.router.navigateByUrl('/ride-insights?from=profile');
   }
 
-  /** Present an alert with a top-right ✕ close and side-by-side action
-      buttons (matched by the global overlay styles). The ✕ is injected on
-      top of Ionic's navy header, so dismissal never needs a text button. */
+  /** Present an alert with a top-right × close and balanced action
+      buttons (matched by the global overlay styles). */
   private async presentAlert(options: AlertOptions) {
     const alert = await this.alertController.create(options);
     await alert.present();
@@ -471,7 +353,7 @@ export class ProfilePage {
       closeBtn.type = 'button';
       closeBtn.className = 'alert-close-x';
       closeBtn.setAttribute('aria-label', 'Close dialog');
-      closeBtn.textContent = '✕';
+      closeBtn.textContent = '×';
       closeBtn.addEventListener('click', () => void alert.dismiss());
       head.appendChild(closeBtn);
     }
@@ -491,6 +373,7 @@ export class ProfilePage {
       header: 'Log out?',
       message: 'You can log back in with your email and password.',
       buttons: [
+        { text: 'Stay', role: 'cancel' },
         {
           text: 'Log Out',
           role: 'destructive',
@@ -609,24 +492,5 @@ export class ProfilePage {
     } catch {
       return;
     }
-=======
-  editProfile() {
-    console.log('Edit Profile');
-  }
-  changePhoto() {
-    console.log('Change Photo');
-  }
-  viewTrips() {
-    console.log('View Trips');
-  }
-  viewRewards() {
-    console.log('View Rewards');
-  }
-  openWallet() {
-    console.log('Open Wallet');
-  }
-  logout() {
-    this.router.navigateByUrl('/login');
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   }
 }

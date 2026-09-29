@@ -3,10 +3,6 @@
             --accent-red aligned to #D32F2F (was #DC2626),
             to match the rest of the app.
             No layout, animation, or typography changes. */
-<<<<<<< HEAD
-=======
-@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap");
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 
 :host {
   --primary-navy: #151d48;
@@ -15,10 +11,7 @@
   --bg-gray: #f8fafc;
   --text-black: #1f1f1f;
   --text-muted: #64748b;
-<<<<<<< HEAD
   --ink: rgba(21, 29, 72, 0.14);
-=======
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   --font-family:
     "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "SF Pro Display",
     sans-serif;
@@ -77,11 +70,7 @@ ion-content.onboarding-screen {
   }
 }
 
-<<<<<<< HEAD
 /* --- 2. CAROUSEL: circle / iris wipe with a hint of spin --- */
-=======
-/* --- 2. CAROUSEL --- */
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 .carousel-container {
   flex: 1;
   display: flex;
@@ -90,16 +79,12 @@ ion-content.onboarding-screen {
   justify-content: center;
   width: 100%;
   overflow: hidden;
-<<<<<<< HEAD
   position: relative;
   --wx: 50%;
   --wy: 42%;
 }
 .dir-next { --wx: 72%; }
 .dir-prev { --wx: 28%; }
-=======
-}
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 
 .slide {
   display: none;
@@ -110,7 +95,6 @@ ion-content.onboarding-screen {
 
   &.active {
     display: flex;
-<<<<<<< HEAD
     position: relative;
     z-index: 2;
   }
@@ -154,34 +138,6 @@ ion-content.onboarding-screen {
 .dir-prev .slide.active { animation: orbitInPrev 0.6s cubic-bezier(0.3, 0.9, 0.3, 1) both; }
 .dir-next .slide.leaving { animation: orbitOutNext 0.6s cubic-bezier(0.3, 0.9, 0.3, 1) both; }
 .dir-prev .slide.leaving { animation: orbitOutPrev 0.6s cubic-bezier(0.3, 0.9, 0.3, 1) both; }
-=======
-  }
-}
-
-@keyframes slideContainerFromRight {
-  from {
-    transform: translateX(40px);
-  }
-  to {
-    transform: translateX(0);
-  }
-}
-@keyframes slideContainerFromLeft {
-  from {
-    transform: translateX(-40px);
-  }
-  to {
-    transform: translateX(0);
-  }
-}
-
-.dir-next .slide.active {
-  animation: slideContainerFromRight 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-.dir-prev .slide.active {
-  animation: slideContainerFromLeft 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 
 @keyframes contentFadeUp {
   from {
@@ -215,7 +171,6 @@ ion-content.onboarding-screen {
   animation: contentFadeUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.18s both;
 }
 
-<<<<<<< HEAD
 /* --- ILLUSTRATION: comic panel --- */
 .illustration-container {
   position: relative;
@@ -348,18 +303,6 @@ ion-content.onboarding-screen {
 .slide.active .t-shield { animation: obBusPulse 2.2s ease-in-out infinite; }
 .slide.active .pow-badge { animation: obBadgePop 0.5s cubic-bezier(0.3, 1.4, 0.5, 1) 0.3s both; }
 
-=======
-/* --- ILLUSTRATION --- */
-.illustration-container {
-  width: 220px;
-  margin-bottom: 32px;
-  svg {
-    width: 100%;
-    height: auto;
-  }
-}
-
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 /* --- TYPOGRAPHY --- */
 .slide-title {
   font-size: 30px;
@@ -368,12 +311,9 @@ ion-content.onboarding-screen {
   margin: 0 0 16px 0;
   letter-spacing: -0.03em;
   line-height: 1.2;
-<<<<<<< HEAD
   text-shadow:
     1px 1px 0 rgba(211, 47, 47, 0.22),
     -1px -1px 0 rgba(63, 81, 181, 0.18);
-=======
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 }
 
 .slide-description {
@@ -463,7 +403,6 @@ ion-content.onboarding-screen {
   gap: 8px;
   width: 100%;
   background-color: var(--primary-navy);
-<<<<<<< HEAD
   background-image: radial-gradient(
     rgba(255, 255, 255, 0.1) 1px,
     transparent 1.3px
@@ -478,15 +417,6 @@ ion-content.onboarding-screen {
     transform 0.15s cubic-bezier(0.16, 1, 0.3, 1),
     background-color 0.2s ease,
     box-shadow 0.15s ease;
-=======
-  border: none;
-  border-radius: 16px;
-  height: 56px;
-  cursor: pointer;
-  transition:
-    transform 0.15s cubic-bezier(0.16, 1, 0.3, 1),
-    background-color 0.2s ease;
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 
   .btn-text {
     color: var(--bg-white);
@@ -505,10 +435,7 @@ ion-content.onboarding-screen {
   &:active {
     background-color: #0e1638;
     transform: scale(0.98);
-<<<<<<< HEAD
     box-shadow: 1px 1px 0 var(--ink);
-=======
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   }
 
   &:active .btn-arrow {

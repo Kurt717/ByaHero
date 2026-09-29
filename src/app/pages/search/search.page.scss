@@ -1,42 +1,27 @@
-<<<<<<< HEAD
 /* search.page.scss — redesigned Search Routes dashboard.
    Desktop-first 1440×900, max content ~1280px, 12-col grid, 8pt spacing.
    Hierarchy: navy = structure, red = primary actions, yellow = tags,
    gray = secondary info. Single discovery column; results live
    in Search Mode instead of a permanent sidebar. */
-=======
-/* search.page.scss — COMPLETE FILE */
-@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap");
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 
 :host {
   --primary-navy: #151d48;
   --primary-navy-bg: #1a237e;
-<<<<<<< HEAD
-=======
-  --primary-navy-dark: #0d47a1;
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   --accent-red: #d32f2f;
   --bg-page: #f8fafc;
   --bg-white: #ffffff;
   --text-main: #1f2937;
   --text-muted: #6b7280;
   --border-color: #e2e8f0;
-<<<<<<< HEAD
   --ink: rgba(21, 29, 72, 0.14);
-=======
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   --pop-yellow: #ffe066;
   --font-family:
     "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "SF Pro Display",
     sans-serif;
-<<<<<<< HEAD
   --s-2: 8px;
   --s-3: 16px;
   --s-4: 24px;
   --s-6: 48px;
-=======
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 }
 
 ion-content.search-content {
@@ -48,27 +33,15 @@ ion-content.search-content {
 .search-wrap {
   position: relative;
   z-index: 1;
-<<<<<<< HEAD
   max-width: 1280px;
   margin: 0 auto;
   padding: calc(env(safe-area-inset-top, 20px) + 24px) 16px 120px;
-=======
-  display: flex;
-  flex-direction: column;
-  padding: calc(env(safe-area-inset-top, 20px) + 24px) 16px 120px; 
-  max-width: 480px;
-  margin: 0 auto;
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 }
 
 @keyframes revealUp {
   from {
     opacity: 0;
-<<<<<<< HEAD
     transform: translateY(12px);
-=======
-    transform: translateY(18px);
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   }
   to {
     opacity: 1;
@@ -76,7 +49,6 @@ ion-content.search-content {
   }
 }
 
-<<<<<<< HEAD
 
 @keyframes recordBounce {
   0%,
@@ -150,80 +122,13 @@ ion-content.search-content {
 
   .brand-text {
     min-width: 0;
-=======
-@keyframes beaconPing {
-  0% {
-    transform: scale(0.9);
-    opacity: 0.6;
-  }
-  70% {
-    transform: scale(1.6);
-    opacity: 0;
-  }
-  100% {
-    transform: scale(1.6);
-    opacity: 0;
-  }
-}
-
-/* --- 1. HEADER (beacon mark, matches Bookings/Alerts) --- */
-.page-header {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-bottom: 20px;
-  opacity: 0;
-  animation: revealUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-
- .beacon {
-      position: relative;
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      background: var(--primary-navy);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-
-      .beacon-burst {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 80px;
-        height: 80px;
-        transform: translate(-50%, -50%);
-        pointer-events: none;
-      }
-
-      .beacon-ring {
-        position: absolute;
-        inset: 0;
-        border-radius: 50%;
-        border: 2px solid var(--accent-red);
-        animation: beaconPing 2.4s cubic-bezier(0.16, 1, 0.3, 1) infinite;
-      }
-
-      ion-icon {
-        font-size: 20px;
-        color: #ffffff;
-        z-index: 1;
-      }
-    }
-
-  .header-text {
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     h1 {
       margin: 0;
       font-size: 20px;
       font-weight: 800;
       color: var(--primary-navy);
-<<<<<<< HEAD
       letter-spacing: -0.01em;
       line-height: 1.15;
-=======
-      letter-spacing: -0.02em;
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     }
     p {
       margin: 2px 0 0;
@@ -233,7 +138,6 @@ ion-content.search-content {
     }
   }
 
-<<<<<<< HEAD
   .go-badge {
     flex-shrink: 0;
     font-size: 12px;
@@ -284,149 +188,35 @@ ion-content.search-content {
   .bar-leading {
     font-size: 21px;
     color: var(--primary-navy);
-=======
-  .icon-btn {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: #eef2ff;
-    border: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition:
-      transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1),
-      background-color 0.2s ease;
-
-    &:active {
-      transform: scale(0.88);
-      background: #e0e7ff;
-    }
-    ion-icon {
-      font-size: 20px;
-      color: var(--primary-navy);
-    }
-  }
-}
-
-/* --- 2. SEARCH INPUT — viewfinder frame --- */
-.search-pill-frame {
-  position: relative;
-  padding: 8px;
-  margin-bottom: 20px;
-  opacity: 0;
-  animation: revealUp 0.5s 0.08s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-
-  .corner {
-    position: absolute;
-    width: 14px;
-    height: 14px;
-    border: 2px solid var(--accent-red);
-    opacity: 0.55;
-    pointer-events: none;
-  }
-  .tl {
-    top: 0;
-    left: 0;
-    border-right: none;
-    border-bottom: none;
-  }
-  .tr {
-    top: 0;
-    right: 0;
-    border-left: none;
-    border-bottom: none;
-  }
-  .bl {
-    bottom: 0;
-    left: 0;
-    border-right: none;
-    border-top: none;
-  }
-  .br {
-    bottom: 0;
-    right: 0;
-    border-left: none;
-    border-top: none;
-  }
-}
-
-.search-pill {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: var(--bg-white);
-  border-radius: 999px;
-  height: 56px;
-  padding: 0 20px;
-  border: 1.5px solid var(--border-color);
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
-
-  &:focus-within {
-    border-color: var(--primary-navy);
-    box-shadow: 0 4px 14px rgba(21, 29, 72, 0.1);
-  }
-
-  > ion-icon {
-    font-size: 20px;
-    color: var(--text-muted);
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     flex-shrink: 0;
   }
 
   input {
     flex: 1;
-<<<<<<< HEAD
     min-width: 0;
     border: none;
     background: transparent;
     font-family: var(--font-family);
     font-size: 16px;
     font-weight: 600;
-=======
-    width: 100%;
-    border: none;
-    background: transparent;
-    font-family: var(--font-family);
-    font-size: 15px;
-    font-weight: 500;
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     color: var(--text-main);
     outline: none;
     &::placeholder {
       color: var(--text-muted);
-<<<<<<< HEAD
       font-weight: 500;
     }
   }
 
   .bar-clear {
-=======
-    }
-  }
-
-  .pill-action {
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     background: transparent;
     border: none;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-<<<<<<< HEAD
     padding: 6px;
     color: var(--text-muted);
     flex-shrink: 0;
-=======
-    padding: 0;
-    color: var(--text-muted);
-    transition:
-      transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1),
-      color 0.2s ease;
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     &:active {
       transform: scale(0.85);
     }
@@ -434,7 +224,6 @@ ion-content.search-content {
       font-size: 20px;
     }
   }
-<<<<<<< HEAD
 
   .bar-mic {
     display: flex;
@@ -535,17 +324,6 @@ ion-content.search-content {
   margin-bottom: 32px;
   opacity: 0;
   animation: revealUp 0.5s 0.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-=======
-}
-
-/* --- 3. CATEGORIES --- */
-.categories-grid {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 28px;
-  opacity: 0;
-  animation: revealUp 0.5s 0.16s cubic-bezier(0.16, 1, 0.3, 1) forwards;
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 
   .cat-item {
     display: flex;
@@ -553,7 +331,6 @@ ion-content.search-content {
     align-items: center;
     gap: 8px;
     cursor: pointer;
-<<<<<<< HEAD
     transition: opacity 0.15s ease;
     -webkit-tap-highlight-color: transparent;
 
@@ -562,37 +339,20 @@ ion-content.search-content {
       height: 58px;
       background: var(--bg-white);
       border: 1.5px solid var(--ink);
-=======
-
-    .squircle {
-      width: 60px;
-      height: 60px;
-      background: var(--bg-white);
-      border: 1px solid var(--border-color);
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
       border-radius: 16px;
       display: flex;
       align-items: center;
       justify-content: center;
       color: var(--primary-navy);
-<<<<<<< HEAD
       box-shadow: 2px 2px 0 var(--ink);
-=======
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
       transition:
         background-color 0.25s ease,
         border-color 0.25s ease,
         color 0.25s ease,
-<<<<<<< HEAD
         transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1),
         box-shadow 0.15s ease;
       ion-icon {
         font-size: 23px;
-=======
-        transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
-      ion-icon {
-        font-size: 24px;
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
       }
     }
 
@@ -601,23 +361,16 @@ ion-content.search-content {
       font-weight: 600;
       color: var(--text-muted);
       transition: color 0.25s ease;
-<<<<<<< HEAD
       white-space: nowrap;
-=======
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     }
 
     &:active .squircle {
       transform: scale(0.9);
-<<<<<<< HEAD
       box-shadow: 0 0 0 var(--ink);
-=======
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     }
 
     &.active {
       .squircle {
-<<<<<<< HEAD
         background-color: var(--primary-navy);
         background-image: radial-gradient(
           rgba(255, 255, 255, 0.14) 1px,
@@ -631,21 +384,11 @@ ion-content.search-content {
       .cat-label {
         color: var(--primary-navy);
         font-weight: 800;
-=======
-        background: var(--primary-navy);
-        border-color: var(--primary-navy);
-        color: #ffffff;
-      }
-      .cat-label {
-        color: var(--primary-navy);
-        font-weight: 700;
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
       }
     }
   }
 }
 
-<<<<<<< HEAD
 /* ------------------------------------------------------------------
    4. TWO-COLUMN DASHBOARD LAYOUT (12-col grid; 8 / 4 split)
    ------------------------------------------------------------------ */
@@ -716,54 +459,6 @@ ion-content.search-content {
         color: var(--accent-red);
         font-size: 12px;
       }
-=======
-/* --- SHARED SECTION HEADER --- */
-.section {
-  margin-bottom: 28px;
-  opacity: 0;
-  animation: revealUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-
-  &:nth-of-type(4) {
-    animation-delay: 0.22s;
-  }
-  &:nth-of-type(5) {
-    animation-delay: 0.28s;
-  }
-  &:nth-of-type(6) {
-    animation-delay: 0.34s;
-  }
-  &:nth-of-type(7) {
-    animation-delay: 0.4s;
-  }
-
-  .section-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 12px;
-    position: relative;
-
-    .section-title {
-      font-size: 15px;
-      font-weight: 800;
-      color: var(--text-main);
-      margin: 0;
-    }
-  }
-
-  /* View All pill — was in HTML but had no SCSS entry */
-  .view-all-pill {
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--primary-navy);
-    background: #eef2ff;
-    padding: 6px 12px;
-    border-radius: 999px;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-    &:active {
-      background: #e0e7ff;
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     }
   }
 
@@ -772,31 +467,18 @@ ion-content.search-content {
     align-items: center;
     gap: 4px;
     cursor: pointer;
-<<<<<<< HEAD
     position: relative;
 
     span {
       font-size: 12.5px;
       font-weight: 800;
-=======
-
-    span {
-      font-size: 12px;
-      font-weight: 700;
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
       color: var(--primary-navy);
     }
 
     ion-icon {
-<<<<<<< HEAD
       font-size: 15px;
       color: var(--primary-navy);
       transition: transform 0.25s ease;
-=======
-      font-size: 14px;
-      color: var(--primary-navy);
-      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
       &.flipped {
         transform: rotate(180deg);
       }
@@ -804,7 +486,6 @@ ion-content.search-content {
 
     .sort-menu {
       position: absolute;
-<<<<<<< HEAD
       top: calc(100% + 8px);
       right: 0;
       z-index: 20;
@@ -814,18 +495,6 @@ ion-content.search-content {
       box-shadow: 3px 3px 0 var(--ink);
       overflow: hidden;
       min-width: 140px;
-=======
-      top: calc(100% + 6px);
-      right: 0;
-      background: var(--bg-white);
-      border: 1px solid var(--border-color);
-      border-radius: 14px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-      overflow: hidden;
-      min-width: 130px;
-      z-index: 10;
-      animation: revealUp 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 
       button {
         width: 100%;
@@ -838,307 +507,21 @@ ion-content.search-content {
         font-weight: 600;
         color: var(--text-main);
         cursor: pointer;
-<<<<<<< HEAD
-=======
-        transition: background-color 0.15s ease;
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
         &:active {
           background: var(--bg-page);
         }
         &.selected {
           color: var(--primary-navy);
           font-weight: 800;
-<<<<<<< HEAD
           &::after {
             content: " ✓";
           }
         }
-=======
-        }
-      }
-    }
-  }
-
-  /* Clear link — FIXED: was nested inside .recent-item in the old SCSS
-     (generated .recent-list .recent-item .clear-link — never matched).
-     Now lives at .section level, matching its actual DOM position. */
-  .clear-link {
-    display: block;
-    margin-top: 8px;
-    background: transparent;
-    border: none;
-    color: var(--text-muted);
-    font-family: var(--font-family);
-    font-size: 13px;
-    font-weight: 500;
-    padding: 4px 8px;
-    text-decoration: underline;
-    cursor: pointer;
-    outline: none;
-    -webkit-tap-highlight-color: transparent;
-    transition: color 0.2s ease;
-    &:hover {
-      color: var(--primary-navy-bg);
-    }
-    &:active {
-      opacity: 0.7;
-    }
-  }
-}
-
-/* --- 4. RECENT SEARCHES --- */
-.recent-list {
-  display: flex;
-  flex-direction: column;
-
-  .recent-item {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 4px;
-    background: transparent;
-    border: none;
-    border-bottom: 1px solid var(--border-color);
-    cursor: pointer;
-    text-align: left;
-    transition: background-color 0.15s ease;
-
-    &:last-child {
-      border-bottom: none;
-    }
-    &:active {
-      background: var(--bg-page);
-    }
-
-    .recent-icon {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: #eef2ff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      ion-icon {
-        font-size: 15px;
-        color: var(--primary-navy);
-      }
-    }
-
-    .recent-text {
-      flex: 1;
-      font-size: 13.5px;
-      font-weight: 600;
-      color: var(--text-main);
-    }
-
-    .chevron {
-      font-size: 16px;
-      color: #cbd5e1;
-      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    &:active .chevron {
-      transform: translateX(3px);
-    }
-  }
-}
-
-/* --- 5. MOST VISITED
-   Rule: all destination cards use flat navy with screentone dot texture.
-   One consistent rule — no alternating colours, no accidental red-family tints. --- */
-.destination-scroll {
-  display: flex;
-  gap: 12px;
-  overflow-x: auto;
-  padding-bottom: 4px;
-  scrollbar-width: none;
-  &::-webkit-scrollbar {
-    display: none;
-  }
-
-  .destination-card {
-    flex: 0 0 auto;
-    width: 128px;
-    background: var(--bg-white);
-    border: 1px solid var(--border-color);
-    border-radius: 18px;
-    padding: 12px;
-    cursor: pointer;
-    transition:
-      transform 0.15s cubic-bezier(0.16, 1, 0.3, 1),
-      border-color 0.2s ease;
-
-    &:active {
-      transform: scale(0.96);
-      border-color: var(--primary-navy);
-    }
-
-    .destination-thumb {
-      width: 100%;
-      height: 72px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 10px;
-      background-color: var(--primary-navy);
-      background-image: radial-gradient(
-        rgba(255, 255, 255, 0.15) 1px,
-        transparent 1.3px
-      );
-      background-size: 8px 8px;
-      ion-icon {
-        font-size: 26px;
-        color: rgba(255, 255, 255, 0.88);
-      }
-    }
-
-    h4 {
-      margin: 0 0 2px;
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--text-main);
-    }
-    p {
-      margin: 0;
-      font-size: 11px;
-      font-weight: 500;
-      color: var(--text-muted);
-    }
-  }
-}
-
-/* --- 6. POPULAR ROUTES --- */
-.route-list {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-
-  .trip-card {
-    background-color: var(--bg-white);
-    background-image:
-      radial-gradient(
-        circle at 0% 100%,
-        transparent 0%,
-        transparent 30%,
-        var(--bg-white) 72%
-      ),
-      radial-gradient(rgba(21, 29, 72, 0.08) 1px, transparent 1.3px);
-    background-size:
-      auto,
-      8px 8px;
-    background-repeat: no-repeat, repeat;
-    border-radius: 22px;
-    border: 1px solid var(--border-color);
-    padding: 18px;
-    cursor: pointer;
-    transition:
-      transform 0.15s cubic-bezier(0.16, 1, 0.3, 1),
-      border-color 0.2s ease;
-
-    &:active {
-      transform: scale(0.985);
-      border-color: var(--primary-navy);
-    }
-
-    .card-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 18px;
-
-      .operator-info {
-        display: flex;
-        gap: 12px;
-        align-items: center;
-        .op-logo {
-          width: 40px;
-          height: 40px;
-          border-radius: 12px;
-          background: #eef2ff;
-          color: var(--primary-navy);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          ion-icon {
-            font-size: 20px;
-          }
-        }
-        .op-text {
-          h4 {
-            margin: 0;
-            font-size: 15px;
-            font-weight: 700;
-            color: var(--primary-navy);
-          }
-          p {
-            margin: 4px 0 0;
-            font-size: 12px;
-            font-weight: 500;
-            color: var(--text-muted);
-          }
-        }
-      }
-      .fare {
-        font-size: 13px;
-        font-weight: 800;
-        color: var(--primary-navy);
-        background: var(--pop-yellow);
-        padding: 4px 10px;
-        border-radius: 6px;
-        transform: rotate(2deg);
-      }
-    }
-
-    .card-middle {
-      display: flex;
-      gap: 16px;
-      padding-left: 6px;
-
-      .route-line-vertical {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        .dot {
-          width: 10px;
-          height: 10px;
-          border-radius: 50%;
-        }
-        .origin {
-          border: 3px solid var(--primary-navy);
-          background: #fff;
-        }
-        .dest {
-          background: var(--accent-red);
-        }
-        .line {
-          width: 2px;
-          height: 26px;
-          background: #e2e8f0;
-          margin: 4px 0;
-        }
-      }
-      .route-text {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        p {
-          margin: 0;
-          font-size: 14px;
-          color: var(--primary-navy);
-        }
-        .dest-text {
-          margin-top: auto;
-        }
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
       }
     }
   }
 }
 
-<<<<<<< HEAD
 /* ------------------------------------------------------------------
    MOST VISITED — strict 2×2 destination cards
    ------------------------------------------------------------------ */
@@ -1199,64 +582,11 @@ ion-content.search-content {
       background: var(--pop-yellow);
       border: 1px solid rgba(21, 29, 72, 0.2);
       padding: 3px 9px;
-=======
-/* --- 7. NEARBY TERMINALS --- */
-.terminal-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-
-  .terminal-card {
-    background: var(--bg-white);
-    border: 1px solid var(--border-color);
-    border-radius: 18px;
-    padding: 14px;
-    cursor: pointer;
-    transition:
-      transform 0.15s cubic-bezier(0.16, 1, 0.3, 1),
-      border-color 0.2s ease;
-
-    &:active {
-      transform: scale(0.96);
-      border-color: var(--primary-navy);
-    }
-
-    .terminal-map {
-      width: 100%;
-      height: 56px;
-      border-radius: 12px;
-      background: #eef2ff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 10px;
-      ion-icon {
-        font-size: 22px;
-        color: var(--primary-navy);
-      }
-    }
-
-    h4 {
-      margin: 0 0 6px;
-      font-size: 12.5px;
-      font-weight: 700;
-      color: var(--text-main);
-    }
-    p {
-      display: inline-block;
-      margin: 0;
-      font-size: 10.5px;
-      font-weight: 700;
-      color: var(--accent-red);
-      background: #fef2f2;
-      padding: 3px 8px;
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
       border-radius: 999px;
     }
   }
 }
 
-<<<<<<< HEAD
 /* ------------------------------------------------------------------
    POPULAR ROUTES — compact horizontal route cards (scannable)
    ------------------------------------------------------------------ */
@@ -1707,14 +1037,3 @@ ion-content.search-content {
 /* ------------------------------------------------------------------
    ACCESSIBILITY
    ------------------------------------------------------------------ */
-=======
-/* --- ACCESSIBILITY --- */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.001ms !important;
-    transition-duration: 0.001ms !important;
-  }
-}
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2

@@ -128,7 +128,7 @@ export class AddMoneyPage implements OnInit {
       closeBtn.type = 'button';
       closeBtn.className = 'alert-close-x';
       closeBtn.setAttribute('aria-label', 'Close dialog');
-      closeBtn.textContent = '✕';
+      closeBtn.textContent = '×';
       closeBtn.addEventListener('click', () => void alert.dismiss());
       head.appendChild(closeBtn);
     }

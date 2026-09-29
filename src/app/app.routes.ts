@@ -37,7 +37,6 @@ export const routes: Routes = [
       ),
   },
   {
-<<<<<<< HEAD
     path: 'booking/compare',
     loadComponent: () =>
       import('./pages/booking/compare/compare.page').then(
@@ -59,8 +58,6 @@ export const routes: Routes = [
       ),
   },
   {
-=======
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     path: 'booking/seats',
     loadComponent: () =>
       import('./pages/booking/seat-selection/seat-selection.page').then(
@@ -73,14 +70,11 @@ export const routes: Routes = [
       import('./pages/booking/payment/payment.page').then((m) => m.PaymentPage),
   },
   {
-<<<<<<< HEAD
     path: 'booking/voucher',
     loadComponent: () =>
       import('./pages/booking/voucher/voucher.page').then((m) => m.VoucherPage),
   },
   {
-=======
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     path: 'booking/confirmation',
     loadComponent: () =>
       import('./pages/booking/confirmation/confirmation.page').then(
@@ -88,16 +82,11 @@ export const routes: Routes = [
       ),
   },
   {
-<<<<<<< HEAD
     path: 'e-ticket/:bookingRef',
-=======
-    path: 'e-ticket',
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     loadComponent: () =>
       import('./pages/bookings/ticket/ticket.page').then((m) => m.TicketPage),
   },
   {
-<<<<<<< HEAD
     path: 'boarding-pass/:bookingRef',
     loadComponent: () =>
       import('./pages/bookings/boarding-pass/boarding-pass.page').then(
@@ -175,8 +164,6 @@ export const routes: Routes = [
       ),
   },
   {
-=======
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     path: 'active-trip',
     loadComponent: () =>
       import('./pages/active-trip/active-trip.page').then(
@@ -184,7 +171,6 @@ export const routes: Routes = [
       ),
   },
   {
-<<<<<<< HEAD
     path: 'emergency',
     loadComponent: () =>
       import('./pages/active-trip/emergency/emergency.page').then(
@@ -192,13 +178,10 @@ export const routes: Routes = [
       ),
   },
   {
-=======
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     path: 'favorites',
     loadComponent: () =>
       import('./pages/favorites/favorites.page').then((m) => m.FavoritesPage),
   },
-<<<<<<< HEAD
   // --- ALERT + CHAT DETAIL (full-screen, outside the tab bar) ---
   {
     path: 'alert/:id',
@@ -343,8 +326,6 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/wallet/settings/settings.page').then((m) => m.WalletSettingsPage),
   },
-=======
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   {
     path: '',
     loadComponent: () => import('./tabs/tabs.page').then((m) => m.TabsPage),
@@ -376,12 +357,9 @@ export const routes: Routes = [
       },
     ],
   },
-<<<<<<< HEAD
   // --- FALLBACK: unknown URLs land on the app Shell (Home) ------------
   {
     path: '**',
     redirectTo: 'home',
   },
-=======
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 ];

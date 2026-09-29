@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-=======
-@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap");
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 
 :host {
   --primary-navy: #151d48;
@@ -11,10 +7,7 @@
   --text-main: #1f2937;
   --text-muted: #6b7280;
   --border-color: #e2e8f0;
-<<<<<<< HEAD
   --ink: rgba(21, 29, 72, 0.14);
-=======
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   --pop-yellow: #ffe066;
   --success-green: #16a34a;
   --font-family:
@@ -28,19 +21,6 @@ ion-content.flow-content {
   -webkit-font-smoothing: antialiased;
 }
 
-<<<<<<< HEAD
-=======
-@keyframes revealUp {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 
 @keyframes badgePop {
   0% {
@@ -69,17 +49,6 @@ ion-content.flow-content {
   }
 }
 
-<<<<<<< HEAD
-=======
-@keyframes burstSpin {
-  from {
-    transform: translate(-50%, -50%) rotate(0deg);
-  }
-  to {
-    transform: translate(-50%, -50%) rotate(360deg);
-  }
-}
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 
 .flow-wrap {
   display: flex;
@@ -155,7 +124,6 @@ ion-content.flow-content {
   animation: revealUp 0.45s 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-<<<<<<< HEAD
 /* Rebook context — subtle, below the confirmation line. */
 .rebook-note {
   display: flex;
@@ -183,22 +151,15 @@ ion-content.flow-content {
   }
 }
 
-=======
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 /* --- TICKET (matches My Bookings ticket style) --- */
 .ticket {
   position: relative;
   display: flex;
   width: 100%;
   background-color: var(--bg-white);
-<<<<<<< HEAD
   border: 1.5px solid var(--primary-navy);
   border-radius: 20px;
   box-shadow: 2px 2px 0 var(--ink);
-=======
-  border: 1px solid var(--border-color);
-  border-radius: 20px;
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   overflow: hidden;
   text-align: left;
   opacity: 0;
@@ -339,7 +300,6 @@ ion-content.flow-content {
     }
   }
 
-<<<<<<< HEAD
   .pickup-line {
     display: flex;
     align-items: center;
@@ -360,8 +320,6 @@ ion-content.flow-content {
     }
   }
 
-=======
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   .ticket-stub {
     position: relative;
     width: 92px;
@@ -433,7 +391,6 @@ ion-content.flow-content {
   display: flex;
   flex-direction: column;
   gap: 10px;
-<<<<<<< HEAD
   background-color: rgba(255, 255, 255, 0.86);
   background-image: radial-gradient(
     rgba(21, 29, 72, 0.03) 1px,
@@ -443,15 +400,6 @@ ion-content.flow-content {
   -webkit-backdrop-filter: blur(14px);
   backdrop-filter: blur(14px);
   border-top: 1px solid var(--ink);
-=======
-  background-color: var(--bg-white);
-  background-image: radial-gradient(
-    rgba(21, 29, 72, 0.04) 1px,
-    transparent 1.3px
-  );
-  background-size: 8px 8px;
-  border-top: 1px solid var(--border-color);
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   padding: 16px 16px calc(env(safe-area-inset-bottom, 16px) + 16px);
   max-width: 480px;
   margin: 0 auto;
@@ -479,7 +427,6 @@ ion-content.flow-content {
   }
 
   .primary-cta {
-<<<<<<< HEAD
     background-color: var(--primary-navy);
     background-image: radial-gradient(
       rgba(255, 255, 255, 0.1) 1px,
@@ -492,16 +439,10 @@ ion-content.flow-content {
     &:active {
       box-shadow: 1px 1px 0 var(--ink);
     }
-=======
-    background: var(--primary-navy);
-    color: #ffffff;
-    border: none;
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   }
   .secondary-cta {
     background: var(--bg-white);
     color: var(--primary-navy);
-<<<<<<< HEAD
     border: 1.5px solid var(--primary-navy);
     box-shadow: 2px 2px 0 var(--ink);
     &:active {
@@ -517,17 +458,3 @@ ion-content.flow-content {
 }
 
 
-=======
-    border: 1.5px solid var(--border-color);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.001ms !important;
-    transition-duration: 0.001ms !important;
-  }
-}
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2

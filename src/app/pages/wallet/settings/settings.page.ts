@@ -147,7 +147,7 @@ export class WalletSettingsPage {
       const closeBtn = document.createElement('button');
       closeBtn.type = 'button';
       closeBtn.className = 'alert-close-x';
-      closeBtn.textContent = '✕';
+      closeBtn.textContent = '×';
       closeBtn.addEventListener('click', () => void alert.dismiss());
       head.appendChild(closeBtn);
     }

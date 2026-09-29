@@ -9,11 +9,7 @@
             stroke-width="2"
             opacity="0.4"
             stroke-linecap="round"
-<<<<<<< HEAD
             >
-=======
-          >
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
             <line x1="40" y1="6" x2="40" y2="16" />
             <line x1="40" y1="64" x2="40" y2="74" />
             <line x1="6" y1="40" x2="16" y2="40" />
@@ -35,11 +31,7 @@
         class="icon-btn"
         (click)="editProfile()"
         aria-label="Edit profile"
-<<<<<<< HEAD
         >
-=======
-      >
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
         <ion-icon name="create-outline"></ion-icon>
       </button>
     </div>
@@ -55,11 +47,7 @@
                 stroke-width="2.5"
                 opacity="0.35"
                 stroke-linecap="round"
-<<<<<<< HEAD
                 >
-=======
-              >
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
                 <line x1="70" y1="4" x2="70" y2="20" />
                 <line x1="70" y1="120" x2="70" y2="136" />
                 <line x1="4" y1="70" x2="20" y2="70" />
@@ -77,11 +65,7 @@
               class="avatar-edit-btn"
               (click)="changePhoto()"
               aria-label="Change profile photo"
-<<<<<<< HEAD
               >
-=======
-            >
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
               <ion-icon name="camera-outline"></ion-icon>
             </button>
           </div>
@@ -89,7 +73,6 @@
           <div class="id-text">
             <div class="name-row">
               <h2>{{ user.name }}</h2>
-<<<<<<< HEAD
               @if (user.verified) {
                 <ion-icon
                   name="shield-checkmark-outline"
@@ -241,144 +224,3 @@
           <p class="app-version">Byahero v1.0.0 · Built for North Luzon</p>
         </div>
       </ion-content>
-=======
-              <ion-icon
-                name="shield-checkmark-outline"
-                class="verified"
-                *ngIf="user.verified"
-              ></ion-icon>
-            </div>
-            <span class="tier-ribbon"
-              ><ion-icon name="star"></ion-icon>{{ user.tier }} Kabyahe</span
-            >
-            <span class="hero-id-code">{{ user.heroId }}</span>
-          </div>
-        </div>
-
-        <div class="contact-row">
-          <span class="contact-chip"
-            ><ion-icon name="call-outline"></ion-icon>{{ user.phone }}</span
-          >
-          <span class="contact-chip"
-            ><ion-icon name="mail-outline"></ion-icon>{{ user.email }}</span
-          >
-        </div>
-      </div>
-
-      <div class="id-stub">
-        <span class="stub-label">Member</span>
-        <span class="stub-year">{{ user.memberSince }}</span>
-        <span class="stub-rule"></span>
-        <span class="stub-label">Rank</span>
-        <span class="stub-tier">{{ user.tier }}</span>
-      </div>
-    </div>
-
-    <!-- 3. RANK METER -->
-    <div class="rank-card" (click)="viewRewards()">
-      <div class="rank-head">
-        <div class="rank-title">
-          <ion-icon name="trending-up-outline"></ion-icon>
-          <span>{{ rank.current }} → {{ rank.next }}</span>
-        </div>
-        <span class="rank-count">{{ rank.points }} / {{ rank.target }}</span>
-      </div>
-      <div class="rank-track">
-        <div class="rank-fill" [style.width.%]="rankPercent"></div>
-      </div>
-      <p class="rank-note">
-        {{ pointsToNext }} points to unlock {{ rank.next }} perks
-      </p>
-    </div>
-
-    <!-- 4. STATS STRIP -->
-    <div class="stats-row">
-      <div class="stat-chip" (click)="viewTrips()">
-        <ion-icon name="bus-outline"></ion-icon>
-        <strong>{{ stats.trips }}</strong>
-        <span>Trips</span>
-      </div>
-      <div class="stat-chip" (click)="viewRewards()">
-        <ion-icon name="star-outline"></ion-icon>
-        <strong>{{ stats.points }}</strong>
-        <span>Points</span>
-      </div>
-      <div class="stat-chip" (click)="openWallet()">
-        <ion-icon name="flash-outline"></ion-icon>
-        <strong>₱{{ stats.saved }}</strong>
-        <span>Saved</span>
-      </div>
-    </div>
-
-    <!-- 5. WALLET BAR -->
-    <div class="wallet-bar" (click)="openWallet()">
-      <div class="wallet-left">
-        <span class="wallet-icon"
-          ><ion-icon name="wallet-outline"></ion-icon
-        ></span>
-        <div class="wallet-text">
-          <span class="w-label">Byahero Wallet · ···{{ wallet.last4 }}</span>
-          <span class="w-value">₱ {{ wallet.balance }}</span>
-        </div>
-      </div>
-      <button
-        class="wallet-cta"
-        (click)="$event.stopPropagation(); openWallet()"
-      >
-        <ion-icon name="add-outline"></ion-icon>
-        Top Up
-      </button>
-    </div>
-
-    <!-- 6. QUICK ACTIONS -->
-    <div class="quick-row">
-      <button
-        class="quick"
-        *ngFor="let q of quickActions"
-        [ngClass]="q.tint"
-        (click)="q.action()"
-      >
-        <span class="q-icon"><ion-icon [name]="q.icon"></ion-icon></span>
-        <span class="q-label">{{ q.label }}</span>
-      </button>
-    </div>
-
-    <!-- 7. SETTINGS GROUPS -->
-    <div class="menu-group" *ngFor="let group of menuGroups">
-      <div class="group-head">
-        <p class="group-title">{{ group.title }}</p>
-        <span class="group-rule"></span>
-      </div>
-      <div class="menu-list">
-        <button
-          class="menu-item"
-          *ngFor="let item of group.items"
-          (click)="handleItem(item)"
-        >
-          <div class="menu-icon" [class.tint-red]="item.danger">
-            <ion-icon [name]="item.icon"></ion-icon>
-          </div>
-          <span class="menu-label">{{ item.label }}</span>
-          <span class="menu-badge" *ngIf="item.badge">{{ item.badge }}</span>
-          <span class="menu-value" *ngIf="item.value">{{ item.value }}</span>
-          <span class="menu-switch" *ngIf="item.toggle" [class.on]="item.on">
-            <span class="knob"></span>
-          </span>
-          <ion-icon
-            name="chevron-forward-outline"
-            class="chevron"
-            *ngIf="!item.toggle"
-          ></ion-icon>
-        </button>
-      </div>
-    </div>
-
-    <!-- 8. LOG OUT -->
-    <button class="logout-btn" (click)="logout()">
-      <ion-icon name="log-out-outline"></ion-icon>
-      Log Out
-    </button>
-    <p class="app-version">Byahero v1.0.0 · Built for North Luzon</p>
-  </div>
-</ion-content>
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2

@@ -1,10 +1,5 @@
-<<<<<<< HEAD
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
-=======
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 import { IonContent, IonIcon } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
@@ -12,7 +7,6 @@ import {
   arrowBackOutline,
   chevronForwardOutline,
   navigateOutline,
-<<<<<<< HEAD
   peopleOutline,
 } from 'ionicons/icons';
 import { BookingService } from '../booking.service';
@@ -22,19 +16,12 @@ import {
   SEAT_COLS,
   SEAT_ROWS,
 } from '../../../services/seat.service';
-=======
-} from 'ionicons/icons';
-import { BookingService } from '../booking.service';
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 
 addIcons({
   'arrow-back-outline': arrowBackOutline,
   'chevron-forward-outline': chevronForwardOutline,
   'navigate-outline': navigateOutline,
-<<<<<<< HEAD
   'people-outline': peopleOutline,
-=======
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 });
 
 type SeatStatus = 'available' | 'selected' | 'booked';
@@ -44,57 +31,8 @@ interface Seat {
   status: SeatStatus;
 }
 
-<<<<<<< HEAD
 const ROWS = SEAT_ROWS;
 const COLS: readonly string[] = SEAT_COLS;
-=======
-const ROWS = 10;
-const COLS = ['A', 'B', 'C', 'D'];
-
-// Deterministic shuffle used to decide which seats show as pre-booked
-const SHUFFLE_ORDER = [
-  '3B',
-  '7A',
-  '2D',
-  '9C',
-  '1A',
-  '5C',
-  '8B',
-  '4D',
-  '6A',
-  '10B',
-  '2A',
-  '7D',
-  '3C',
-  '9A',
-  '5B',
-  '1D',
-  '8C',
-  '4A',
-  '6D',
-  '10C',
-  '2C',
-  '7B',
-  '3A',
-  '9D',
-  '5A',
-  '1C',
-  '8D',
-  '4B',
-  '6C',
-  '10A',
-  '2B',
-  '7C',
-  '3D',
-  '9B',
-  '5D',
-  '1B',
-  '8A',
-  '4C',
-  '6B',
-  '10D',
-];
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 
 @Component({
   selector: 'app-seat-selection',
@@ -104,7 +42,6 @@ const SHUFFLE_ORDER = [
   styleUrls: ['./seat-selection.page.scss'],
 })
 export class SeatSelectionPage implements OnInit {
-<<<<<<< HEAD
   booking = inject(BookingService);
   private router = inject(Router);
   private location = inject(Location);
@@ -118,16 +55,6 @@ export class SeatSelectionPage implements OnInit {
 
   constructor() {
     addIcons({ arrowBackOutline, navigateOutline, chevronForwardOutline, peopleOutline });
-=======
-  seats: Seat[] = [];
-  rowNumbers: number[] = Array.from({ length: ROWS }, (_, i) => i + 1);
-
-  constructor(
-    public booking: BookingService,
-    private router: Router,
-  ) {
-    addIcons({ arrowBackOutline, navigateOutline, chevronForwardOutline });
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   }
 
   ngOnInit() {
@@ -139,7 +66,6 @@ export class SeatSelectionPage implements OnInit {
   }
 
   buildSeatMap() {
-<<<<<<< HEAD
     const key = this.seatService.keyFor(this.booking);
     const availability = this.seatService.availabilityFor(
       this.booking.trip!.seatsLeft,
@@ -147,13 +73,6 @@ export class SeatSelectionPage implements OnInit {
     );
     this.availability = availability;
     const bookedSet = availability.bookedSet;
-=======
-    const seatsLeftNum =
-      Number((this.booking.trip!.seatsLeft || '').replace(/[^0-9]/g, '')) || 20;
-    const total = ROWS * COLS.length;
-    const bookedCount = Math.max(0, Math.min(total, total - seatsLeftNum));
-    const bookedSet = new Set(SHUFFLE_ORDER.slice(0, bookedCount));
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     const alreadySelected = new Set(this.booking.selectedSeats);
 
     const list: Seat[] = [];
@@ -167,7 +86,6 @@ export class SeatSelectionPage implements OnInit {
       }
     }
     this.seats = list;
-<<<<<<< HEAD
     // Highlight help: available seats satisfying the session preference.
     // Never auto-selects — the commuter still taps an actual seat.
     this.matchingSet = new Set(
@@ -179,8 +97,6 @@ export class SeatSelectionPage implements OnInit {
           )
         : [],
     );
-=======
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   }
 
   seatsInRow(row: number): Seat[] {
@@ -214,7 +130,6 @@ export class SeatSelectionPage implements OnInit {
     return this.booking.selectedSeats.length === this.booking.passengerCount;
   }
 
-<<<<<<< HEAD
   /** Available + matches the session preference → highlighted, not reserved. */
   isPreferred(seat: Seat): boolean {
     return seat.status === 'available' && this.matchingSet.has(seat.id);
@@ -234,10 +149,6 @@ export class SeatSelectionPage implements OnInit {
       return;
     }
     this.router.navigateByUrl('/booking/seat-preference');
-=======
-  goBack() {
-    this.router.navigateByUrl('/booking/trip');
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   }
 
   continue() {

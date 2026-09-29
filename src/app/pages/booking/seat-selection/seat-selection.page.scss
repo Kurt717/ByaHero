@@ -1,25 +1,15 @@
-<<<<<<< HEAD
 
 :host {
   --primary-navy: #151d48;
   --deep-navy: #060a28;
-=======
-@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap");
-
-:host {
-  --primary-navy: #151d48;
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   --accent-red: #d32f2f;
   --bg-page: #f8fafc;
   --bg-white: #ffffff;
   --text-main: #1f2937;
   --text-muted: #6b7280;
   --border-color: #e2e8f0;
-<<<<<<< HEAD
   --ink: rgba(21, 29, 72, 0.14);
   --pop-yellow: #ffe066;
-=======
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   --font-family:
     "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "SF Pro Display",
     sans-serif;
@@ -31,19 +21,6 @@ ion-content.flow-content {
   -webkit-font-smoothing: antialiased;
 }
 
-<<<<<<< HEAD
-=======
-@keyframes revealUp {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 
 .flow-wrap {
   display: flex;
@@ -66,12 +43,8 @@ ion-content.flow-content {
     height: 40px;
     border-radius: 50%;
     background: var(--bg-white);
-<<<<<<< HEAD
     border: 1.5px solid var(--primary-navy);
     box-shadow: 2px 2px 0 var(--ink);
-=======
-    border: 1px solid var(--border-color);
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     display: flex;
     align-items: center;
     justify-content: center;
@@ -116,12 +89,9 @@ ion-content.flow-content {
   font-weight: 800;
   color: var(--primary-navy);
   letter-spacing: -0.02em;
-<<<<<<< HEAD
   text-shadow:
     1px 1px 0 rgba(211, 47, 47, 0.28),
     -1px -1px 0 rgba(63, 81, 181, 0.22);
-=======
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   opacity: 0;
   animation: revealUp 0.45s 0.05s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
@@ -135,7 +105,6 @@ ion-content.flow-content {
   animation: revealUp 0.45s 0.08s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-<<<<<<< HEAD
 /* --- AVAILABILITY CHIP --- */
 .avail-chip {
   display: flex;
@@ -169,8 +138,6 @@ ion-content.flow-content {
   }
 }
 
-=======
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 /* --- BUS FRAME --- */
 .bus-frame {
   background-color: var(--bg-white);
@@ -179,18 +146,11 @@ ion-content.flow-content {
     transparent 1.3px
   );
   background-size: 9px 9px;
-<<<<<<< HEAD
   border: 1.5px solid var(--primary-navy);
   border-radius: 28px;
   padding: 20px 16px 24px;
   margin-bottom: 20px;
   box-shadow: 2px 2px 0 var(--ink);
-=======
-  border: 1px solid var(--border-color);
-  border-radius: 28px;
-  padding: 20px 16px 24px;
-  margin-bottom: 20px;
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   opacity: 0;
   animation: revealUp 0.5s 0.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 
@@ -203,11 +163,7 @@ ion-content.flow-content {
     width: fit-content;
     padding: 6px 16px;
     background: var(--bg-page);
-<<<<<<< HEAD
     border: 1.5px dashed var(--primary-navy);
-=======
-    border: 1px dashed var(--border-color);
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     border-radius: 999px;
     color: var(--text-muted);
     font-size: 10.5px;
@@ -254,11 +210,7 @@ ion-content.flow-content {
       aspect-ratio: 1 / 1;
       max-width: 52px;
       border-radius: 10px;
-<<<<<<< HEAD
       border: 1.5px solid var(--ink);
-=======
-      border: 1.5px solid var(--border-color);
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
       background: var(--bg-page);
       color: var(--text-main);
       font-family: var(--font-family);
@@ -269,12 +221,8 @@ ion-content.flow-content {
         transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1),
         background-color 0.2s ease,
         border-color 0.2s ease,
-<<<<<<< HEAD
         color 0.2s ease,
         box-shadow 0.15s ease;
-=======
-        color 0.2s ease;
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 
       &:active:not(:disabled) {
         transform: scale(0.88);
@@ -282,7 +230,6 @@ ion-content.flow-content {
 
       &.available:hover {
         border-color: var(--primary-navy);
-<<<<<<< HEAD
         box-shadow: 1.5px 1.5px 0 var(--ink);
       }
 
@@ -296,14 +243,6 @@ ion-content.flow-content {
         border-color: var(--primary-navy);
         color: #ffffff;
         box-shadow: 2px 2px 0 rgba(211, 47, 47, 0.55);
-=======
-      }
-
-      &.selected {
-        background: var(--primary-navy);
-        border-color: var(--primary-navy);
-        color: #ffffff;
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
       }
 
       &.booked {
@@ -312,7 +251,6 @@ ion-content.flow-content {
         color: #94a3b8;
         cursor: not-allowed;
       }
-<<<<<<< HEAD
 
       /* Available + matches the session preference: yellow ring + dot, so
          the match never depends on color alone. */
@@ -333,13 +271,10 @@ ion-content.flow-content {
           background: var(--accent-red);
         }
       }
-=======
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     }
   }
 }
 
-<<<<<<< HEAD
 /* --- PREFERENCE BANNER --- */
 .pref-banner {
   display: flex;
@@ -391,8 +326,6 @@ ion-content.flow-content {
   }
 }
 
-=======
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 /* --- LEGEND --- */
 .legend-row {
   display: flex;
@@ -428,14 +361,11 @@ ion-content.flow-content {
         background: #e2e8f0;
         border-color: #e2e8f0;
       }
-<<<<<<< HEAD
       &.preferred {
         background: #fffbe6;
         border-color: var(--primary-navy);
         border-width: 2.5px;
       }
-=======
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     }
   }
 }
@@ -458,7 +388,6 @@ ion-content.flow-content {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-<<<<<<< HEAD
   background-color: rgba(255, 255, 255, 0.86);
   background-image: radial-gradient(
     rgba(21, 29, 72, 0.03) 1px,
@@ -468,15 +397,6 @@ ion-content.flow-content {
   -webkit-backdrop-filter: blur(14px);
   backdrop-filter: blur(14px);
   border-top: 1px solid var(--ink);
-=======
-  background-color: var(--bg-white);
-  background-image: radial-gradient(
-    rgba(21, 29, 72, 0.04) 1px,
-    transparent 1.3px
-  );
-  background-size: 8px 8px;
-  border-top: 1px solid var(--border-color);
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   padding: 14px 16px calc(env(safe-area-inset-bottom, 14px) + 14px);
   max-width: 480px;
   margin: 0 auto;
@@ -506,7 +426,6 @@ ion-content.flow-content {
     display: flex;
     align-items: center;
     gap: 6px;
-<<<<<<< HEAD
     background-color: var(--primary-navy);
     background-image: radial-gradient(
       rgba(255, 255, 255, 0.1) 1px,
@@ -515,11 +434,6 @@ ion-content.flow-content {
     background-size: 6px 6px;
     color: #ffffff;
     border: 1.5px solid var(--primary-navy);
-=======
-    background: var(--primary-navy);
-    color: #ffffff;
-    border: none;
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     border-radius: 999px;
     padding: 14px 22px;
     font-family: var(--font-family);
@@ -528,10 +442,7 @@ ion-content.flow-content {
     cursor: pointer;
     white-space: nowrap;
     flex-shrink: 0;
-<<<<<<< HEAD
     box-shadow: 2px 2px 0 var(--ink);
-=======
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     transition:
       transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1),
       opacity 0.2s ease;
@@ -541,10 +452,7 @@ ion-content.flow-content {
 
     &:active:not(:disabled) {
       transform: scale(0.95);
-<<<<<<< HEAD
       box-shadow: 1px 1px 0 var(--ink);
-=======
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     }
     &:disabled {
       opacity: 0.4;
@@ -553,15 +461,4 @@ ion-content.flow-content {
   }
 }
 
-<<<<<<< HEAD
 
-=======
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.001ms !important;
-    transition-duration: 0.001ms !important;
-  }
-}
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2

@@ -17,11 +17,8 @@ ion-content.splash-content {
 }
 
 .splash-container {
-<<<<<<< HEAD
   position: relative;
   overflow: hidden;
-=======
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -35,26 +32,14 @@ ion-content.splash-content {
   background-size: 12px 12px;
 }
 
-<<<<<<< HEAD
 /* --- LOGO: appears with the reveal, then holds still (vision: static hold) --- */
-=======
-/* --- LOGO WITH SPRING ENTRY & CONTINUOUS FLOAT --- */
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 .logo-wrapper {
   position: relative;
   width: 150px;
   height: 150px;
-<<<<<<< HEAD
   margin-bottom: 0;
   filter: drop-shadow(0 12px 24px rgba(30, 58, 138, 0.15));
   opacity: 0;
-=======
-  margin-bottom: 28px;
-  filter: drop-shadow(0 12px 24px rgba(30, 58, 138, 0.15));
-  animation:
-    springIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
-    floatLogo 3s ease-in-out infinite alternate 0.8s;
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 
   .logo-burst {
     position: absolute;
@@ -64,10 +49,6 @@ ion-content.splash-content {
     height: 210px;
     transform: translate(-50%, -50%);
     pointer-events: none;
-<<<<<<< HEAD
-=======
-    animation: burstSlowSpin 12s linear infinite;
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   }
 
   .logo-svg-main {
@@ -76,18 +57,6 @@ ion-content.splash-content {
   }
 }
 
-<<<<<<< HEAD
-=======
-@keyframes burstSlowSpin {
-  from {
-    transform: translate(-50%, -50%) rotate(0deg);
-  }
-  to {
-    transform: translate(-50%, -50%) rotate(360deg);
-  }
-}
-
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 /* --- TYPOGRAPHY --- */
 .brand-text {
   text-align: center;
@@ -128,35 +97,14 @@ ion-content.splash-content {
   }
 }
 
-<<<<<<< HEAD
 /* Staggered Fade & Slide Up for Title */
 .title-anim {
   opacity: 0;
-=======
-/* Gentle continuous floating motion after entry */
-@keyframes floatLogo {
-  0% {
-    transform: translateY(0px);
-  }
-  100% {
-    transform: translateY(-8px);
-  }
-}
-
-/* Staggered Fade & Slide Up for Title */
-.title-anim {
-  opacity: 0;
-  animation: fadeInUpSmooth 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 }
 
 /* Staggered Fade & Slide Up for Subtitle */
 .subtitle-anim {
   opacity: 0;
-<<<<<<< HEAD
-=======
-  animation: fadeInUpSmooth 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.45s forwards;
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 }
 
 @keyframes fadeInUpSmooth {
@@ -169,7 +117,6 @@ ion-content.splash-content {
     transform: translateY(0);
   }
 }
-<<<<<<< HEAD
 
 /* --- INTRO: hero -> bus -> logo morph (splash-intro.ts) --- */
 .logo-slot { position: relative; width: 150px; height: 150px; margin-bottom: 28px; }
@@ -227,5 +174,3 @@ ion-content.splash-content {
 @media (prefers-reduced-motion: reduce) {
   .splash-container::before, .splash-container::after { animation: none; transform: scale(1); }
 }
-=======
->>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
