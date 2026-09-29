@@ -2,6 +2,7 @@
 
 Captured with headless Chrome at mobile viewport **390×844 @2x**.
 Build: `npm run build` → served `www/`, one shot per route.
+The splash shot is an **animated GIF** (12fps capture of the live intro).
 
 ## Seasoned account
 
@@ -24,7 +25,7 @@ empty states:
 
 | # | File | Route |
 |---|------|-------|
-| 01 | 01-splash.png | /splash |
+| 01 | 01-splash.gif | /splash (animated) |
 | 02 | 02-onboarding.png | /onboarding |
 | 03 | 03-login.png | /login |
 | 04 | 04-signup.png | /signup |
