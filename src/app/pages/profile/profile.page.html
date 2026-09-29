@@ -59,7 +59,7 @@
               </g>
             </svg>
             <ion-avatar class="profile-avatar">
-              <img [src]="user.avatar" alt="{{ user.name }}'s profile photo" />
+              <img [src]="user.avatar" (error)="$any($event.target).src = fallbackAvatar" alt="{{ user.name }}'s profile photo" />
             </ion-avatar>
             <button
               class="avatar-edit-btn"

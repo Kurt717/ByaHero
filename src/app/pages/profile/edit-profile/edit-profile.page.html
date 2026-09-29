@@ -13,7 +13,7 @@
       <div class="id-dots"></div>
       <div class="id-avatar">
         <span class="rays"></span>
-        <img [src]="avatarSrc" alt="Your avatar preview" />
+        <img [src]="avatarSrc" (error)="$any($event.target).src = defaultAvatar" alt="Your avatar preview" />
       </div>
       <div class="id-text">
         <span class="tag">Live preview</span>

@@ -9,7 +9,7 @@ import {
   ToastController,
 } from '@ionic/angular';
 import { Router } from '@angular/router';
-import { DEFAULT_PROFILE_USER, ProfileService } from './profile.service';
+import { DEFAULT_AVATAR, DEFAULT_PROFILE_USER, ProfileService } from './profile.service';
 import { AuthService } from '../../services/auth.service';
 import { TicketService } from '../bookings/ticket.service';
 import { VoucherService } from '../../services/voucher.service';
@@ -124,6 +124,9 @@ export class ProfilePage implements OnDestroy {
   });
 
   private readonly preferencesStorageKey = 'byahero.profile-preferences.v1';
+
+  /** Local fallback if a saved avatar URL ever fails to load. */
+  readonly fallbackAvatar = DEFAULT_AVATAR;
 
   constructor() {
     addIcons({

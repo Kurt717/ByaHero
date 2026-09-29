@@ -53,7 +53,7 @@ import {
   flagOutline,
 } from 'ionicons/icons';
 
-import { ProfileService } from '../profile/profile.service';
+import { ProfileService, DEFAULT_AVATAR } from '../profile/profile.service';
 
 import {
   BookingService,
@@ -193,8 +193,10 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
 
   userName = 'Nonie';
 
-  userAvatar =
-    'https://ionicframework.com/docs/img/demos/avatar.svg';
+  userAvatar = DEFAULT_AVATAR;
+
+  /** Local fallback if a saved avatar URL ever fails to load. */
+  readonly fallbackAvatar = DEFAULT_AVATAR;
 
   activeCategory: 'all' | RouteMode = 'all';
 

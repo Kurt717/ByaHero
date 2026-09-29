@@ -68,6 +68,31 @@ export interface StoredProfile {
   [key: string]: unknown;
 }
 
+/** Local on-theme default avatar (navy + yellow person mark).
+ *  Never hotlink the Ionic docs demo image — it breaks offline / when
+ *  docs assets move, leaving a broken-image icon in the avatar slot. */
+const DEFAULT_AVATAR_SVG =
+  `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'>` +
+  `<defs><pattern id='d' width='8' height='8' patternUnits='userSpaceOnUse'><circle cx='4' cy='4' r='1.4' fill='rgba(255,255,255,0.16)'/></pattern></defs>` +
+  `<rect width='120' height='120' fill='#151d48'/><rect width='120' height='120' fill='url(#d)'/>` +
+  `<circle cx='60' cy='46' r='19' fill='#ffe066'/>` +
+  `<path d='M28 108c4-20 16-30 32-30s28 10 32 30' fill='#ffffff'/>` +
+  `</svg>`;
+export const DEFAULT_AVATAR =
+  'data:image/svg+xml;utf8,' + encodeURIComponent(DEFAULT_AVATAR_SVG);
+
+/** Retired hotlinked default — devices that saved it get migrated
+ *  back to {@link DEFAULT_AVATAR} on read (see sanitizeAvatar). */
+const LEGACY_REMOTE_AVATAR =
+  'https://ionicframework.com/docs/img/demos/avatar.svg';
+
+/** Swap the retired remote avatar (or any empty value) for the local one. */
+function sanitizeAvatar(value: unknown): string {
+  return typeof value !== 'string' || !value || value === LEGACY_REMOTE_AVATAR
+    ? DEFAULT_AVATAR
+    : value;
+}
+
 /** Keep in sync with DEFAULT_USER in edit-profile.page.ts and
  *  the default `user` object in profile.page.ts. */
 export const DEFAULT_PROFILE_USER: ProfileUser = {
@@ -77,7 +102,7 @@ export const DEFAULT_PROFILE_USER: ProfileUser = {
   heroId: 'BYH-KF-0482',
   phone: '+63 917 123 4567',
   email: 'keilah@email.com',
-  avatar: 'https://ionicframework.com/docs/img/demos/avatar.svg',
+  avatar: DEFAULT_AVATAR,
   verified: true,
   avatarStyle: null,
 };
@@ -125,7 +150,9 @@ export class ProfileService {
     try {
       const raw = localStorage.getItem(this.storageKey);
       const saved = raw ? (JSON.parse(raw) as StoredProfile) : {};
-      return { ...DEFAULT_PROFILE_USER, ...saved.user };
+      const user = { ...DEFAULT_PROFILE_USER, ...saved.user };
+      user.avatar = sanitizeAvatar(user.avatar);
+      return user;
     } catch {
       return { ...DEFAULT_PROFILE_USER };
     }
@@ -158,7 +185,9 @@ export class ProfileService {
    *  renders the same data without drifting. */
   read(): ProfileUser {
     const saved = this.readStored();
-    return { ...DEFAULT_PROFILE_USER, ...saved.user };
+    const user = { ...DEFAULT_PROFILE_USER, ...saved.user };
+    user.avatar = sanitizeAvatar(user.avatar);
+    return user;
   }
 
   // ------------------------------------------------------------- wallet

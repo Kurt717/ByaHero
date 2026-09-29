@@ -627,6 +627,7 @@ $wide:    "(min-width: 1280px) and (min-height: 560px)";
       grid-template-areas: "art title" "art desc";
       column-gap: 72px; align-items: center; text-align: left;
     }
+    .slide.active > * { min-width: 0; max-width: 100%; }
     .illustration-container {
       grid-area: art; width: min(440px, 100%); margin: 0 auto; padding: 40px;
       background: radial-gradient(circle at 30% 18%, #e0e7ff, var(--bh-tint) 70%); border-radius: 48px;
