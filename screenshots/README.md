@@ -1,27 +1,6 @@
 # ByaHero v2 — Page Screenshots
 
-Captured with headless Chrome at mobile viewport **390×844 @2x**.
-Build: `npm run build` → served `www/`, one shot per route.
-The splash shot is an **animated GIF** (12fps capture of the live intro).
 
-## Seasoned account
-
-The shots use a seeded "used for over a year" account (planted in
-localStorage before capture), so pages show real content instead of
-empty states:
-
-- **14 bookings** (`byahero.bookings.v1`) — Dec 2025 → Sep 2026, mostly
-  completed, 1 confirmed + 1 boarding upcoming, 1 cancelled + refunded
-- **5 saved routes** (`byahero.favorite-routes.v1`) with use counts
-  (up to 23×) and staggered saved dates
-- **Profile** — Gold tier, member since 2024, 14 trips, wallet ₱1,240.50,
-  2 trusted contacts, GCash + card on file
-- **10 wallet transactions** (`walletTransactions`) — top-ups, ride
-  payments, a sent transfer, and the BYH-46590 refund
-- **Alerts/Chats** — mostly read, 2 unread alerts, c2 thread with
-  2 unread messages
-- **4 trip reviews**, 1 submitted problem report, logged-in session,
-  onboarding marked seen
 
 | # | File | Route |
 |---|------|-------|
