@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+=======
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap");
+
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 :host {
   --primary-navy: #151d48;
   --accent-red: #d32f2f;
@@ -6,10 +11,16 @@
   --text-main: #1f2937;
   --text-muted: #6b7280;
   --border-color: #e2e8f0;
+<<<<<<< HEAD
   --ink: rgba(21, 29, 72, 0.14);
   --pop-yellow: #ffe066;
   --success-green: #16a34a;
   --paper: #fff8e7;
+=======
+  --pop-yellow: #ffe066;
+  --success-green: #16a34a;
+  --amber: #d97706;
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   --font-family:
     "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "SF Pro Display",
     sans-serif;
@@ -21,6 +32,7 @@ ion-content.ticket-content {
   -webkit-font-smoothing: antialiased;
 }
 
+<<<<<<< HEAD
 
 @keyframes stubIn {
   from {
@@ -30,6 +42,16 @@ ion-content.ticket-content {
   to {
     opacity: 1;
     transform: translateY(0) rotate(-1.1deg);
+=======
+@keyframes revealUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   }
 }
 
@@ -39,14 +61,22 @@ ion-content.ticket-content {
     opacity: 0;
   }
   35% {
+<<<<<<< HEAD
     opacity: 0.45;
   }
   100% {
     transform: translateY(132px);
+=======
+    opacity: 0.55;
+  }
+  100% {
+    transform: translateY(126px);
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     opacity: 0;
   }
 }
 
+<<<<<<< HEAD
 @keyframes boltGlow {
   0%,
   100% {
@@ -86,25 +116,70 @@ ion-content.ticket-content {
     height: 30px;
     animation: boltGlow 2.4s ease-in-out infinite;
     filter: drop-shadow(2px 2px 0 rgba(0, 0, 0, 0.35));
+=======
+/* --- HERO VISOR BAND --- */
+.ticket-hero {
+  position: relative;
+  height: 150px;
+  background-image:
+    radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1.3px),
+    linear-gradient(160deg, #060a28 0%, #0f1d6b 100%);
+  background-size:
+    10px 10px,
+    100% 100%;
+  border-bottom-left-radius: 28px;
+  border-bottom-right-radius: 28px;
+  overflow: hidden;
+
+  .hero-mask {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 200px;
+    pointer-events: none;
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   }
 
   .hero-bar {
     position: relative;
     z-index: 2;
     display: flex;
+<<<<<<< HEAD
     align-items: flex-start;
+=======
+    align-items: center;
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     justify-content: space-between;
     gap: 12px;
     padding: calc(env(safe-area-inset-top, 20px) + 14px) 16px 0;
     max-width: 480px;
     margin: 0 auto;
 
+<<<<<<< HEAD
+=======
+    h1 {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.01em;
+      text-shadow:
+        -1.2px 0 0 rgba(0, 200, 255, 0.35),
+        1.2px 0 0 rgba(255, 0, 110, 0.3);
+    }
+
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     .icon-btn {
       width: 40px;
       height: 40px;
       border-radius: 50%;
       background: rgba(255, 255, 255, 0.15);
+<<<<<<< HEAD
       border: 1.5px solid rgba(255, 255, 255, 0.55);
+=======
+      border: none;
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
       display: flex;
       align-items: center;
       justify-content: center;
@@ -121,6 +196,7 @@ ion-content.ticket-content {
         background: rgba(255, 255, 255, 0.28);
       }
     }
+<<<<<<< HEAD
 
     .hero-title {
       text-align: center;
@@ -145,6 +221,8 @@ ion-content.ticket-content {
         color: var(--pop-yellow);
       }
     }
+=======
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   }
 }
 
@@ -153,11 +231,16 @@ ion-content.ticket-content {
   flex-direction: column;
   padding: 0 16px 170px;
   max-width: 480px;
+<<<<<<< HEAD
   margin: -30px auto 0;
+=======
+  margin: -34px auto 0;
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   position: relative;
   z-index: 3;
 }
 
+<<<<<<< HEAD
 /* Reminder slot between the stub and the actions (gated by the page). */
 .ticket-wrap.reminder-slot {
   padding-bottom: 0;
@@ -314,18 +397,51 @@ ion-content.ticket-content {
 
 /* CONDUCTOR'S COPY / HEAD */
 .stub-head {
+=======
+/* --- BOARDING PASS --- */
+.pass {
+  background-color: var(--bg-white);
+  border: 1px solid var(--border-color);
+  border-radius: 24px;
+  overflow: hidden;
+  opacity: 0;
+  animation: revealUp 0.5s 0.05s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+
+  &.void {
+    filter: grayscale(0.45);
+  }
+}
+
+.pass-top {
+  padding: 20px 18px 18px;
+  background-image: radial-gradient(
+    rgba(21, 29, 72, 0.05) 1px,
+    transparent 1.3px
+  );
+  background-size: 7px 7px;
+}
+
+.pass-head {
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
+<<<<<<< HEAD
   padding: 16px 16px 12px;
 
   .head-brand {
+=======
+  margin-bottom: 20px;
+
+  .op {
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     display: flex;
     align-items: center;
     gap: 10px;
     min-width: 0;
 
+<<<<<<< HEAD
     .hb-emblem {
       width: 40px;
       height: 40px;
@@ -333,10 +449,18 @@ ion-content.ticket-content {
       background: var(--primary-navy);
       background-image: radial-gradient(rgba(255, 255, 255, 0.18) 1px, transparent 1.3px);
       background-size: 5px 5px;
+=======
+    .op-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: #eef2ff;
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
+<<<<<<< HEAD
       border: 1.5px solid var(--primary-navy);
       box-shadow: 2px 2px 0 var(--ink);
       ion-icon {
@@ -351,21 +475,42 @@ ion-content.ticket-content {
         margin: 0;
         font-size: 16px;
         font-weight: 900;
+=======
+      ion-icon {
+        font-size: 19px;
+        color: var(--primary-navy);
+      }
+    }
+    .op-text {
+      min-width: 0;
+      h3 {
+        margin: 0;
+        font-size: 15px;
+        font-weight: 800;
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
         color: var(--primary-navy);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
       }
+<<<<<<< HEAD
       .hb-sub {
         font-size: 10px;
         font-weight: 700;
         letter-spacing: 0.04em;
         color: var(--text-muted);
         text-transform: uppercase;
+=======
+      span {
+        font-size: 10.5px;
+        font-weight: 600;
+        color: var(--text-muted);
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
       }
     }
   }
 
+<<<<<<< HEAD
   .head-seq {
     flex-shrink: 0;
     text-align: right;
@@ -436,11 +581,48 @@ ion-content.ticket-content {
       color: var(--text-muted);
     }
     &.cancelled {
+=======
+  .status-chip {
+    font-size: 10px;
+    font-weight: 800;
+    padding: 5px 10px;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+    flex-shrink: 0;
+
+    &.confirmed {
+      background-color: #dcfce7;
+      background-image: radial-gradient(
+        rgba(22, 163, 74, 0.15) 1px,
+        transparent 1.2px
+      );
+      background-size: 5px 5px;
+      color: var(--success-green);
+    }
+    &.boarding {
+      background-color: #fef3c7;
+      background-image: radial-gradient(
+        rgba(217, 119, 6, 0.18) 1px,
+        transparent 1.2px
+      );
+      background-size: 5px 5px;
+      color: var(--amber);
+    }
+    &.completed {
+      background: #f1f5f9;
+      color: var(--text-muted);
+    }
+    &.cancelled {
+      background: #fee2e2;
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
       color: var(--accent-red);
     }
   }
 }
 
+<<<<<<< HEAD
 /* ROUTE BANNER */
 .stub-route {
   position: relative;
@@ -635,10 +817,71 @@ ion-content.ticket-content {
       color: var(--accent-red);
       transform: rotate(-8deg);
       text-shadow: 1px 1px 0 var(--pop-yellow);
+=======
+/* --- ROUTE LEG --- */
+.leg {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+
+  .leg-end {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+
+    &.right {
+      text-align: right;
+    }
+
+    .leg-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .leg-city {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--primary-navy);
+      line-height: 1.25;
+    }
+  }
+
+  .leg-mid {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    flex-shrink: 0;
+
+    .leg-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    .leg-dot.origin {
+      border: 2px solid var(--primary-navy);
+      background: var(--bg-white);
+    }
+    .leg-dot.dest {
+      background: var(--accent-red);
+    }
+    .leg-track {
+      width: 16px;
+      border-top: 1.5px dashed #cbd5e1;
+    }
+    ion-icon {
+      font-size: 13px;
+      color: var(--text-muted);
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     }
   }
 }
 
+<<<<<<< HEAD
 /* BOARDING CODE */
 .stub-copy {
   position: relative;
@@ -711,18 +954,218 @@ ion-content.ticket-content {
       position: absolute;
       width: 15px;
       height: 15px;
+=======
+/* --- DETAIL GRID --- */
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px 12px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--border-color);
+  margin-bottom: 16px;
+
+  .detail {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+
+    .d-label {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--text-muted);
+      ion-icon {
+        font-size: 12px;
+      }
+    }
+    .d-value {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+}
+
+/* --- SEAT + FARE HIGHLIGHT --- */
+.highlight-row {
+  display: flex;
+  gap: 10px;
+
+  .hl {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 10px 12px;
+    border-radius: 14px;
+
+    .hl-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+    .hl-value {
+      font-size: 17px;
+      font-weight: 800;
+    }
+
+    &.seat {
+      background-color: var(--primary-navy);
+      background-image:
+        radial-gradient(
+          circle at 100% 100%,
+          transparent 0%,
+          transparent 25%,
+          var(--primary-navy) 60%
+        ),
+        radial-gradient(rgba(255, 255, 255, 0.18) 1px, transparent 1.3px);
+      background-size:
+        auto,
+        6px 6px;
+      .hl-label {
+        color: rgba(255, 255, 255, 0.7);
+      }
+      .hl-value {
+        color: #ffffff;
+      }
+    }
+
+    &.fare {
+      background: var(--pop-yellow);
+      .hl-label {
+        color: rgba(21, 29, 72, 0.6);
+      }
+      .hl-value {
+        color: var(--primary-navy);
+      }
+    }
+  }
+}
+
+/* --- PERFORATION --- */
+.perforation {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 22px;
+
+  .notch {
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    background: var(--bg-page);
+    border-radius: 50%;
+    &.left {
+      left: -11px;
+    }
+    &.right {
+      right: -11px;
+    }
+  }
+
+  .tear {
+    flex: 1;
+    margin: 0 16px;
+    border-top: 2px dashed var(--border-color);
+  }
+}
+
+/* --- SCAN BLOCK --- */
+.pass-bottom {
+  position: relative;
+  padding: 6px 18px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background-image: radial-gradient(
+    rgba(21, 29, 72, 0.05) 1px,
+    transparent 1.3px
+  );
+  background-size: 7px 7px;
+
+  .void-stamp {
+    position: absolute;
+    top: 46%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-12deg);
+    border: 3px solid var(--accent-red);
+    color: var(--accent-red);
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    padding: 6px 16px;
+    border-radius: 8px;
+    opacity: 0.8;
+    z-index: 4;
+
+    &.used {
+      border-color: var(--success-green);
+      color: var(--success-green);
+    }
+  }
+
+  .qr-frame {
+    position: relative;
+    padding: 14px;
+    margin-bottom: 14px;
+
+    .corner {
+      position: absolute;
+      width: 16px;
+      height: 16px;
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
       border-color: var(--primary-navy);
       border-style: solid;
       border-width: 0;
 
+<<<<<<< HEAD
       &.tl { top: -2px; left: -2px; border-top-width: 3px; border-left-width: 3px; }
       &.tr { top: -2px; right: -2px; border-top-width: 3px; border-right-width: 3px; }
       &.bl { bottom: -2px; left: -2px; border-bottom-width: 3px; border-left-width: 3px; }
       &.br { bottom: -2px; right: -2px; border-bottom-width: 3px; border-right-width: 3px; }
+=======
+      &.tl {
+        top: 0;
+        left: 0;
+        border-top-width: 2.5px;
+        border-left-width: 2.5px;
+        border-top-left-radius: 6px;
+      }
+      &.tr {
+        top: 0;
+        right: 0;
+        border-top-width: 2.5px;
+        border-right-width: 2.5px;
+        border-top-right-radius: 6px;
+      }
+      &.bl {
+        bottom: 0;
+        left: 0;
+        border-bottom-width: 2.5px;
+        border-left-width: 2.5px;
+        border-bottom-left-radius: 6px;
+      }
+      &.br {
+        bottom: 0;
+        right: 0;
+        border-bottom-width: 2.5px;
+        border-right-width: 2.5px;
+        border-bottom-right-radius: 6px;
+      }
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     }
 
     .qr {
       position: relative;
+<<<<<<< HEAD
       width: 106px;
       height: 106px;
       overflow: hidden;
@@ -734,6 +1177,11 @@ ion-content.ticket-content {
         width: 100%;
         height: 100%;
       }
+=======
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 
       &::after {
         content: "";
@@ -742,13 +1190,37 @@ ion-content.ticket-content {
         right: 0;
         top: 0;
         height: 3px;
+<<<<<<< HEAD
         background: linear-gradient(90deg, transparent, var(--accent-red), transparent);
         animation: scanSweep 2.6s ease-in-out infinite;
         pointer-events: none;
+=======
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--accent-red),
+          transparent
+        );
+        animation: scanSweep 2.6s ease-in-out infinite;
+      }
+
+      .qr-row {
+        display: flex;
+      }
+
+      .qr-cell {
+        width: 6px;
+        height: 6px;
+        background: transparent;
+        &.on {
+          background: var(--primary-navy);
+        }
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
       }
     }
   }
 
+<<<<<<< HEAD
   .ref-zone {
     flex: 1;
     min-width: 0;
@@ -946,6 +1418,36 @@ ion-content.ticket-content {
   &.used,
   &.void {
     color: #c0392b;
+=======
+  .ref-label {
+    margin: 0;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+  }
+  .ref-code {
+    margin: 3px 0 0;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--primary-navy);
+    letter-spacing: 1px;
+  }
+
+  .scan-note {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin: 12px 0 0;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    ion-icon {
+      font-size: 13px;
+      color: var(--success-green);
+    }
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   }
 }
 
@@ -954,11 +1456,18 @@ ion-content.ticket-content {
   display: flex;
   gap: 12px;
   background: var(--bg-white);
+<<<<<<< HEAD
   border: 1.5px solid var(--primary-navy);
   border-radius: 18px;
   padding: 16px;
   margin-top: 16px;
   box-shadow: 2px 2px 0 var(--ink);
+=======
+  border: 1px solid var(--border-color);
+  border-radius: 18px;
+  padding: 16px;
+  margin-top: 16px;
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   opacity: 0;
   animation: revealUp 0.5s 0.14s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 
@@ -1006,6 +1515,7 @@ ion-content.ticket-content {
   display: flex;
   flex-direction: column;
   gap: 10px;
+<<<<<<< HEAD
   background-color: rgba(255, 255, 255, 0.86);
   background-image: radial-gradient(
     rgba(21, 29, 72, 0.03) 1px,
@@ -1015,6 +1525,15 @@ ion-content.ticket-content {
   -webkit-backdrop-filter: blur(14px);
   backdrop-filter: blur(14px);
   border-top: 1px solid var(--ink);
+=======
+  background-color: var(--bg-white);
+  background-image: radial-gradient(
+    rgba(21, 29, 72, 0.04) 1px,
+    transparent 1.3px
+  );
+  background-size: 8px 8px;
+  border-top: 1px solid var(--border-color);
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   padding: 16px 16px calc(env(safe-area-inset-bottom, 16px) + 16px);
   max-width: 480px;
   margin: 0 auto;
@@ -1042,6 +1561,7 @@ ion-content.ticket-content {
   }
 
   .primary-cta {
+<<<<<<< HEAD
     background-color: var(--primary-navy);
     background-image: radial-gradient(
       rgba(255, 255, 255, 0.1) 1px,
@@ -1054,10 +1574,16 @@ ion-content.ticket-content {
     &:active {
       box-shadow: 1px 1px 0 var(--ink);
     }
+=======
+    background: var(--primary-navy);
+    color: #ffffff;
+    border: none;
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   }
   .danger-cta {
     background: transparent;
     color: var(--accent-red);
+<<<<<<< HEAD
     border: 1.5px solid var(--accent-red);
     box-shadow: 1.5px 1.5px 0 rgba(211, 47, 47, 0.3);
   }
@@ -1092,3 +1618,17 @@ ion-content.ticket-content {
   }
 }
 
+=======
+    border: 1.5px solid #fecaca;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2

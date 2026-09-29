@@ -1,0 +1,1 @@
+import {ag as L}from'./main-BQDNGP7L.js';var a=(()=>{let t=class t{constructor(){this.active=null;}publish(r){this.active=r;}clear(){this.active=null;}};t.\u0275fac=function(e){return new(e||t)},t.\u0275prov=L({token:t,factory:t.\u0275fac,providedIn:"root"});let i=t;return i})();export{a};

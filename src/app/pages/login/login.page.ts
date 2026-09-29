@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { Component, inject } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
@@ -10,6 +11,13 @@ import {
 } from '@ionic/angular';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+=======
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { IonContent, IonIcon, IonInput } from '@ionic/angular';
+import { Router, RouterLink } from '@angular/router';
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 import { addIcons } from 'ionicons';
 import {
   mailOutline,
@@ -35,26 +43,42 @@ addIcons({
   selector: 'app-login',
   standalone: true,
   imports: [
+<<<<<<< HEAD
+=======
+    CommonModule,
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     FormsModule,
     IonContent,
     IonIcon,
     IonInput,
+<<<<<<< HEAD
     RouterLink
 ],
+=======
+    RouterLink,
+  ],
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
 })
 export class LoginPage {
+<<<<<<< HEAD
   private router = inject(Router);
   private toastController = inject(ToastController);
   private alertController = inject(AlertController);
   private auth = inject(AuthService);
 
+=======
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   email = '';
   password = '';
   showPassword = false;
 
+<<<<<<< HEAD
   constructor() {
+=======
+  constructor(private router: Router) {
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     addIcons({
       mailOutline,
       lockClosedOutline,
@@ -63,6 +87,7 @@ export class LoginPage {
       logoFacebook,
     });
   }
+<<<<<<< HEAD
   get canLogin(): boolean {
     return this.isValidEmail(this.email) && this.password.length >= 6;
   }
@@ -136,4 +161,9 @@ export class LoginPage {
     });
     await toast.present();
   }
+=======
+  login() {
+    this.router.navigateByUrl('/home');
+  }
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 }

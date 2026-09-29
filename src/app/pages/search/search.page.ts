@@ -1,6 +1,11 @@
+<<<<<<< HEAD
 import { DecimalPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
 
+=======
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonIcon } from '@ionic/angular';
 import { Router } from '@angular/router';
@@ -14,12 +19,17 @@ import {
   carSportOutline,
   peopleOutline,
   compassOutline,
+<<<<<<< HEAD
+=======
+  timeOutline,
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   closeCircleOutline,
   chevronForwardOutline,
   chevronDownOutline,
   mapOutline,
   locationOutline,
   bus,
+<<<<<<< HEAD
   heart,
   heartOutline,
   arrowForwardOutline,
@@ -32,6 +42,9 @@ import {
   TerminalInfo,
 } from '../../services/route-catalog.service';
 import { PickupService } from '../../services/pickup.service';
+=======
+} from 'ionicons/icons';
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 
 addIcons({
   'arrow-back-outline': arrowBackOutline,
@@ -42,17 +55,24 @@ addIcons({
   'car-sport-outline': carSportOutline,
   'people-outline': peopleOutline,
   'compass-outline': compassOutline,
+<<<<<<< HEAD
+=======
+  'time-outline': timeOutline,
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   'close-circle-outline': closeCircleOutline,
   'chevron-forward-outline': chevronForwardOutline,
   'chevron-down-outline': chevronDownOutline,
   'map-outline': mapOutline,
   'location-outline': locationOutline,
   bus: bus,
+<<<<<<< HEAD
   heart: heart,
   'heart-outline': heartOutline,
   'arrow-forward-outline': arrowForwardOutline,
   star: star,
   'business-outline': businessOutline,
+=======
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 });
 
 type Category = 'bus' | 'uv' | 'shared' | 'all';
@@ -63,6 +83,7 @@ interface CategoryOption {
   label: string;
   icon: string;
 }
+<<<<<<< HEAD
 interface Destination {
   name: string;
   tag: string;
@@ -71,11 +92,23 @@ interface Destination {
 }
 interface RouteCard {
   id: string;
+=======
+interface RecentSearch {
+  from: string;
+  to: string;
+}
+interface Destination {
+  name: string;
+  tag: string;
+}
+interface RouteCard {
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   operator: string;
   from: string;
   to: string;
   fare: string;
   duration: string;
+<<<<<<< HEAD
   eta: string;
   seats: string;
   status: string;
@@ -85,15 +118,27 @@ interface RouteCard {
 
 /** Which discovery shelf the scope chips show. */
 type SearchScope = 'all' | 'terminals' | 'routes' | 'places';
+=======
+}
+interface Terminal {
+  name: string;
+  distance: string;
+}
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 
 @Component({
   selector: 'app-search',
   standalone: true,
+<<<<<<< HEAD
   imports: [FormsModule, IonContent, IonIcon, DecimalPipe],
+=======
+  imports: [CommonModule, FormsModule, IonContent, IonIcon],
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   templateUrl: './search.page.html',
   styleUrls: ['./search.page.scss'],
 })
 export class SearchPage {
+<<<<<<< HEAD
   private router = inject(Router);
   private bookingService = inject(BookingService);
   private catalog = inject(RouteCatalogService);
@@ -107,6 +152,12 @@ export class SearchPage {
   showAllDestinations = false;
   feedbackMessage = '';
   isListening = false;
+=======
+  query = '';
+  activeCategory: Category = 'all';
+  sortBy: SortOption = 'Fastest';
+  showSortMenu = false;
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   sortOptions: SortOption[] = ['Fastest', 'Cheapest', 'Rated'];
 
   categories: CategoryOption[] = [
@@ -116,6 +167,7 @@ export class SearchPage {
     { id: 'all', label: 'All', icon: 'compass-outline' },
   ];
 
+<<<<<<< HEAD
   mostVisited: Destination[] = [
     { name: 'Baguio City', tag: 'Summer Capital', lat: 16.4023, lng: 120.596 },
     { name: 'Vigan City', tag: 'Heritage Town', lat: 17.5747, lng: 120.3869 },
@@ -128,11 +180,30 @@ export class SearchPage {
 popularRoutes: RouteCard[] = [
     {
       id: 'r5',
+=======
+  recentSearches: RecentSearch[] = [
+    { from: 'Baguio City', to: 'Tuguegarao City' },
+    { from: 'Santiago City', to: 'Cubao, QC' },
+  ];
+
+  mostVisited: Destination[] = [
+    { name: 'Baguio City', tag: 'Summer Capital' },
+    { name: 'Vigan City', tag: 'Heritage Town' },
+    { name: 'Sagada', tag: 'Mountain Province' },
+    { name: 'Laoag City', tag: 'Ilocos Norte' },
+    { name: 'Tuguegarao City', tag: 'Cagayan' },
+    { name: 'Banaue', tag: 'Rice Terraces' },
+  ];
+
+  popularRoutes: RouteCard[] = [
+    {
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
       operator: 'Victory Liner',
       from: 'Manila (Cubao)',
       to: 'Baguio City',
       fare: '₱ 480',
       duration: '5h 30m',
+<<<<<<< HEAD
       eta: '18 min away',
       seats: '12 seats left',
       status: 'on-time',
@@ -141,11 +212,16 @@ popularRoutes: RouteCard[] = [
     },
     {
       id: 'r6',
+=======
+    },
+    {
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
       operator: 'Partas',
       from: 'Manila (Cubao)',
       to: 'Laoag City',
       fare: '₱ 850',
       duration: '9h',
+<<<<<<< HEAD
       eta: '42 min away',
       seats: '9 seats left',
       status: 'on-time',
@@ -154,11 +230,16 @@ popularRoutes: RouteCard[] = [
     },
     {
       id: 'r7',
+=======
+    },
+    {
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
       operator: 'Florida Bus Line',
       from: 'Manila (PITX)',
       to: 'Vigan City',
       fare: '₱ 750',
       duration: '8h',
+<<<<<<< HEAD
       eta: '24 min away',
       seats: '18 seats left',
       status: 'delayed',
@@ -167,11 +248,16 @@ popularRoutes: RouteCard[] = [
     },
     {
       id: 'r8',
+=======
+    },
+    {
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
       operator: 'GV Florida',
       from: 'Cauayan',
       to: 'Tuguegarao',
       fare: '₱ 150',
       duration: '1h 30m',
+<<<<<<< HEAD
       eta: '7 min away',
       seats: '3 seats left',
       status: 'on-time',
@@ -256,6 +342,29 @@ constructor() {
       if (this.sortBy === 'Cheapest') return this.priceValue(a) - this.priceValue(b);
       if (this.sortBy === 'Rated') return b.rating - a.rating;
       return this.durationMinutes(a) - this.durationMinutes(b);
+=======
+    },
+  ];
+
+  nearbyTerminals: Terminal[] = [
+    { name: 'Baguio Terminal', distance: '0.4 km' },
+    { name: 'Victory Liner Cubao', distance: '2.1 km' },
+  ];
+
+  constructor(private router: Router) {
+    addIcons({
+      arrowBackOutline,
+      closeOutline,
+      searchOutline,
+      closeCircleOutline,
+      micOutline,
+      timeOutline,
+      chevronForwardOutline,
+      locationOutline,
+      chevronDownOutline,
+      bus,
+      mapOutline,
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     });
   }
 
@@ -264,11 +373,15 @@ constructor() {
   }
   clearQuery() {
     this.query = '';
+<<<<<<< HEAD
     this.feedbackMessage = '';
+=======
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   }
   selectCategory(id: Category) {
     this.activeCategory = id;
   }
+<<<<<<< HEAD
   toggleSortMenu() {
     this.showSortMenu = !this.showSortMenu;
   }
@@ -394,5 +507,22 @@ selectDestination(dest: Destination) {
     const hours = Number(/(\d+)h/.exec(route.duration)?.[1] ?? 0);
     const minutes = Number(/(\d+)m/.exec(route.duration)?.[1] ?? 0);
     return hours * 60 + minutes;
+=======
+  useRecentSearch(item: RecentSearch) {
+    this.query = `${item.from} to ${item.to}`;
+  }
+  clearRecentSearches() {
+    this.recentSearches = [];
+  }
+  toggleSortMenu() {
+    this.showSortMenu = !this.showSortMenu;
+  }
+  setSort(option: SortOption) {
+    this.sortBy = option;
+    this.showSortMenu = false;
+  }
+  selectDestination(dest: Destination) {
+    this.query = dest.name;
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   }
 }

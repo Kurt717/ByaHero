@@ -1,6 +1,10 @@
+<<<<<<< HEAD
 import { Injectable, inject } from '@angular/core';
 import { BookingService } from '../booking/booking.service';
 import { ProfileService } from '../profile/profile.service';
+=======
+import { Injectable } from '@angular/core';
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 
 export type BookingStatus =
   | 'confirmed'
@@ -18,6 +22,7 @@ export interface Booking {
   fare: string;
   status: BookingStatus;
   bookingRef: string;
+<<<<<<< HEAD
   passengerName?: string;
   passengerPhone?: string;
   passengerEmail?: string;
@@ -40,10 +45,13 @@ export interface Booking {
    *  History/audit context only — the new booking keeps its own ref.
    *  Absent on ordinary bookings and older stored records. */
   rebookedFrom?: string;
+=======
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 }
 
 @Injectable({ providedIn: 'root' })
 export class TicketService {
+<<<<<<< HEAD
   private readonly storageKey = 'byahero.bookings.v1';
   private profileService = inject(ProfileService);
   private bookingsState: Booking[] = this.loadBookings();
@@ -285,4 +293,14 @@ return updated;
       },
     ];
   }
+=======
+  selected: Booking | null = null;
+
+  open(booking: Booking) {
+    this.selected = booking;
+  }
+  clear() {
+    this.selected = null;
+  }
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 }

@@ -1,8 +1,22 @@
 import * as L from 'leaflet';
+<<<<<<< HEAD
 import { Component, AfterViewInit, OnDestroy, ViewChild, ElementRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonContent, IonIcon, ToastController } from '@ionic/angular';
 import { Router, ActivatedRoute } from '@angular/router';
+=======
+import {
+  Component,
+  OnInit,
+  AfterViewInit,
+  OnDestroy,
+  ViewChild,
+  ElementRef,
+} from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { IonContent, IonIcon } from '@ionic/angular';
+import { Router } from '@angular/router';
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 import { addIcons } from 'ionicons';
 import {
   arrowBackOutline,
@@ -16,6 +30,7 @@ import {
   checkmarkCircle,
   chevronForwardOutline,
   ticketOutline,
+<<<<<<< HEAD
   sunnyOutline,
   cloudyOutline,
   rainyOutline,
@@ -35,6 +50,9 @@ import {
 import { RideIdentityService } from '../../services/ride-identity.service';
 import { RideCardsComponent } from '../../components/ride-cards/ride-cards.component';
 import { RouteStopTimelineComponent } from '../../components/route-stop-timeline/route-stop-timeline.component';
+=======
+} from 'ionicons/icons';
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 
 addIcons({
   'arrow-back-outline': arrowBackOutline,
@@ -48,6 +66,7 @@ addIcons({
   'checkmark-circle': checkmarkCircle,
   'chevron-forward-outline': chevronForwardOutline,
   'ticket-outline': ticketOutline,
+<<<<<<< HEAD
   'sunny-outline': sunnyOutline,
   'cloudy-outline': cloudyOutline,
   'rainy-outline': rainyOutline,
@@ -75,10 +94,23 @@ const PLATES: Record<string, string> = {
   Partas: 'GDH 7205',
   'Florida Bus Line': 'NEE 4108',
 };
+=======
+});
+
+type StopStatus = 'done' | 'current' | 'upcoming';
+type TripStage = 'boarding' | 'enroute' | 'arriving';
+
+interface TripStop {
+  name: string;
+  sub: string;
+  status: StopStatus;
+}
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 
 @Component({
   selector: 'app-active-trip',
   standalone: true,
+<<<<<<< HEAD
   imports: [CommonModule, IonContent, IonIcon, RideCardsComponent, RouteStopTimelineComponent],
   templateUrl: './active-trip.page.html',
   styleUrls: ['./active-trip.page.scss'],
@@ -129,10 +161,39 @@ export class ActiveTripPage implements AfterViewInit, OnDestroy {
    *  entry for this origin → destination (e.g. '7h 30m' → 450) so ETA and
    *  progress share one basis; falls back to 90 when unmatched. */
   private readonly tripMinutes = this.tripMinutesFor(this.booking);
+=======
+  imports: [CommonModule, IonContent, IonIcon],
+  templateUrl: './active-trip.page.html',
+  styleUrls: ['./active-trip.page.scss'],
+})
+export class ActiveTripPage implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild('mapEl') mapEl?: ElementRef<HTMLDivElement>;
+
+  trip = {
+    operator: 'Victory Liner',
+    busNo: '402',
+    plate: 'NBC 1932',
+    from: 'Baguio City',
+    to: 'Tuguegarao City',
+    driver: 'Ramon Cruz',
+    rating: '4.8',
+  };
+
+  stops: TripStop[] = [
+    { name: 'Baguio City Terminal', sub: 'Boarded • 7:02 AM', status: 'done' },
+    { name: 'Rosario, La Union', sub: 'Rest stop • ETA 7:48 AM', status: 'current' },
+    { name: 'Santiago City', sub: 'ETA 9:15 AM', status: 'upcoming' },
+    { name: 'Tuguegarao City Terminal', sub: 'Final stop • ETA 11:40 AM', status: 'upcoming' },
+  ];
+
+  private readonly originCoords: [number, number] = [16.4023, 120.596]; // Baguio
+  private readonly destCoords: [number, number] = [17.6132, 121.727]; // Tuguegarao
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 
   private map: L.Map | null = null;
   private busMarker: L.Marker | null = null;
   private busInterval: any = null;
+<<<<<<< HEAD
   /** Map display position, seeded deterministically from departure + device
    *  time (see derivedProgress). Refreshing restores the same position. */
   private busProgress = this.initialBusProgress();
@@ -152,6 +213,17 @@ export class ActiveTripPage implements AfterViewInit, OnDestroy {
     if (b && (b.status === 'confirmed' || b.status === 'boarding')) {
       void this.pickupService.refreshCurrentForBooking(b.bookingRef);
     }
+=======
+  private busProgress = 0.12; // trip just departed
+
+  constructor(private router: Router) {
+      addIcons({arrowBackOutline,chevronForwardOutline,shareSocialOutline,navigateOutline,locateOutline,star,chatbubbleEllipsesOutline,callOutline,checkmarkCircle,ticketOutline,alertOutline});}
+
+  ngOnInit() {}
+
+  ngAfterViewInit() {
+    setTimeout(() => this.initMap(), 60);
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   }
 
   ngOnDestroy() {
@@ -159,6 +231,7 @@ export class ActiveTripPage implements AfterViewInit, OnDestroy {
     this.map?.remove();
   }
 
+<<<<<<< HEAD
   private resolveBooking(): Booking | null {
     const ref = this.route.snapshot.queryParamMap.get('ref');
     if (ref) {
@@ -247,6 +320,8 @@ export class ActiveTripPage implements AfterViewInit, OnDestroy {
     return isNaN(d.getTime()) ? null : d;
   }
 
+=======
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   get stage(): TripStage {
     if (this.busProgress < 0.15) return 'boarding';
     if (this.busProgress > 0.85) return 'arriving';
@@ -254,6 +329,7 @@ export class ActiveTripPage implements AfterViewInit, OnDestroy {
   }
 
   get progressPercent(): number {
+<<<<<<< HEAD
     if (this.booking?.status === 'cancelled') return 0;
     if (this.booking?.status === 'completed' || this.hasArrived) return 100;
     return Math.round(Math.max(0, Math.min(this.busProgress, 1)) * 100);
@@ -348,10 +424,21 @@ export class ActiveTripPage implements AfterViewInit, OnDestroy {
     }
   }
 
+=======
+    return Math.round(this.busProgress * 100);
+  }
+
+  get etaLabel(): string {
+    const minsLeft = Math.max(2, Math.round((1 - this.busProgress) * 90));
+    return `${minsLeft} min`;
+  }
+
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   goBack() {
     this.router.navigateByUrl('/home');
   }
 
+<<<<<<< HEAD
   /** Slim sample-conditions indicator for the live corridor. Compact by
    *  design — the map stays the hero of this screen. */
   get corridorConditions() {
@@ -378,11 +465,14 @@ export class ActiveTripPage implements AfterViewInit, OnDestroy {
     }
   }
 
+=======
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   recenter() {
     if (!this.map || !this.busMarker) return;
     this.map.panTo(this.busMarker.getLatLng(), { animate: true });
   }
 
+<<<<<<< HEAD
   async shareTrip() {
     const id = this.booking
       ? this.rideIdentity.identityForBooking(this.booking)
@@ -429,6 +519,27 @@ export class ActiveTripPage implements AfterViewInit, OnDestroy {
       color: 'dark',
     });
     await toast.present();
+=======
+  callDriver() {
+    window.open('tel:+639171234567');
+  }
+
+  messageDriver() {
+    console.log('Opening chat with', this.trip.driver);
+  }
+
+  shareTrip() {
+    const text = `Tracking my ${this.trip.operator} trip from ${this.trip.from} to ${this.trip.to} on ByaHero.`;
+    if ((navigator as any).share) {
+      (navigator as any).share({ title: 'My ByaHero trip', text });
+    } else {
+      console.log('Share:', text);
+    }
+  }
+
+  sosAlert() {
+    console.log('SOS triggered for trip', this.trip.busNo);
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   }
 
   private initMap() {
@@ -454,7 +565,10 @@ export class ActiveTripPage implements AfterViewInit, OnDestroy {
 
     this.addPin(this.originCoords, '#151D48', 'A');
     this.addPin(this.destCoords, '#D32F2F', 'B');
+<<<<<<< HEAD
     this.addStopDots();
+=======
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 
     this.busMarker = this.busDivMarker(
       this.interpolate(this.originCoords, this.destCoords, this.busProgress),
@@ -467,7 +581,11 @@ export class ActiveTripPage implements AfterViewInit, OnDestroy {
   }
 
   private stepBus() {
+<<<<<<< HEAD
     if (this.hasArrived || this.busProgress >= 0.97) return;
+=======
+    if (this.busProgress >= 0.94) return; // simulate arriving soon, don't overshoot
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     this.busProgress += 0.01;
     const pos = this.interpolate(this.originCoords, this.destCoords, this.busProgress);
     this.busMarker?.setLatLng(pos);
@@ -493,6 +611,7 @@ export class ActiveTripPage implements AfterViewInit, OnDestroy {
     L.marker(coords, { icon }).addTo(this.map!);
   }
 
+<<<<<<< HEAD
   /**
    * Intermediate stop dots along the same straight corridor the bus
    * marker travels, so map and timeline share one stop sequence. Visual
@@ -515,6 +634,8 @@ export class ActiveTripPage implements AfterViewInit, OnDestroy {
     }
   }
 
+=======
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   private busDivMarker(coords: [number, number]): L.Marker {
     const html = `
       <div style="position:relative;width:30px;height:30px;">
@@ -527,4 +648,8 @@ export class ActiveTripPage implements AfterViewInit, OnDestroy {
       icon: L.divIcon({ className: '', html, iconSize: [30, 30], iconAnchor: [15, 15] }),
     });
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2

@@ -1,4 +1,5 @@
 <ion-content fullscreen class="home-content">
+<<<<<<< HEAD
   <!-- COMIC HERO BANNER -->
   <section class="hero-banner">
     <!-- superhero action backdrop: giant ray burst + speed streaks -->
@@ -127,6 +128,82 @@
     <div class="hb-content">
       <div class="hero-identity">
         <div class="avatar-wrap">
+=======
+  <!-- Deep Blue Header Background (Image 2 Color Scheme) -->
+  <div class="header-bg-block">
+    <svg class="visor-arc" viewBox="0 0 150 150" aria-hidden="true">
+      <defs>
+        <linearGradient id="visorWash" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#5B7CFF" stop-opacity="0.45" />
+          <stop offset="100%" stop-color="#5B7CFF" stop-opacity="0" />
+        </linearGradient>
+      </defs>
+      <!-- Manga-style focus lines, kept faint -->
+      <g stroke="#8FA3FF" stroke-width="1.5" opacity="0.28">
+        <line x1="75" y1="75" x2="8" y2="140" />
+        <line x1="75" y1="75" x2="140" y2="132" />
+        <line x1="75" y1="75" x2="142" y2="18" />
+        <line x1="75" y1="75" x2="26" y2="4" />
+      </g>
+      <!-- The logo's route-line curve, zoomed in and layered like a visor/windshield glint -->
+      <rect
+        x="8"
+        y="8"
+        width="134"
+        height="134"
+        rx="38"
+        fill="url(#visorWash)"
+      />
+      <path
+        d="M18 58 Q75 18 132 58 Q75 96 18 58 Z"
+        fill="#02040F"
+        opacity="0.45"
+      />
+      <path
+        d="M27 52 Q75 27 123 52 Q75 70 27 52 Z"
+        fill="#8FA3FF"
+        opacity="0.55"
+      />
+      <path
+        d="M40 46 Q75 34 110 46 Q75 55 40 46 Z"
+        fill="#FFFFFF"
+        opacity="0.32"
+      />
+    </svg>
+    <svg
+      class="header-seam"
+      viewBox="0 0 340 60"
+      preserveAspectRatio="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M0,42 Q42.5,14 85,42 Q127.5,14 170,42 Q212.5,14 255,42 Q297.5,14 340,42 L340,60 L0,60 Z"
+        fill="var(--bg-page)"
+      />
+      <g fill="#AFC0FF" opacity="0.9">
+        <polygon
+          points="6,0 7.32,4.2 12,6 7.32,7.8 6,12 4.68,7.8 0,6 4.68,4.2"
+          transform="translate(80,16) scale(0.9)"
+        />
+        <polygon
+          points="6,0 7.32,4.2 12,6 7.32,7.8 6,12 4.68,7.8 0,6 4.68,4.2"
+          transform="translate(165,14) scale(0.7)"
+        />
+        <polygon
+          points="6,0 7.32,4.2 12,6 7.32,7.8 6,12 4.68,7.8 0,6 4.68,4.2"
+          transform="translate(250,16) scale(0.9)"
+        />
+      </g>
+    </svg>
+  </div>
+
+  <div class="home-wrap">
+    <!-- 1. HEADER -->
+    <div class="page-header">
+      <div class="user-profile">
+        <div class="avatar-wrap">
+          <!-- Pop-art action burst behind the avatar -->
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
           <svg class="avatar-burst" viewBox="0 0 100 100" aria-hidden="true">
             <g stroke="#FFE066" stroke-width="2.5" opacity="0.6" stroke-linecap="round">
               <line x1="50" y1="4" x2="50" y2="16" />
@@ -140,6 +217,7 @@
             </g>
           </svg>
           <ion-avatar class="avatar">
+<<<<<<< HEAD
             <img [src]="userAvatar" alt="User" />
           </ion-avatar>
           <span class="hero-rank">R1</span>
@@ -172,6 +250,29 @@
 
   <div class="home-wrap">
 
+=======
+            <img
+              src="https://ionicframework.com/docs/img/demos/avatar.svg"
+              alt="User"
+            />
+          </ion-avatar>
+        </div>
+        
+        <div class="greeting">
+          <span class="greeting-sub">Good morning,</span>
+          <h2 class="greeting-name">{{ userName }}</h2>
+        </div>
+      </div>
+      <button
+        class="favorites-btn"
+        (click)="goToFavorites()"
+        aria-label="Favorites"
+      >
+        <ion-icon name="heart-outline"></ion-icon>
+      </button>
+    </div>
+
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     <!-- 2. ROUTE SELECTORS (Flat, Bordered Pills) -->
     <div class="route-selectors">
       <!-- Primary Route Pill -->
@@ -189,7 +290,11 @@
             type="text"
             [(ngModel)]="destination"
             placeholder="Destination"
+<<<<<<< HEAD
             />
+=======
+          />
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
         </div>
       </div>
 
@@ -197,18 +302,23 @@
       <div class="pill-card secondary-info" (click)="viewLiveTrip()">
         <div class="info-left">
           <div class="status-indicator"></div>
+<<<<<<< HEAD
           @if (activeBooking) {
             <span class="trip-pill-main">{{ activeBooking.operator }}</span>
             <span class="trip-pill-sub">{{ activeBooking.from }} → {{ activeBooking.to }}</span>
           } @else {
             <span>No active trip yet — book one!</span>
           }
+=======
+          <span>View Active Trip</span>
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
         </div>
         <ion-icon
           name="chevron-forward-outline"
           class="forward-icon"
         ></ion-icon>
       </div>
+<<<<<<< HEAD
 
       <!-- TRAVEL CONDITIONS (compact sample strip — secondary, never the hero) -->
       <button
@@ -237,10 +347,13 @@
       @if (reminderView) {
         <app-trip-reminder-card class="home-reminder"></app-trip-reminder-card>
       }
+=======
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     </div>
 
     <!-- 3. CATEGORIES -->
     <div class="categories-grid">
+<<<<<<< HEAD
       @for (cat of categories; track cat.id) {
         <div
           class="cat-item"
@@ -285,10 +398,58 @@
               >
           }
         </div>
+=======
+      <div class="cat-item active">
+        <div class="squircle"><ion-icon name="bus-outline"></ion-icon></div>
+        <span class="cat-label">Bus</span>
+      </div>
+      <div class="cat-item">
+        <div class="squircle">
+          <ion-icon name="car-sport-outline"></ion-icon>
+        </div>
+        <span class="cat-label">UV Exp</span>
+      </div>
+      <div class="cat-item">
+        <div class="squircle"><ion-icon name="people-outline"></ion-icon></div>
+        <span class="cat-label">Shared</span>
+      </div>
+      <div class="cat-item">
+        <div class="squircle"><ion-icon name="compass-outline"></ion-icon></div>
+        <span class="cat-label">All</span>
+      </div>
+    </div>
+
+    <!-- 4. SEGMENTED TOGGLE & FILTERS -->
+    <div class="view-toggle-wrapper">
+      <div class="segmented-control">
+        <button
+          class="seg-btn"
+          [class.active]="selectedView === 'list'"
+          (click)="toggleMapView('list')"
+        >
+          <ion-icon name="list-outline"></ion-icon>
+          <span>List View</span>
+        </button>
+        <button
+          class="seg-btn"
+          [class.active]="selectedView === 'map'"
+          (click)="toggleMapView('map')"
+        >
+          <ion-icon name="map-outline"></ion-icon>
+          <span>Map View</span>
+        </button>
+      </div>
+
+      <div class="filter-row">
+        <span class="filter-pill active">Fastest</span>
+        <span class="filter-pill">Cheapest</span>
+        <span class="filter-pill">Rated</span>
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
       </div>
     </div>
 
     <!-- 5A. LIST VIEW -->
+<<<<<<< HEAD
     @if (selectedView === 'list') {
       <div class="content-viewport list-viewport">
         @for (route of displayRoutes; track route.id; let i = $index) {
@@ -374,6 +535,59 @@
         @if (mapError) {
           <div class="map-error">{{ mapError }}</div>
         }
+=======
+    <div class="content-viewport list-viewport" *ngIf="selectedView === 'list'">
+      <div class="trip-card" *ngFor="let route of nearbyRoutes; let i = index">
+        <div class="fastest-tag" *ngIf="i === 0">
+          <ion-icon name="star-sharp"></ion-icon>
+          <span>Fastest pick</span>
+        </div>
+        <div class="card-top">
+          <div class="operator-info">
+            <div class="op-logo"><ion-icon name="bus"></ion-icon></div>
+            <div class="op-text">
+              <h4>{{ route.operator }}</h4>
+              <p>{{ route.eta }} • {{ route.status }}</p>
+            </div>
+          </div>
+          <span class="fare">{{ route.fare }}</span>
+        </div>
+        <div class="card-middle">
+          <div class="route-line-vertical">
+            <span class="dot origin"></span>
+            <span class="line"></span>
+            <span class="dot dest"></span>
+          </div>
+          <div class="route-text">
+            <p><strong>{{ route.from }}</strong></p>
+            <p class="dest-text"><strong>{{ route.to }}</strong></p>
+          </div>
+        </div>
+        <div class="card-bottom">
+          <span class="seats">{{ route.seats }}</span>
+          <div class="card-actions">
+            <button
+              class="hail-btn"
+              [disabled]="hail !== null"
+              (click)="startHail(route)"
+            >
+              <ion-icon name="hand-left-outline"></ion-icon>
+              <span>{{ hail?.route === route ? 'Hailed' : 'Hail' }}</span>
+            </button>
+            <button class="book-btn" (click)="bookTrip(route)">Select</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5B. MAP VIEW (real Leaflet + OpenStreetMap) -->
+    <div
+      class="content-viewport map-viewport"
+      [hidden]="selectedView !== 'map'"
+    >
+      <div class="map-shell">
+        <div #mapEl class="leaflet-host"></div>
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 
         <div class="map-legend">
           <span class="legend-dot navy"></span>On-time
@@ -385,6 +599,7 @@
           [class.loading]="locating"
           (click)="locateMe()"
           aria-label="Find my location"
+<<<<<<< HEAD
           >
           <ion-icon name="locate-outline"></ion-icon>
         </button>
@@ -445,3 +660,101 @@
       </div>
     }
   </ion-content>
+=======
+        >
+          <ion-icon name="locate-outline"></ion-icon>
+        </button>
+
+        <span class="locate-toast" *ngIf="locateMessage"
+          >{{ locateMessage }}</span
+        >
+
+        <!-- Compact info card for the marker the user just tapped.
+             The View button reuses the exact same bookTrip() handler and
+             route object as List Mode's Select button — same detail page,
+             same booking flow, no separate Map Mode flow. -->
+        <div class="map-info-card" *ngIf="selectedMapRoute">
+          <button
+            class="map-info-close"
+            (click)="closeMapCard()"
+            aria-label="Close"
+          >
+            <ion-icon name="close-outline"></ion-icon>
+          </button>
+
+          <div class="map-info-top">
+            <div class="operator-info">
+              <div class="op-logo"><ion-icon name="bus"></ion-icon></div>
+              <div class="op-text">
+                <h4>{{ selectedMapRoute.operator }}</h4>
+                <p>{{ selectedMapRoute.eta }} • {{ selectedMapRoute.status }}</p>
+              </div>
+            </div>
+            <span class="fare">{{ selectedMapRoute.fare }}</span>
+          </div>
+
+          <div class="map-info-route">
+            <span class="dot origin"></span>
+            <span class="route-text">{{ selectedMapRoute.from }}</span>
+            <ion-icon name="arrow-forward-outline"></ion-icon>
+            <span class="route-text dest">{{ selectedMapRoute.to }}</span>
+          </div>
+
+          <div class="map-info-bottom">
+            <span class="seats">{{ selectedMapRoute.seats }}</span>
+            <div class="card-actions">
+              <button
+                class="hail-btn"
+                [disabled]="hail !== null"
+                (click)="startHail(selectedMapRoute)"
+              >
+                <ion-icon name="hand-left-outline"></ion-icon>
+                <span>Hail</span>
+              </button>
+              <button class="book-btn" (click)="bookTrip(selectedMapRoute)">
+                View
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HAIL STATUS SHEET (shows in both List and Map views while a hail is active) -->
+  <div
+    class="hail-sheet"
+    slot="fixed"
+    *ngIf="hail"
+    [class.accepted]="hail.status === 'accepted'"
+  >
+    <div class="hail-sheet-icon">
+      <ion-icon
+        [name]="hail.status === 'accepted' ? 'checkmark-circle' : 'hand-left-outline'"
+      ></ion-icon>
+    </div>
+
+    <div class="hail-sheet-text">
+      <h4 *ngIf="hail.status === 'locating'">Finding your pickup point...</h4>
+      <h4 *ngIf="hail.status === 'sent'">
+        Hail sent to {{ hail.route.operator }}
+      </h4>
+      <h4 *ngIf="hail.status === 'accepted'">Driver acknowledged your hail</h4>
+
+      <p *ngIf="hail.status === 'locating'">
+        Getting your location so the driver knows where to stop.
+      </p>
+      <p *ngIf="hail.status === 'sent'">
+        Waiting for the driver to confirm. Stay where you are.
+      </p>
+      <p *ngIf="hail.status === 'accepted'">
+        {{ hail.route.operator }} will stop for you at {{ hail.pickupLabel }}
+        in about {{ hail.etaMin }} min. Wait by the roadside and keep your phone
+        ready.
+      </p>
+    </div>
+
+    <button class="hail-cancel" (click)="cancelHail()">Cancel</button>
+  </div>
+</ion-content>
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2

@@ -1,6 +1,10 @@
+<<<<<<< HEAD
 import { Injectable, inject } from '@angular/core';
 import { SeatService } from '../../services/seat.service';
 import type { LocatedPoint } from '../../services/pickup.service';
+=======
+import { Injectable } from '@angular/core';
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 
 export interface TripSummary {
   operator: string;
@@ -10,6 +14,7 @@ export interface TripSummary {
   fare: string; // base one-way fare per seat, e.g. '₱ 620'
   seatsLeft: string; // e.g. '18 seats left'
   status: string; // 'on-time' | 'delayed'
+<<<<<<< HEAD
   /** Exact scheduled departure (e.g. "8:30 AM") when chosen from a terminal
    *  board. Absent for catalog/route-card trips, which derive time from eta. */
   departureTime?: string;
@@ -43,6 +48,20 @@ export interface AppliedVoucher {
   value: number; // percent value or peso amount
   minSpend: number;
   cap?: number; // max peso discount, when set
+=======
+}
+
+export type FareClass = 'saver' | 'plus' | 'premium';
+export type PaymentMethod = 'gcash' | 'card' | 'cash';
+export type PassengerType = 'regular' | 'student' | 'senior' | 'pwd';
+
+export interface FareClassOption {
+  id: FareClass;
+  label: string;
+  tagline: string;
+  icon: string;
+  multiplier: number;
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 }
 
 export interface PassengerEntry {
@@ -73,6 +92,7 @@ export const PASSENGER_TYPE_META: Record<PassengerType, PassengerTypeMeta> = {
 
 @Injectable({ providedIn: 'root' })
 export class BookingService {
+<<<<<<< HEAD
   private seatService = inject(SeatService);
   trip: TripSummary | null = null;
   travelDate = '';
@@ -97,22 +117,72 @@ export class BookingService {
 
   private counter = 1;
 
+=======
+  trip: TripSummary | null = null;
+  travelDate = '';
+  passengers: PassengerEntry[] = [{ id: 'p1', type: 'regular' }];
+  fareClass: FareClass = 'saver';
+  selectedSeats: string[] = [];
+  paymentMethod: PaymentMethod = 'gcash';
+  bookingRef = '';
+
+  private counter = 1;
+
+  readonly fareClasses: FareClassOption[] = [
+    {
+      id: 'saver',
+      label: 'Saver',
+      tagline: 'Standard reclining seat',
+      icon: 'bus-outline',
+      multiplier: 1,
+    },
+    {
+      id: 'plus',
+      label: 'Plus',
+      tagline: 'Extra legroom, window priority',
+      icon: 'flash-outline',
+      multiplier: 1.35,
+    },
+    {
+      id: 'premium',
+      label: 'Premium',
+      tagline: 'Wide seat + onboard snack',
+      icon: 'sparkles-outline',
+      multiplier: 1.75,
+    },
+  ];
+
+  get selectedFareClass(): FareClassOption {
+    return (
+      this.fareClasses.find((f) => f.id === this.fareClass) ??
+      this.fareClasses[0]
+    );
+  }
+
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   get baseFare(): number {
     if (!this.trip) return 0;
     const n = Number(this.trip.fare.replace(/[^0-9.]/g, ''));
     return isNaN(n) ? 0 : n;
   }
 
+<<<<<<< HEAD
   /** Fare for one seat — set by the bus/operator/route in the catalog, no
    *  artificial "fare classes". */
   get seatFare(): number {
     return Math.round(this.baseFare);
+=======
+  /** Full, undiscounted fare for one seat at the chosen fare class. */
+  get seatFare(): number {
+    return Math.round(this.baseFare * this.selectedFareClass.multiplier);
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   }
 
   get passengerCount(): number {
     return this.passengers.length;
   }
 
+<<<<<<< HEAD
   /** How many passengers a booking may hold — exactly how many seats are
    *  still genuinely free on the departure, never more. */
   get maxPassengers(): number {
@@ -141,6 +211,11 @@ export class BookingService {
     if (this.seatPreference.zone !== 'any')
       parts.push(this.seatPreference.zone.toUpperCase());
     return parts.join(' · ');
+=======
+  get maxPassengers(): number {
+    const n = Number((this.trip?.seatsLeft || '').replace(/[^0-9]/g, ''));
+    return Math.max(1, Math.min(isNaN(n) ? 6 : n, 6));
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   }
 
   fareForPassenger(p: PassengerEntry): number {
@@ -148,10 +223,13 @@ export class BookingService {
     return Math.round(this.seatFare * (1 - discount));
   }
 
+<<<<<<< HEAD
   passengerLabel(p: PassengerEntry): string {
     return PASSENGER_TYPE_META[p.type].label;
   }
 
+=======
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   get subtotal(): number {
     return this.passengers.reduce(
       (sum, p) => sum + this.fareForPassenger(p),
@@ -170,6 +248,7 @@ export class BookingService {
     return this.passengers.filter((p) => p.type !== 'regular').length;
   }
 
+<<<<<<< HEAD
   /** Discount applied by the selected voucher, if eligible. */
   get voucherDiscount(): number {
     const v = this.voucher;
@@ -183,6 +262,14 @@ export class BookingService {
 
   get total(): number {
     return Math.max(0, this.subtotal - this.voucherDiscount);
+=======
+  get serviceFee(): number {
+    return this.subtotal ? 15 : 0;
+  }
+
+  get total(): number {
+    return this.subtotal + this.serviceFee;
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   }
 
   formatCurrency(n: number): string {
@@ -211,6 +298,7 @@ export class BookingService {
     this.trip = trip;
     this.counter = 1;
     this.passengers = [{ id: 'p1', type: 'regular' }];
+<<<<<<< HEAD
     this.selectedSeats = [];
     this.paymentMethod = 'gcash';
     this.bookingRef = '';
@@ -219,6 +307,12 @@ export class BookingService {
     this.hailMode = false;
     this.rebookedFrom = null;
     this.seatPreference = { ...NO_SEAT_PREFERENCE };
+=======
+    this.fareClass = 'saver';
+    this.selectedSeats = [];
+    this.paymentMethod = 'gcash';
+    this.bookingRef = '';
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     const d = new Date();
     d.setDate(d.getDate() + 1);
     this.travelDate = d.toDateString();
@@ -233,10 +327,13 @@ export class BookingService {
     this.trip = null;
     this.selectedSeats = [];
     this.bookingRef = '';
+<<<<<<< HEAD
     this.voucher = null;
     this.pickup = null;
     this.hailMode = false;
     this.rebookedFrom = null;
     this.seatPreference = { ...NO_SEAT_PREFERENCE };
+=======
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   }
 }

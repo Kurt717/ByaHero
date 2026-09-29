@@ -9,8 +9,11 @@
  * https://ionicframework.com/docs/layout/global-stylesheets
  */
 
+<<<<<<< HEAD
 @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap");
 
+=======
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 /* Core CSS required for Ionic components to work properly */
 @import "@ionic/angular/css/core.css";
 
@@ -39,6 +42,7 @@
 @import '@ionic/angular/css/palettes/dark.system.css';
 
 /* =====================================================================
+<<<<<<< HEAD
    BYAHERO design system (centralized, no visual change).
    - theme/_tokens.scss: :root tokens + legacy aliases
    - theme/_animations.scss: shared keyframes + reduced-motion guard
@@ -53,6 +57,8 @@
 @import "./theme/utilities";
 
 /* =====================================================================
+=======
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
    byaHERO — responsive layer (tablet + desktop)
    Paste at the bottom of src/global.scss (must be SCSS: it uses nesting).
    Phone (< 768px) is untouched.
@@ -119,9 +125,12 @@ $wide:    "(min-width: 1280px) and (min-height: 560px)";
       padding: 0; background: transparent; border: 0; box-shadow: none; border-radius: 0;
       width: 100%;
 
+<<<<<<< HEAD
       /* pill corner bolts only belong to the floating pill, not the rail */
       &::before, &::after { display: none; }
 
+=======
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
       .nav-item {
         width: 100%; padding: 6px 0; border-radius: 16px; gap: 4px;
         justify-content: center;
@@ -178,11 +187,20 @@ $wide:    "(min-width: 1280px) and (min-height: 560px)";
 
   /* ---------- HOME ---------- */
   html:not(#bh) app-home {
+<<<<<<< HEAD
     .hero-banner {
       border-radius: 0;
       .hero-identity .hero-name { font-size: 28px; }
     }
     .hero-banner { padding-top: 28px; }
+=======
+    .header-bg-block {
+      height: 250px; border-radius: 0 0 40px 40px;
+      .visor-arc { display: block; width: 300px; max-width: none; margin: -30px 5% 0 auto; opacity: .85; }
+    }
+    .page-header { margin-bottom: 28px; }
+    .page-header .greeting .greeting-name { font-size: 26px; }
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 
     .route-selectors {
       flex-direction: row; align-items: stretch; gap: 16px; margin-bottom: 64px;
@@ -205,6 +223,7 @@ $wide:    "(min-width: 1280px) and (min-height: 560px)";
     .map-shell { height: calc(100vh - 430px); min-height: 440px; border-radius: 28px; }
     .map-info-card { right: auto; left: 16px; bottom: 16px; width: min(400px, calc(100% - 32px)); }
   }
+<<<<<<< HEAD
 
   /* HOME: sticky control bar spans the full content-viewport width.
      The bar bleeds to the outlet edges; padding keeps its controls aligned
@@ -216,6 +235,8 @@ $wide:    "(min-width: 1280px) and (min-height: 560px)";
     padding-right: calc(16px + (100vw - var(--bh-nav-w) - 100%) / 2);
     .view-toggle-wrapper { margin-bottom: 0; }
   }
+=======
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   @media (hover: hover) {
     html:not(#bh) :is(app-home, app-search) .trip-card,
     html:not(#bh) app-favorites .favorite-card,
@@ -228,6 +249,7 @@ $wide:    "(min-width: 1280px) and (min-height: 560px)";
   /* ---------- SEARCH ---------- */
   html:not(#bh) app-search {
     .search-wrap { display: flow-root; }
+<<<<<<< HEAD
 
     /* route cards grid + terminal pairs at tablet widths */
     .route-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 16px; }
@@ -257,6 +279,28 @@ $wide:    "(min-width: 1280px) and (min-height: 560px)";
       .page-header { flex: 1 1 auto; min-width: 0; margin-bottom: 0; }
       .top-toggle { flex: 0 1 340px; min-width: 260px; margin-bottom: 0; }
     }
+=======
+    .search-pill-frame { max-width: 760px; }
+    .section:has(.recent-list) .recent-list {
+      background: #fff; border: 1px solid var(--bh-line); border-radius: 20px; padding: 6px 14px;
+    }
+    .destination-scroll {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      overflow: visible;
+      .destination-card { width: auto; }
+    }
+    .route-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+    .terminal-grid { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); }
+  }
+
+  /* ---------- BOOKINGS ---------- */
+  html:not(#bh) app-bookings .bookings-wrap {
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 340px);
+    column-gap: 24px; row-gap: 8px; align-items: center; align-content: start;
+
+    .page-header { grid-column: 1; }
+    .top-toggle  { grid-column: 2; }
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     .ticket-list, .empty-state { grid-column: 1 / -1; }
     .ticket-list {
       display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 470px), 1fr));
@@ -266,6 +310,7 @@ $wide:    "(min-width: 1280px) and (min-height: 560px)";
   }
 
   /* ---------- ALERTS ---------- */
+<<<<<<< HEAD
   /* NOTE: title + Alerts/Chats nav + filters now live together inside
      .sticky-header: title left, nav right, chips full-width below. */
   html:not(#bh) app-alerts .alerts-wrap {
@@ -291,6 +336,16 @@ $wide:    "(min-width: 1280px) and (min-height: 560px)";
       .filter-row { flex: 1 1 100%; margin-bottom: 0; }
     }
     .alert-groups, .chat-list, .empty-state { grid-column: 1 / -1; }
+=======
+  html:not(#bh) app-alerts .alerts-wrap {
+    max-width: 920px;
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 320px);
+    column-gap: 24px; row-gap: 8px; align-items: center; align-content: start;
+
+    .page-header { grid-column: 1; }
+    .top-toggle  { grid-column: 2; }
+    .filter-row, .alert-groups, .chat-list, .empty-state { grid-column: 1 / -1; }
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     .alert-card { padding: 16px 18px; }
     .alert-card .alert-body h4 { font-size: 14.5px; }
     .alert-card .alert-body p { font-size: 13px; }
@@ -352,6 +407,7 @@ $wide:    "(min-width: 1280px) and (min-height: 560px)";
     .slide-description { max-width: 420px; font-size: 17px; }
     .bottom-actions { max-width: 420px; margin: 0 auto; }
   }
+<<<<<<< HEAD
 
   /* ---------- PROFILE SUBPAGES + WALLET (tablet) ----------
      Phone pages are 480–560px centered columns. On tablet they widen
@@ -422,6 +478,8 @@ $wide:    "(min-width: 1280px) and (min-height: 560px)";
       align-items: start;
     }
   }
+=======
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 }
 
 /* =====================================================================
@@ -431,10 +489,16 @@ $wide:    "(min-width: 1280px) and (min-height: 560px)";
 
   /* ---------- HOME ---------- */
   html:not(#bh) app-home {
+<<<<<<< HEAD
     .home-wrap { padding-top: 32px; }
     .hero-banner { min-height: 320px; }
     .hero-banner .hb-art { width: 260px; }
     .hero-banner .hero-identity .hero-name { font-size: 30px; }
+=======
+    .home-wrap { padding-top: 40px; }
+    .header-bg-block { height: 256px; }
+    .page-header .greeting .greeting-name { font-size: 30px; }
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     .route-selectors .pill-card { height: 68px; }
     .list-viewport { grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
     .map-shell { height: calc(100vh - 460px); }
@@ -455,6 +519,7 @@ $wide:    "(min-width: 1280px) and (min-height: 560px)";
     .logout-btn { width: calc(100% - 440px); margin-left: 440px; }
   }
 
+<<<<<<< HEAD
   /* ---------- PROFILE SUBPAGES + WALLET (desktop) ---------- */
   html:not(#bh) {
     :is(app-arrival-alerts, app-auto-share, app-dark-mode, app-fare-id,
@@ -476,6 +541,8 @@ $wide:    "(min-width: 1280px) and (min-height: 560px)";
     }
   }
 
+=======
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   /* ---------- FLOW: two-region wizards ---------- */
   html:not(#bh) :is(app-trip-details, app-seat-selection, app-payment) .flow-wrap {
     max-width: 1100px; display: grid; column-gap: 48px; align-items: start; align-content: start;
@@ -629,9 +696,12 @@ $wide:    "(min-width: 1280px) and (min-height: 560px)";
       grid-column: 1 / -1; grid-row: 2; align-self: stretch;
       align-items: stretch; gap: 6px; margin-top: 30px;
 
+<<<<<<< HEAD
       /* drop the pill corner bolt that no longer belongs here */
       &::before { display: none; }
 
+=======
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
       .nav-item {
         flex-direction: row; justify-content: flex-start; align-items: center;
         gap: 14px; height: 54px; padding: 0 14px 0 8px; border-radius: 18px;
@@ -653,10 +723,13 @@ $wide:    "(min-width: 1280px) and (min-height: 560px)";
       }
 
       &::after {
+<<<<<<< HEAD
         /* fully reset the pill-bolt styles (was: absolute, 11px yellow circle) */
         position: static; top: auto; right: auto; width: auto; height: auto;
         border-radius: 0; background: transparent; border: 0; box-shadow: none;
         display: flex; align-items: center; justify-content: center; text-align: center;
+=======
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
         content: "Built for North Luzon"; margin-top: auto; padding: 18px 12px 0;
         font-size: 11px; font-weight: 600; color: #94a3b8;
       }
@@ -666,6 +739,7 @@ $wide:    "(min-width: 1280px) and (min-height: 560px)";
     html:not(#bh) app-tabs .glass-nav .nav-item.center-fab:hover { filter: brightness(.95); background: var(--bh-red); }
   }
 
+<<<<<<< HEAD
   /* ---------- SEARCH: layout is handled by the component's own 8/4 grid,
      so the older float-based right-column split is intentionally dropped. ---------- */
 }
@@ -1345,3 +1419,12 @@ html:not(#bh) {
   transform: translateY(1px);
   filter: brightness(0.94);
 }
+=======
+  /* ---------- SEARCH: main column + side panel (recent + terminals) ---------- */
+  html:not(#bh) app-search .search-wrap {
+    .section:has(.recent-list), .section:has(.terminal-grid) { float: right; clear: right; width: 340px; }
+    .section:has(.destination-scroll), .section:has(.route-list) { margin-right: 376px; }
+    .terminal-grid { grid-template-columns: 1fr 1fr; }
+  }
+}
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2

@@ -1,8 +1,15 @@
+<<<<<<< HEAD
 import { Component, OnInit, inject } from '@angular/core';
 import { Location } from '@angular/common';
 
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonIcon, ToastController } from '@ionic/angular';
+=======
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { IonContent, IonIcon } from '@ionic/angular';
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
 import {
@@ -13,8 +20,11 @@ import {
   checkmarkCircle,
   lockClosedOutline,
   informationCircleOutline,
+<<<<<<< HEAD
   pricetagOutline,
   chevronForwardOutline,
+=======
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 } from 'ionicons/icons';
 import {
   BookingService,
@@ -22,11 +32,14 @@ import {
   PassengerType,
   PASSENGER_TYPE_META,
 } from '../booking.service';
+<<<<<<< HEAD
 import { TicketService } from '../../bookings/ticket.service';
 import { ProfileService } from '../../profile/profile.service';
 import { SeatService } from '../../../services/seat.service';
 import { VoucherService } from '../../../services/voucher.service';
 import { PickupService } from '../../../services/pickup.service';
+=======
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 
 addIcons({
   'arrow-back-outline': arrowBackOutline,
@@ -36,8 +49,11 @@ addIcons({
   'checkmark-circle': checkmarkCircle,
   'lock-closed-outline': lockClosedOutline,
   'information-circle-outline': informationCircleOutline,
+<<<<<<< HEAD
   'pricetag-outline': pricetagOutline,
   'chevron-forward-outline': chevronForwardOutline,
+=======
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 });
 
 interface PaymentOption {
@@ -50,11 +66,16 @@ interface PaymentOption {
 @Component({
   selector: 'app-payment',
   standalone: true,
+<<<<<<< HEAD
   imports: [FormsModule, IonContent, IonIcon],
+=======
+  imports: [CommonModule, FormsModule, IonContent, IonIcon],
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   templateUrl: './payment.page.html',
   styleUrls: ['./payment.page.scss'],
 })
 export class PaymentPage implements OnInit {
+<<<<<<< HEAD
   booking = inject(BookingService);
   private router = inject(Router);
   private location = inject(Location);
@@ -65,10 +86,13 @@ export class PaymentPage implements OnInit {
   private voucherService = inject(VoucherService);
   private pickupService = inject(PickupService);
 
+=======
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   agreed = false;
   cardNumber = '';
   cardExpiry = '';
   cardCvv = '';
+<<<<<<< HEAD
   processing = false;
 
   readonly methods: PaymentOption[] = [
@@ -79,18 +103,26 @@ export class PaymentPage implements OnInit {
       icon: 'wallet-outline',
     },
     {
+=======
+
+  readonly methods: PaymentOption[] = [
+    {
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
       id: 'gcash',
       label: 'GCash',
       sub: 'Pay via GCash e-wallet',
       icon: 'wallet-outline',
     },
     {
+<<<<<<< HEAD
       id: 'maya',
       label: 'Maya',
       sub: 'Pay via Maya e-wallet',
       icon: 'wallet-outline',
     },
     {
+=======
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
       id: 'card',
       label: 'Credit / Debit Card',
       sub: 'Visa, Mastercard, JCB',
@@ -104,7 +136,14 @@ export class PaymentPage implements OnInit {
     },
   ];
 
+<<<<<<< HEAD
   constructor() {
+=======
+  constructor(
+    public booking: BookingService,
+    private router: Router,
+  ) {
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     addIcons({
       arrowBackOutline,
       informationCircleOutline,
@@ -119,6 +158,7 @@ export class PaymentPage implements OnInit {
     }
   }
 
+<<<<<<< HEAD
   get recommendedDiscount(): number {
     return this.voucherService.bestDiscountFor(
       this.booking.subtotal,
@@ -135,6 +175,8 @@ export class PaymentPage implements OnInit {
     this.router.navigateByUrl('/booking/voucher');
   }
 
+=======
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   typeLabel(type: PassengerType): string {
     return PASSENGER_TYPE_META[type].label;
   }
@@ -143,6 +185,7 @@ export class PaymentPage implements OnInit {
     this.booking.paymentMethod = id;
   }
 
+<<<<<<< HEAD
   get walletBalance(): number {
     return this.profileService.walletBalance();
   }
@@ -256,4 +299,19 @@ export class PaymentPage implements OnInit {
     });
     await toast.present();
   }
+=======
+  get canPay(): boolean {
+    return this.agreed;
+  }
+
+  goBack() {
+    this.router.navigateByUrl('/booking/seats');
+  }
+
+  pay() {
+    if (!this.canPay) return;
+    this.booking.generateBookingRef();
+    this.router.navigateByUrl('/booking/confirmation');
+  }
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 }

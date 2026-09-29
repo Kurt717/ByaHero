@@ -8,5 +8,6 @@
     "@ionic/angular/types/ionic-angular-lazy.d.ts",
     "@ionic/angular/types/ionic-angular-common.d.ts"
   ],
-  "github.copilot.chat.alternateGeminiModelFPrompt.enabled": true
+  "github.copilot.chat.alternateGeminiModelFPrompt.enabled": true,
+  "java.configuration.updateBuildConfiguration": "interactive"
 }

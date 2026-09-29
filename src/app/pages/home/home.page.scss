@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap");
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 
 :host {
   /* Color Scheme from Image 2 */
@@ -11,7 +15,10 @@
   --text-muted: #6b7280;
 
   --border-color: #e2e8f0;
+<<<<<<< HEAD
   --ink: rgba(21, 29, 72, 0.14);
+=======
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   --pop-yellow: #ffe066; /* Flat pop-art highlight, used sparingly on key data */
   --font-family:
     "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "SF Pro Display",
@@ -24,17 +31,29 @@ ion-content.home-content {
   -webkit-font-smoothing: antialiased;
 }
 
+<<<<<<< HEAD
 /* --- CLEAN HERO BANNER: deep-navy gradient, no illustrations, no outline --- */
 .hero-banner {
   position: relative;
   margin: 0  -16px -1px;
   padding: calc(env(safe-area-inset-top, 20px) + 20px) 16px 64px;
+=======
+/* Deep Blue Header Background */
+/* Hero visor header */
+.header-bg-block {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 280px;
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   background-image:
     radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1.3px),
     linear-gradient(160deg, #060a28 0%, #0f1d6b 100%);
   background-size:
     10px 10px,
     100% 100%;
+<<<<<<< HEAD
   border: none;
   outline: none;
   box-shadow: none;
@@ -320,6 +339,47 @@ ion-content.home-content {
 @keyframes glassShimmer {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.45; }
+=======
+  border-bottom-left-radius: 32px;
+  border-bottom-right-radius: 32px;
+  z-index: 0;
+  overflow: hidden;
+
+  /* Ben-Day dot cluster — screentone shading node */
+  &::after {
+    content: "";
+    position: absolute;
+    top: -40px;
+    right: -40px;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background-image: radial-gradient(
+      rgba(255, 255, 255, 0.16) 1.5px,
+      transparent 1.6px
+    );
+    background-size: 13px 13px;
+    pointer-events: none;
+  }
+
+  .hero-mask {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 280px;
+    pointer-events: none;
+  }
+
+  .header-seam {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 58px;
+    pointer-events: none;
+  }
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 }
 
 .home-wrap {
@@ -327,8 +387,14 @@ ion-content.home-content {
   z-index: 1;
   display: flex;
   flex-direction: column;
+<<<<<<< HEAD
   padding: 0 16px 120px;
   background: var(--bg-page);
+=======
+  padding: calc(env(safe-area-inset-top, 20px) + 24px) 16px 120px;
+  max-width: 480px;
+  margin: 0 auto;
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 }
 
 /* --- ENTRANCE KEYFRAMES --- */
@@ -343,6 +409,17 @@ ion-content.home-content {
   }
 }
 
+<<<<<<< HEAD
+=======
+@keyframes burstSpin {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 
 @keyframes revealCard {
   from {
@@ -398,6 +475,7 @@ ion-content.home-content {
   }
 }
 
+<<<<<<< HEAD
 
 /* --- 1. HERO IDENTITY ROW (inside the comic banner) --- */
 .hero-identity {
@@ -453,11 +531,66 @@ ion-content.home-content {
       border: none;
       transform: rotate(-6deg);
       box-shadow: 1.5px 1.5px 0 rgba(255, 255, 255, 0.25);
+=======
+@keyframes byaheroPulse {
+  0% {
+    transform: scale(0.7);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+
+/* --- 1. HEADER --- */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  opacity: 0;
+  animation: revealUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+
+  .user-profile {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    .avatar-wrap {
+      position: relative;
+      width: 46px;
+      height: 46px;
+      flex-shrink: 0;
+
+      .avatar-burst {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 84px;
+        height: 84px;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+        /* Slow rotation for that dynamic comic-book feel */
+        animation: burstSpin 18s linear infinite; 
+      }
+
+      .avatar {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        border: 2px solid rgba(255, 255, 255, 0.85);
+        z-index: 2;
+        transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     }
 
     &:active .avatar {
       transform: scale(0.92);
     }
+<<<<<<< HEAD
   }
 
   .hero-type {
@@ -519,16 +652,42 @@ ion-content.home-content {
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+=======
+
+    .greeting {
+      display: flex;
+      flex-direction: column;
+      .greeting-sub {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.8);
+        font-weight: 500;
+      }
+      .greeting-name {
+        font-size: 20px;
+        font-weight: 800;
+        color: #ffffff;
+        margin: 0;
+        letter-spacing: -0.02em;
+        /* Vintage comic-print misregistration: offset cyan/magenta plates behind the main type */
+        text-shadow:
+          -1.5px 0 0 rgba(0, 200, 255, 0.4),
+          1.5px 0 0 rgba(255, 0, 110, 0.35);
+      }
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     }
   }
 
   .favorites-btn {
+<<<<<<< HEAD
     background-color: var(--accent-red);
     background-image: radial-gradient(
       rgba(255, 255, 255, 0.2) 1px,
       transparent 1.2px
     );
     background-size: 5px 5px;
+=======
+    background: rgba(255, 255, 255, 0.15);
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     border: none;
     width: 44px;
     height: 44px;
@@ -537,15 +696,22 @@ ion-content.home-content {
     align-items: center;
     justify-content: center;
     cursor: pointer;
+<<<<<<< HEAD
     flex-shrink: 0;
     box-shadow: 3px 3px 0 rgba(255, 255, 255, 0.25);
+=======
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     transition:
       transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1),
       background-color 0.2s ease;
 
     &:active {
       transform: scale(0.88);
+<<<<<<< HEAD
       background-color: #b3261e;
+=======
+      background: rgba(255, 255, 255, 0.25);
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     }
 
     ion-icon {
@@ -555,14 +721,22 @@ ion-content.home-content {
   }
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 /* --- 2. ROUTE SELECTORS --- */
 .route-selectors {
   display: flex;
   flex-direction: column;
+<<<<<<< HEAD
   gap: 8px;
   margin-top: 10px;
   margin-bottom: 14px;
+=======
+  gap: 12px;
+  margin-bottom: 24px;
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   opacity: 0;
   animation: revealUp 0.55s 0.08s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 
@@ -577,15 +751,23 @@ ion-content.home-content {
   .primary-route {
     position: relative;
     background: var(--bg-white);
+<<<<<<< HEAD
     border: 1.5px solid var(--primary-navy);
     box-shadow: 2px 2px 0 var(--ink);
+=======
+    border: 1px solid var(--border-color);
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     transition:
       border-color 0.2s ease,
       box-shadow 0.2s ease;
 
     &:focus-within {
       border-color: var(--primary-navy);
+<<<<<<< HEAD
       box-shadow: 2px 2px 0 var(--ink);
+=======
+      box-shadow: 0 0 0 3px rgba(21, 29, 72, 0.08);
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     }
 
     /* Ticket-stub notches — punched-out circles at the pill's edges */
@@ -677,8 +859,11 @@ ion-content.home-content {
     justify-content: space-between;
     padding: 0 20px 0 16px;
     cursor: pointer;
+<<<<<<< HEAD
     border: 1.5px solid var(--primary-navy);
     box-shadow: 2px 2px 0 var(--ink);
+=======
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     transition:
       transform 0.15s cubic-bezier(0.16, 1, 0.3, 1),
       filter 0.15s ease;
@@ -713,6 +898,7 @@ ion-content.home-content {
         font-size: 14px;
         font-weight: 700;
       }
+<<<<<<< HEAD
       .trip-pill-main {
         font-size: 14px;
         font-weight: 700;
@@ -725,6 +911,8 @@ ion-content.home-content {
         opacity: 0.85;
         line-height: 1.2;
       }
+=======
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     }
     .forward-icon {
       color: #ffffff;
@@ -736,6 +924,7 @@ ion-content.home-content {
       transform: translateX(3px);
     }
   }
+<<<<<<< HEAD
 
   /* Compact travel-conditions strip — deliberately quieter than the
      booking pills above it. */
@@ -837,6 +1026,15 @@ ion-content.home-content {
   display: flex;
   justify-content: space-between;
   margin-bottom: 14px;
+=======
+}
+
+/* --- 3. CATEGORIES --- */
+.categories-grid {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 28px;
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   opacity: 0;
   animation: revealUp 0.55s 0.16s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 
@@ -851,7 +1049,11 @@ ion-content.home-content {
       width: 60px;
       height: 60px;
       background: var(--bg-white);
+<<<<<<< HEAD
       border: 1.5px solid var(--ink);
+=======
+      border: 1px solid var(--border-color);
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
       border-radius: 16px; /* Even round corners */
       display: flex;
       align-items: center;
@@ -895,7 +1097,10 @@ ion-content.home-content {
           6px 6px;
         border-color: var(--primary-navy);
         color: #ffffff;
+<<<<<<< HEAD
         box-shadow: 2px 2px 0 rgba(211, 47, 47, 0.45);
+=======
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
       }
       .cat-label {
         color: var(--primary-navy);
@@ -909,15 +1114,23 @@ ion-content.home-content {
 .view-toggle-wrapper {
   display: flex;
   flex-direction: column;
+<<<<<<< HEAD
   gap: 10px;
   margin-bottom: 0;
+=======
+  gap: 16px;
+  margin-bottom: 24px;
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   opacity: 0;
   animation: revealUp 0.55s 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 
   .segmented-control {
     display: flex;
     background: #e2e8f0;
+<<<<<<< HEAD
     border: 1.5px solid var(--ink);
+=======
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     border-radius: 999px;
     padding: 4px;
     height: 52px;
@@ -952,7 +1165,10 @@ ion-content.home-content {
       &.active {
         background: var(--primary-navy);
         color: #ffffff;
+<<<<<<< HEAD
         box-shadow: none;
+=======
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
       }
     }
   }
@@ -967,7 +1183,11 @@ ion-content.home-content {
       border-radius: 999px;
       background: var(--bg-white);
       color: var(--text-main);
+<<<<<<< HEAD
       border: 1.5px solid var(--ink);
+=======
+      border: 1px solid var(--border-color);
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
       cursor: pointer;
       transition:
         background-color 0.2s ease,
@@ -983,7 +1203,10 @@ ion-content.home-content {
         background: var(--primary-navy);
         color: #ffffff;
         border-color: var(--primary-navy);
+<<<<<<< HEAD
         box-shadow: none;
+=======
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
       }
     }
   }
@@ -993,9 +1216,13 @@ ion-content.home-content {
 .list-viewport {
   display: flex;
   flex-direction: column;
+<<<<<<< HEAD
   gap: 12px;
   /* clears the sticky control bar so the first card is never tucked under it */
   margin-top: 8px;
+=======
+  gap: 16px;
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 
   .trip-card {
     position: relative;
@@ -1013,9 +1240,14 @@ ion-content.home-content {
       8px 8px;
     background-repeat: no-repeat, repeat;
     border-radius: 24px; /* Uniform card rounding */
+<<<<<<< HEAD
     border: 1.5px solid var(--primary-navy);
     box-shadow: 0 10px 30px rgba(6, 10, 40, 0.08);
     padding: 16px;
+=======
+    border: 1px solid var(--border-color);
+    padding: 20px;
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     opacity: 0;
     animation: revealCard 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     transition:
@@ -1085,14 +1317,21 @@ ion-content.home-content {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
+<<<<<<< HEAD
       margin-bottom: 14px;
+=======
+      margin-bottom: 24px;
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 
       .operator-info {
         display: flex;
         gap: 12px;
         align-items: center;
+<<<<<<< HEAD
         flex: 1;
         min-width: 0;
+=======
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
         .op-logo {
           width: 44px;
           height: 44px;
@@ -1102,22 +1341,31 @@ ion-content.home-content {
           display: flex;
           align-items: center;
           justify-content: center;
+<<<<<<< HEAD
           flex-shrink: 0;
+=======
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
           ion-icon {
             font-size: 22px;
           }
         }
         .op-text {
+<<<<<<< HEAD
           flex: 1;
           min-width: 0;
+=======
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
           h4 {
             margin: 0;
             font-size: 16px;
             font-weight: 700;
             color: var(--primary-navy);
+<<<<<<< HEAD
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+=======
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
           }
           p {
             margin: 4px 0 0;
@@ -1125,6 +1373,7 @@ ion-content.home-content {
             font-weight: 500;
             color: var(--text-muted);
           }
+<<<<<<< HEAD
           .live-line {
             font-weight: 800;
             color: var(--primary-navy);
@@ -1139,6 +1388,8 @@ ion-content.home-content {
             overflow: hidden;
             text-overflow: ellipsis;
           }
+=======
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
         }
       }
       .fare {
@@ -1147,11 +1398,15 @@ ion-content.home-content {
         font-weight: 800;
         color: var(--primary-navy);
         background: var(--pop-yellow);
+<<<<<<< HEAD
         white-space: nowrap;
+=======
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
         padding: 3px 9px;
         border-radius: 6px;
         transform: rotate(-2deg);
       }
+<<<<<<< HEAD
       .card-top-right {
         display: flex;
         flex-direction: column;
@@ -1185,12 +1440,18 @@ ion-content.home-content {
           }
         }
       }
+=======
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     }
 
     .card-middle {
       display: flex;
       gap: 16px;
+<<<<<<< HEAD
       margin-bottom: 14px;
+=======
+      margin-bottom: 24px;
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
       padding-left: 8px;
 
       .route-line-vertical {
@@ -1235,7 +1496,11 @@ ion-content.home-content {
       display: flex;
       justify-content: space-between;
       align-items: center;
+<<<<<<< HEAD
       padding-top: 12px;
+=======
+      padding-top: 16px;
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
       border-top: 1px dashed var(--border-color);
 
       .seats {
@@ -1247,6 +1512,7 @@ ion-content.home-content {
         border-radius: 8px;
       }
       .book-btn {
+<<<<<<< HEAD
         background: var(--bg-white);
         color: var(--primary-navy);
         border: 1.5px solid var(--primary-navy);
@@ -1257,14 +1523,28 @@ ion-content.home-content {
         font-size: 13px;
         cursor: pointer;
         box-shadow: 2px 2px 0 var(--ink);
+=======
+        background: var(--primary-navy);
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 28px;
+        font-family: var(--font-family);
+        font-weight: 700;
+        cursor: pointer;
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
         transition:
           transform 0.15s cubic-bezier(0.16, 1, 0.3, 1),
           background-color 0.2s ease;
 
         &:active {
           transform: scale(0.93);
+<<<<<<< HEAD
           background-color: var(--bg-page);
           box-shadow: 1px 1px 0 var(--ink);
+=======
+          background-color: #0e1638;
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
         }
       }
     }
@@ -1273,11 +1553,16 @@ ion-content.home-content {
 
 /* --- 5B. MAP VIEW (real Leaflet map) --- */
 .map-viewport {
+<<<<<<< HEAD
   margin-top: 8px;
   /* marker taps must register instantly — no double-tap zoom delay on the map shell */
   touch-action: manipulation;
   opacity: 0;
   animation: contentFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+=======
+  opacity: 0;
+  animation: contentFadeIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 }
 
 .map-shell {
@@ -1285,6 +1570,7 @@ ion-content.home-content {
   height: calc(100vh - 460px);
   min-height: 350px;
   border-radius: 24px;
+<<<<<<< HEAD
   border: 1.5px solid var(--primary-navy);
   box-shadow: 0 10px 30px rgba(6, 10, 40, 0.08);
   overflow: hidden;
@@ -1293,11 +1579,19 @@ ion-content.home-content {
 .map-host {
   position: relative;
   z-index: 0;
+=======
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+}
+
+.leaflet-host {
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   width: 100%;
   height: 100%;
   background: #e2e8f0;
 }
 
+<<<<<<< HEAD
 .map-error {
   position: absolute;
   left: 12px;
@@ -1313,6 +1607,8 @@ ion-content.home-content {
   box-shadow: 0 8px 24px rgba(211, 47, 47, 0.35);
 }
 
+=======
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 .map-legend {
   position: absolute;
   top: 12px;
@@ -1323,10 +1619,15 @@ ion-content.home-content {
   gap: 4px;
   background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(4px);
+<<<<<<< HEAD
   border: 1.5px solid var(--primary-navy);
   border-radius: 999px;
   padding: 6px 12px;
   box-shadow: 2px 2px 0 var(--ink);
+=======
+  border-radius: 999px;
+  padding: 6px 12px;
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   font-size: 10.5px;
   font-weight: 700;
   color: var(--text-main);
@@ -1352,18 +1653,30 @@ ion-content.home-content {
   position: absolute;
   bottom: 16px;
   right: 16px;
+<<<<<<< HEAD
   z-index: 800;
+=======
+  z-index: 500;
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   width: 48px;
   height: 48px;
   border-radius: 14px;
   background: var(--bg-white);
+<<<<<<< HEAD
   border: 1.5px solid var(--primary-navy);
+=======
+  border: 1px solid var(--border-color);
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--text-main);
   cursor: pointer;
+<<<<<<< HEAD
   box-shadow: 2px 2px 0 var(--ink);
+=======
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
   ion-icon {
     font-size: 22px;
@@ -1371,7 +1684,10 @@ ion-content.home-content {
 
   &:active {
     transform: scale(0.88);
+<<<<<<< HEAD
     box-shadow: 1px 1px 0 var(--ink);
+=======
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   }
   &.loading ion-icon {
     animation: locateSpin 0.9s linear infinite;
@@ -1391,7 +1707,11 @@ ion-content.home-content {
   position: absolute;
   bottom: 72px;
   right: 16px;
+<<<<<<< HEAD
   z-index: 800;
+=======
+  z-index: 500;
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   background: var(--primary-navy);
   color: #ffffff;
   font-size: 11px;
@@ -1402,7 +1722,180 @@ ion-content.home-content {
   text-align: right;
 }
 
+<<<<<<< HEAD
 /* --- 5B-i. MAP MARKER INFO CARD (removed — marker taps open the hail bubble directly) --- */
+=======
+/* --- 5B-i. MAP MARKER INFO CARD ---
+   Compact echo of the List View .trip-card (5A) — same colors, radius,
+   shadow language and button styling, just smaller, so a marker tap
+   feels like part of the same design system. */
+.map-info-card {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 16px;
+  z-index: 600;
+  background: var(--bg-white);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+  opacity: 0;
+  animation: revealCard 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.map-info-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--bg-page);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  ion-icon {
+    font-size: 15px;
+  }
+
+  &:active {
+    transform: scale(0.88);
+  }
+}
+
+.map-info-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding-right: 26px;
+  margin-bottom: 14px;
+
+  .operator-info {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+
+    .op-logo {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: #eef2ff;
+      color: var(--primary-navy);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      ion-icon {
+        font-size: 18px;
+      }
+    }
+    .op-text {
+      h4 {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--primary-navy);
+      }
+      p {
+        margin: 2px 0 0;
+        font-size: 11px;
+        font-weight: 500;
+        color: var(--text-muted);
+      }
+    }
+  }
+
+  .fare {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--primary-navy);
+    background: var(--pop-yellow);
+    padding: 3px 9px;
+    border-radius: 6px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+}
+
+.map-info-route {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--primary-navy);
+
+  .dot.origin {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: 2px solid var(--primary-navy);
+    background: #fff;
+    flex-shrink: 0;
+  }
+
+  ion-icon {
+    font-size: 12px;
+    color: #9ca3af;
+    flex-shrink: 0;
+  }
+
+  .route-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .route-text.dest {
+    color: var(--accent-red);
+  }
+}
+
+.map-info-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 12px;
+  border-top: 1px dashed var(--border-color);
+
+  .seats {
+    font-size: 11px;
+    font-weight: 700;
+    color: #059669;
+    background: #d1fae5;
+    padding: 6px 12px;
+    border-radius: 8px;
+  }
+
+  .book-btn {
+    background: var(--primary-navy);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 22px;
+    font-family: var(--font-family);
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    transition:
+      transform 0.15s cubic-bezier(0.16, 1, 0.3, 1),
+      background-color 0.2s ease;
+
+    &:active {
+      transform: scale(0.93);
+      background-color: #0e1638;
+    }
+  }
+}
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 
 /* --- 6. FLOATING BOTTOM NAVIGATION --- */
 .floating-nav-container {
@@ -1421,11 +1914,19 @@ ion-content.home-content {
   display: flex;
   align-items: center;
   background: var(--bg-white);
+<<<<<<< HEAD
   border: 1.5px solid var(--primary-navy);
   padding: 8px 24px;
   border-radius: 999px;
   gap: 20px;
   box-shadow: 2px 2px 0 var(--ink);
+=======
+  border: 1px solid var(--border-color);
+  padding: 8px 24px;
+  border-radius: 999px;
+  gap: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 
   .nav-item {
     background: transparent;
@@ -1499,6 +2000,7 @@ ion-content.home-content {
   gap: 8px;
 }
 
+<<<<<<< HEAD
 /* Live-bus cards offer hailing only — reserving a moving bus is not a
    thing, so the single CTA stretches full width. */
 .card-actions.hail-only .hail-btn {
@@ -1507,6 +2009,10 @@ ion-content.home-content {
 }
 
 .card-bottom {
+=======
+.card-bottom,
+.map-info-bottom {
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   gap: 8px;
 
   .seats {
@@ -1514,12 +2020,16 @@ ion-content.home-content {
   }
 }
 
+<<<<<<< HEAD
 /* Hail is Byahero's primary action — bold red CTA, rendered first in the
    card, more visually dominant than booking. */
+=======
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 .hail-btn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+<<<<<<< HEAD
   background-color: var(--accent-red);
   background-image: radial-gradient(
     rgba(255, 255, 255, 0.14) 1px,
@@ -1542,12 +2052,34 @@ ion-content.home-content {
 
   ion-icon {
     font-size: 17px;
+=======
+  background: var(--bg-white);
+  color: var(--primary-navy);
+  border: 1.5px solid var(--primary-navy);
+  border-radius: 12px;
+  padding: 10.5px 16px;
+  font-family: var(--font-family);
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    transform 0.15s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.2s ease,
+    opacity 0.2s ease;
+
+  ion-icon {
+    font-size: 16px;
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   }
 
   &:active:not(:disabled) {
     transform: scale(0.93);
+<<<<<<< HEAD
     filter: brightness(0.9);
     box-shadow: 1px 1px 0 var(--ink);
+=======
+    background-color: var(--bg-page);
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   }
 
   &:disabled {
@@ -1556,6 +2088,18 @@ ion-content.home-content {
   }
 }
 
+<<<<<<< HEAD
+=======
+.map-info-bottom .hail-btn {
+  padding: 7.5px 14px;
+  font-size: 13px;
+
+  ion-icon {
+    font-size: 15px;
+  }
+}
+
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 .hail-sheet {
   position: absolute;
   left: 16px;
@@ -1567,9 +2111,15 @@ ion-content.home-content {
   gap: 12px;
   padding: 14px 16px;
   background: var(--bg-white);
+<<<<<<< HEAD
   border: 1.5px solid var(--primary-navy);
   border-radius: 20px;
   box-shadow: 2px 2px 0 var(--ink);
+=======
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   opacity: 0;
   animation: revealCard 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 
@@ -1577,8 +2127,13 @@ ion-content.home-content {
     width: 38px;
     height: 38px;
     border-radius: 10px;
+<<<<<<< HEAD
     background: #fef2f2;
     color: var(--accent-red);
+=======
+    background: #eef2ff;
+    color: var(--primary-navy);
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1589,6 +2144,14 @@ ion-content.home-content {
     }
   }
 
+<<<<<<< HEAD
+=======
+  &.accepted .hail-sheet-icon {
+    background: #d1fae5;
+    color: #059669;
+  }
+
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   .hail-sheet-text {
     flex: 1;
     min-width: 0;
@@ -1607,6 +2170,7 @@ ion-content.home-content {
       line-height: 1.4;
       color: var(--text-muted);
     }
+<<<<<<< HEAD
 
     .hail-pickup-line {
       display: flex;
@@ -1681,6 +2245,8 @@ ion-content.home-content {
       color: var(--text-muted);
       opacity: 0.7;
     }
+=======
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   }
 
   .hail-cancel {
@@ -1710,4 +2276,8 @@ ion-content.home-content {
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { AfterViewInit, Component, ElementRef, NgZone, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonContent } from '@ionic/angular';
@@ -6,6 +7,12 @@ import { BURST_SPIN_MS, DONE, END, burstAngleAt, createIntro } from './splash-in
 
 /** How long the finished logo + "byaHero" stay on screen before moving on. */
 const HOLD_MS = 1400;
+=======
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { IonContent } from '@ionic/angular';
+import { Router } from '@angular/router';
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 
 @Component({
   selector: 'app-splash',
@@ -14,6 +21,7 @@ const HOLD_MS = 1400;
   templateUrl: './splash.page.html',
   styleUrls: ['./splash.page.scss'],
 })
+<<<<<<< HEAD
 export class SplashPage implements AfterViewInit, OnDestroy {
   @ViewChild('intro', { static: true }) introRef!: ElementRef<SVGSVGElement>;
   ready = false;
@@ -109,3 +117,14 @@ export class SplashPage implements AfterViewInit, OnDestroy {
     clearTimeout(this.timer);
   }
 }
+=======
+export class SplashPage implements OnInit {
+  constructor(private router: Router) {}
+
+  ngOnInit() {
+    setTimeout(() => {
+      this.router.navigateByUrl('/onboarding');
+    }, 2200);
+  }
+}
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2

@@ -1,6 +1,12 @@
+<<<<<<< HEAD
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AlertController, IonContent, IonIcon, ToastController } from '@ionic/angular';
+=======
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { IonContent, IonIcon } from '@ionic/angular';
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
 import {
@@ -15,6 +21,7 @@ import {
   arrowForwardOutline,
   refreshOutline,
   radioButtonOn,
+<<<<<<< HEAD
   trashOutline,
   star,
   locationOutline,
@@ -22,17 +29,23 @@ import {
   handLeftOutline,
   ticketOutline,
   trendingUpOutline,
+=======
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 } from 'ionicons/icons';
 import {
   TicketService,
   Booking,
   BookingStatus,
+<<<<<<< HEAD
 } from './ticket.service';
 import { TripReviewService, TripReview } from './trip-review.service';
 import { BookingService, TripSummary } from '../booking/booking.service';
 import { TripPreparationService } from './trip-preparation.service';
 import { ProfileService } from '../profile/profile.service';
 import { HailService, HailRequest } from '../../services/hail.service';
+=======
+} from '../bookings/ticket.service';
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 
 addIcons({
   'time-outline': timeOutline,
@@ -46,6 +59,7 @@ addIcons({
   'arrow-forward-outline': arrowForwardOutline,
   'refresh-outline': refreshOutline,
   'radio-button-on': radioButtonOn,
+<<<<<<< HEAD
   'trash-outline': trashOutline,
   star: star,
   'location-outline': locationOutline,
@@ -56,6 +70,11 @@ addIcons({
 });
 
 type TabKey = 'upcoming' | 'active' | 'past';
+=======
+});
+
+type TabKey = 'upcoming' | 'past';
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 
 @Component({
   selector: 'app-bookings',
@@ -65,6 +84,7 @@ type TabKey = 'upcoming' | 'active' | 'past';
   styleUrls: ['./bookings.page.scss'],
 })
 export class BookingsPage {
+<<<<<<< HEAD
   private router = inject(Router);
   private ticketService = inject(TicketService);
   private hailService = inject(HailService);
@@ -78,6 +98,61 @@ export class BookingsPage {
   activeTab: TabKey = 'upcoming';
 
   constructor() {
+=======
+  activeTab: TabKey = 'upcoming';
+
+  bookings: Booking[] = [
+    {
+      operator: 'Victory Liner',
+      from: 'Baguio City',
+      to: 'Tuguegarao City',
+      date: 'Sep 18, 2026',
+      time: '6:30 AM',
+      seat: 'Seat 14A',
+      fare: '₱ 480',
+      status: 'confirmed',
+      bookingRef: 'BYH-48291',
+    },
+    {
+      operator: 'GV Florida',
+      from: 'Cauayan',
+      to: 'Ilagan',
+      date: 'Sep 14, 2026',
+      time: '2:00 PM',
+      seat: 'Seat 07C',
+      fare: '₱ 95',
+      status: 'boarding',
+      bookingRef: 'BYH-48304',
+    },
+    {
+      operator: 'Partas',
+      from: 'Manila (Cubao)',
+      to: 'Laoag City',
+      date: 'Aug 29, 2026',
+      time: '9:00 PM',
+      seat: 'Seat 22B',
+      fare: '₱ 850',
+      status: 'completed',
+      bookingRef: 'BYH-47118',
+    },
+    {
+      operator: 'Florida Bus Line',
+      from: 'Manila (PITX)',
+      to: 'Vigan City',
+      date: 'Aug 12, 2026',
+      time: '10:15 PM',
+      seat: 'Seat 03A',
+      fare: '₱ 750',
+      status: 'cancelled',
+      bookingRef: 'BYH-46590',
+    },
+  ];
+
+  constructor(
+    private router: Router,
+    private ticketService: TicketService,
+  ) {
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
     addIcons({
       bus,
       timeOutline,
@@ -86,6 +161,7 @@ export class BookingsPage {
       qrCodeOutline,
       refreshOutline,
       arrowForwardOutline,
+<<<<<<< HEAD
       trashOutline,
       star,
       locationOutline,
@@ -100,6 +176,11 @@ export class BookingsPage {
     return this.ticketService.bookings;
   }
 
+=======
+    });
+  }
+
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   get upcomingBookings(): Booking[] {
     return this.bookings.filter(
       (b) => b.status === 'confirmed' || b.status === 'boarding',
@@ -112,6 +193,7 @@ export class BookingsPage {
     );
   }
 
+<<<<<<< HEAD
   get completedBookings(): Booking[] {
     return this.bookings.filter((b) => b.status === 'completed');
   }
@@ -149,6 +231,12 @@ export class BookingsPage {
 
   hailStatusLabel(_hail: HailRequest): string {
     return 'Confirming hail';
+=======
+  get visibleBookings(): Booking[] {
+    return this.activeTab === 'upcoming'
+      ? this.upcomingBookings
+      : this.pastBookings;
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   }
 
   setTab(tab: TabKey) {
@@ -166,6 +254,7 @@ export class BookingsPage {
 
   viewTicket(booking: Booking) {
     this.ticketService.open(booking);
+<<<<<<< HEAD
     this.router.navigateByUrl(`/e-ticket/${booking.bookingRef}`);
   }
 
@@ -237,11 +326,19 @@ export class BookingsPage {
       ],
     });
     await alert.present();
+=======
+    this.router.navigateByUrl('/e-ticket');
+  }
+
+  bookAgain(booking: Booking) {
+    this.router.navigateByUrl('/search');
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
   }
 
   goToSearch() {
     this.router.navigateByUrl('/search');
   }
+<<<<<<< HEAD
 
   private async showToast(message: string) {
     const toast = await this.toastController.create({
@@ -252,4 +349,6 @@ export class BookingsPage {
     });
     await toast.present();
   }
+=======
+>>>>>>> e08cf0f11cf5ef2696ff66d9364b0c434f27c5f2
 }
