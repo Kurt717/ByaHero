@@ -1,4 +1,4 @@
-# ByaHero v2 — Page Screenshots
+# byaHero — page screenshots
 
 
 
