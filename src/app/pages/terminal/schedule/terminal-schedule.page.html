@@ -147,6 +147,21 @@
                     }
                   </p>
                   <p class="board-sub">{{ dep.seats }} · {{ dep.duration }} · {{ stopCount(dep) }} stops</p>
+                  @if (downstreamFares(dep); as fares) {
+                    @if (fares.length) {
+                      <details class="fare-table">
+                        <summary>Fares to towns ahead ({{ fares.length }})</summary>
+                        <ul>
+                          @for (f of fares; track f.town) {
+                            <li>
+                              <span>{{ f.town }}</span>
+                              <span>₱{{ f.fare }} · {{ f.seatsLeft }} left</span>
+                            </li>
+                          }
+                        </ul>
+                      </details>
+                    }
+                  }
                 </div>
                 <div class="board-cta">
                   <button

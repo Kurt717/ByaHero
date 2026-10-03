@@ -288,6 +288,93 @@ ion-content.search-content {
   }
 }
 
+/* Pair filter — same pickup + destination rule as Home. */
+.pair-row {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  margin-top: 12px;
+
+  .pair-btn {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 48px;
+    padding: 8px 14px;
+    background: var(--bg-white);
+    border: 1.5px solid var(--primary-navy);
+    border-radius: 999px;
+    box-shadow: 2px 2px 0 var(--ink);
+    font-family: var(--font-family);
+    cursor: pointer;
+    text-align: left;
+
+    .pair-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      &.origin {
+        border: 2.5px solid var(--primary-navy);
+      }
+      &.dest {
+        background: var(--accent-red);
+      }
+    }
+
+    .pair-text {
+      flex: 1;
+      min-width: 0;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    &:active { transform: scale(0.98); }
+  }
+
+  .pair-swap,
+  .pair-clear {
+    width: 48px;
+    min-height: 48px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: var(--bg-white);
+    border: 1.5px solid var(--primary-navy);
+    box-shadow: 2px 2px 0 var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--primary-navy);
+    ion-icon { font-size: 20px; }
+    &:active { transform: scale(0.9); }
+  }
+}
+
+.pair-note {
+  margin: 8px 2px 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--primary-navy);
+}
+
+.rc-seg {
+  margin: 8px 0 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--primary-navy);
+  background: #eef2ff;
+  border-radius: 10px;
+  padding: 8px 10px;
+  line-height: 1.5;
+}
+
 .search-feedback {
   margin: 14px 4px 0;
   font-size: 13px;
@@ -300,7 +387,6 @@ ion-content.search-content {
   position: relative;
   box-shadow: 2px 2px 0 var(--ink);
   display: inline-block;
-
   &::after {
     content: "";
     position: absolute;

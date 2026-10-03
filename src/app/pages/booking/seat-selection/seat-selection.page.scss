@@ -103,6 +103,12 @@ ion-content.flow-content {
   color: var(--text-muted);
   opacity: 0;
   animation: revealUp 0.45s 0.08s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+
+  &.segment-sub {
+    margin: -14px 0 20px;
+    font-weight: 700;
+    color: var(--primary-navy);
+  }
 }
 
 /* --- AVAILABILITY CHIP --- */

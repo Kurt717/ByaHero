@@ -38,6 +38,9 @@ import {
 } from '../../../services/pickup.service';
 import { TravelConditionsService } from '../../../services/travel-conditions.service';
 import { PickupSelectorComponent } from '../../../components/pickup-selector/pickup-selector.component';
+import {
+  NetworkService,
+} from '../../../services/network.service';
 
 addIcons({
   'arrow-back-outline': arrowBackOutline,
@@ -86,6 +89,7 @@ export class TripDetailsPage implements OnInit {
   private toastController = inject(ToastController);
   private pickupService = inject(PickupService);
   private conditionsService = inject(TravelConditionsService);
+  private network = inject(NetworkService);
 
   days: DayOption[] = [];
   showPickupPicker = false;
@@ -200,6 +204,38 @@ export class TripDetailsPage implements OnInit {
       this.pickupService.zoneFor(distance),
       this.pickupService.formatDistance(distance),
     );
+  }
+
+  /** Corridor recap for the chosen trip (read-only — Home owns the choice). */
+  get segmentSummary(): {
+    km: number;
+    boardEta: string;
+    alightEta: string;
+    fare: string;
+  } | null {
+    if (!this.booking.hasNetworkSegment) return null;
+    const km = this.booking.segmentKm;
+    const boardEta = this.network.stopEta(
+      this.booking.tripId!,
+      Math.min(this.booking.boardSeq!, this.booking.alightSeq!),
+      this.booking.travelDate,
+    );
+    const alightEta = this.network.stopEta(
+      this.booking.tripId!,
+      Math.max(this.booking.boardSeq!, this.booking.alightSeq!),
+      this.booking.travelDate,
+    );
+    return {
+      km,
+      boardEta,
+      alightEta,
+      fare: this.booking.formatCurrency(this.booking.seatFare),
+    };
+  }
+
+  /** Back to Home: pickup + destination can only change there. */
+  changeOnHome() {
+    this.router.navigateByUrl('/home');
   }
 
   togglePickupPicker() {

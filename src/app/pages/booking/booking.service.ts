@@ -1,5 +1,15 @@
 import { Injectable, inject } from '@angular/core';
 import { SeatService } from '../../services/seat.service';
+import {
+  NetworkService,
+  serviceClassById,
+  corridorById,
+  stopById,
+  tripById,
+  vehicleById,
+  type Direction,
+  type ServiceClassId,
+} from '../../services/network.service';
 import type { LocatedPoint } from '../../services/pickup.service';
 
 export interface TripSummary {
@@ -90,6 +100,7 @@ export const MAX_ID_UPLOAD_BYTES = 5 * 1024 * 1024;
 @Injectable({ providedIn: 'root' })
 export class BookingService {
   private seatService = inject(SeatService);
+  private network = inject(NetworkService);
   trip: TripSummary | null = null;
   travelDate = '';
   passengers: PassengerEntry[] = [{ id: 'p1', type: 'regular' }];
@@ -111,18 +122,220 @@ export class BookingService {
    *  this is history/audit context for the new booking. */
   rebookedFrom: string | null = null;
 
+  // ------------------------------------------------ network segment state
+  // A booking is for a boarding stop + alighting stop on a corridor trip.
+  // tripId/corridorId resolve from the trip summary in startBooking and can
+  // be refined by the board/alight pickers (Trip Details) or hail.
+
+  tripId: string | null = null;
+  corridorId: string | null = null;
+  operatorId: string | null = null;
+  serviceClassId: ServiceClassId | null = null;
+  boardStopId: string | null = null;
+  alightStopId: string | null = null;
+  boardSeq: number | null = null;
+  alightSeq: number | null = null;
+  /** Bus position anchor (sequence) for hail: stops at/before it are passed. */
+  busSeq: number | null = null;
+
   private counter = 1;
 
+  /** True when the session rides a resolved corridor trip. */
+  get hasNetworkSegment(): boolean {
+    return (
+      this.tripId != null &&
+      this.corridorId != null &&
+      this.boardSeq != null &&
+      this.alightSeq != null
+    );
+  }
+
+  /** Segment fare for one seat — fareFor(board → alight). Legacy trips
+   *  without a corridor fall back to the catalog string (deprecated). */
+  get seatFare(): number {
+    if (this.hasNetworkSegment) {
+      return this.network.fareFor({
+        corridorId: this.corridorId!,
+        operatorId: this.operatorId ?? 'victory-liner',
+        serviceClassId: this.serviceClassId ?? 'aircon',
+        boardStopId: this.boardStopId!,
+        alightStopId: this.alightStopId!,
+      });
+    }
+    return Math.round(this.baseFare);
+  }
+
+  /** Boarding → alighting label, e.g. 'Ilagan → Santiago City'. */
+  get segmentLabel(): string {
+    const corridor = corridorById(this.corridorId);
+    const board = corridor && this.boardStopId ? stopById(corridor, this.boardStopId) : null;
+    const alight = corridor && this.alightStopId ? stopById(corridor, this.alightStopId) : null;
+    if (board && alight) return `${board.name} → ${alight.name}`;
+    return this.trip ? `${this.trip.from} → ${this.trip.to}` : '';
+  }
+
+  get segmentKm(): number {
+    if (!this.hasNetworkSegment) return 0;
+    return this.network.segmentKm(this.corridorId!, this.boardSeq!, this.alightSeq!);
+  }
+
+  get serviceClassLabel(): string {
+    if (this.serviceClassId) return serviceClassById(this.serviceClassId).label;
+    return '';
+  }
+
+  /** @deprecated Catalog-string fallback for trips off any corridor. */
   get baseFare(): number {
     if (!this.trip) return 0;
     const n = Number(this.trip.fare.replace(/[^0-9.]/g, ''));
     return isNaN(n) ? 0 : n;
   }
 
-  /** Fare for one seat — set by the bus/operator/route in the catalog, no
-   *  artificial "fare classes". */
-  get seatFare(): number {
-    return Math.round(this.baseFare);
+  get direction(): Direction | null {
+    if (!this.hasNetworkSegment) return null;
+    return this.alightSeq! >= this.boardSeq! ? 'forward' : 'reverse';
+  }
+
+  /** Resolve the trip summary onto a corridor trip (full origin→destination
+   *  segment by default). Silent when unresolvable — legacy path applies. */
+  attachNetwork() {
+    if (!this.trip) return;
+    const resolved = this.network.resolveTrip(
+      this.trip.operator,
+      this.trip.from,
+      this.trip.to,
+    );
+    if (!resolved) {
+      this.clearNetworkSegment();
+      return;
+    }
+    const trip = resolved.trip;
+    const vehicle = vehicleById(trip.vehicleId);
+    this.tripId = trip.tripId;
+    this.corridorId = resolved.corridor.id;
+    this.operatorId = resolved.operatorId ?? trip.operatorId;
+    this.serviceClassId = vehicle?.serviceClassId ?? 'aircon';
+    const board = resolved.corridor.stops[resolved.boardSeq];
+    const alight = resolved.corridor.stops[resolved.alightSeq];
+    this.boardStopId = board.id;
+    this.alightStopId = alight.id;
+    this.boardSeq = resolved.boardSeq;
+    this.alightSeq = resolved.alightSeq;
+  }
+
+  private clearNetworkSegment() {
+    this.tripId = null;
+    this.corridorId = null;
+    this.operatorId = null;
+    this.serviceClassId = null;
+    this.boardStopId = null;
+    this.alightStopId = null;
+    this.boardSeq = null;
+    this.alightSeq = null;
+    this.busSeq = null;
+  }
+
+  /** Change the boarding/alighting stops. Only downstream stops are valid;
+   *  changing stops clears selected seats and re-checks availability. */
+  setBoardAlight(boardStopId: string, alightStopId: string): string | null {
+    const corridor = corridorById(this.corridorId);
+    if (!corridor) return 'This trip is not on a corridor yet.';
+    const board = stopById(corridor, boardStopId);
+    const alight = stopById(corridor, alightStopId);
+    if (!board || !alight) return 'Pick both a boarding and an alighting stop.';
+    if (board.id === alight.id) {
+      return 'Get off after you get on — pick a different stop.';
+    }
+    const dir = this.directionFromSeqs(board.sequence, alight.sequence);
+    if (!dir) return 'Get off after you get on — pick a later stop in the direction of travel.';
+    const trip = this.tripId ? tripById(this.tripId) : null;
+    if (trip && dir !== trip.direction) {
+      const label = trip.direction === 'forward' ? 'southbound' : 'northbound';
+      return `That order runs against this ${label} trip — pick stops in travel order.`;
+    }
+    if (this.busSeq != null) {
+      const passed =
+        dir === 'forward' ? board.sequence < this.busSeq : board.sequence > this.busSeq;
+      if (passed) return 'The bus already passed that stop. Pick a stop ahead.';
+    }
+    this.boardStopId = board.id;
+    this.alightStopId = alight.id;
+    this.boardSeq = board.sequence;
+    this.alightSeq = alight.sequence;
+    this.selectedSeats = [];
+    return null;
+  }
+
+  private directionFromSeqs(boardSeq: number, alightSeq: number): Direction | null {
+    if (alightSeq === boardSeq) return null;
+    return alightSeq > boardSeq ? 'forward' : 'reverse';
+  }
+
+  /** Inline validation messages for the current session state. */
+  validateStops(): string[] {
+    const errors: string[] = [];
+    if (!this.trip) {
+      errors.push('Pick a trip first.');
+      return errors;
+    }
+    if (!this.hasNetworkSegment) return errors;
+    const dir = this.direction;
+    if (!dir) {
+      errors.push('Get off after you get on — pick a different stop.');
+      return errors;
+    }
+    const trip = this.tripId ? tripById(this.tripId) : null;
+    if (trip && dir !== trip.direction) {
+      const label = trip.direction === 'forward' ? 'southbound' : 'northbound';
+      errors.push(
+        `That order runs against this ${label} trip — pick stops in travel order.`,
+      );
+    }
+    if (this.busSeq != null && dir) {
+      const passed =
+        dir === 'forward' ? this.boardSeq! < this.busSeq : this.boardSeq! > this.busSeq;
+      if (passed) errors.push('The bus already passed that stop. Pick a stop ahead.');
+    }
+    if (this.travelDate) {
+      const dep = this.departureDate();
+      if (dep && dep.getTime() < Date.now() - 24 * 3600 * 1000) {
+        errors.push('That departure already left. Pick another date.');
+      }
+    }
+    return errors;
+  }
+
+  /** Scheduled departure instant for the session (null when unknown). */
+  departureDate(): Date | null {
+    if (!this.tripId || !this.travelDate) return null;
+    const trip = tripById(this.tripId);
+    if (!trip) return null;
+    try {
+      const d = new Date(`${this.travelDate} ${trip.departureTime}`);
+      return isNaN(d.getTime()) ? null : d;
+    } catch {
+      return null;
+    }
+  }
+
+  /** Hail anchor: map a GPS pickup to the nearest downstream stop and pin
+   *  the bus position so passed stops stay unbookable. */
+  anchorHailBoarding(lat: number, lng: number, busSeq: number) {
+    if (!this.corridorId || !this.tripId) return;
+    const trip = tripById(this.tripId);
+    if (!trip) return;
+    const stop = this.network.nearestDownstreamStop(
+      this.corridorId,
+      trip.direction,
+      lat,
+      lng,
+      busSeq,
+    );
+    if (!stop) return;
+    this.busSeq = busSeq;
+    this.boardStopId = stop.id;
+    this.boardSeq = stop.sequence;
+    this.selectedSeats = [];
   }
 
   get passengerCount(): number {
@@ -130,13 +343,10 @@ export class BookingService {
   }
 
   /** How many passengers a booking may hold — exactly how many seats are
-   *  still genuinely free on the departure, never more. */
+   *  still genuinely free on the rider's own segment, never more. */
   get maxPassengers(): number {
     if (!this.trip) return 1;
-    const availability = this.seatService.availabilityFor(
-      this.trip.seatsLeft,
-      this.seatService.keyFor(this),
-    );
+    const availability = this.seatService.availabilityForBooking(this);
     return Math.max(1, availability.available);
   }
 
@@ -272,6 +482,8 @@ export class BookingService {
     this.hailMode = false;
     this.rebookedFrom = null;
     this.seatPreference = { ...NO_SEAT_PREFERENCE };
+    this.clearNetworkSegment();
+    this.attachNetwork();
     const d = new Date();
     d.setDate(d.getDate() + 1);
     this.travelDate = d.toDateString();
@@ -291,5 +503,6 @@ export class BookingService {
     this.hailMode = false;
     this.rebookedFrom = null;
     this.seatPreference = { ...NO_SEAT_PREFERENCE };
+    this.clearNetworkSegment();
   }
 }

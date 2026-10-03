@@ -245,10 +245,20 @@ export class PaymentPage implements OnInit {
     await new Promise((resolve) => setTimeout(resolve, 1200));
 
     if (!this.booking.bookingRef) this.booking.generateBookingRef();
-    this.seatService.bookSeats(
-      this.seatService.keyFor(this.booking),
-      this.booking.selectedSeats,
-    );
+    if (this.booking.hasNetworkSegment) {
+      this.seatService.bookSegment(
+        `${this.booking.tripId}|${this.booking.travelDate}`,
+        this.booking.selectedSeats,
+        Math.min(this.booking.boardSeq!, this.booking.alightSeq!),
+        Math.max(this.booking.boardSeq!, this.booking.alightSeq!),
+        this.booking.bookingRef,
+      );
+    } else {
+      this.seatService.bookSeats(
+        this.seatService.keyFor(this.booking),
+        this.booking.selectedSeats,
+      );
+    }
     const ticket = this.ticketService.createFromCheckout(this.booking);
     if (!ticket) {      this.processing = false;
       const toast = await this.toastController.create({

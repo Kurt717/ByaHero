@@ -87,24 +87,18 @@ export class SeatPreferencePage implements OnInit {
     this.booking.seatPreference = { position: 'any', zone: 'any' };
   }
 
-  /** Available seats on this departure matching the current wish. */
+  /** Available seats on this booking segment matching the current wish. */
   get matchingSeats(): string[] {
     if (!this.booking.trip) return [];
-    return this.seatService.matchingAvailableSeats(
-      this.booking.trip.seatsLeft,
-      this.seatService.keyFor(this.booking),
+    return this.seatService.matchingForBooking(
+      this.booking,
       this.booking.seatPreference,
     );
   }
 
   get soldOut(): boolean {
     if (!this.booking.trip) return false;
-    return (
-      this.seatService.availabilityFor(
-        this.booking.trip.seatsLeft,
-        this.seatService.keyFor(this.booking),
-      ).available <= 0
-    );
+    return this.seatService.availabilityForBooking(this.booking).available <= 0;
   }
 
   goBack() {
