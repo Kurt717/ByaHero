@@ -1701,6 +1701,157 @@ ion-content.home-content {
   }
 }
 
+/* --- DESKTOP: MAX-WIDTH CONTAINER + UNIFIED TOOLBAR (1140px) --- */
+.home-toolbar {
+  display: contents;
+}
+
+/* Constrain page gutters on large screens; mobile stays full-bleed */
+@media (min-width: 992px) {
+  .hero-banner {
+    margin: 0;
+    padding: calc(env(safe-area-inset-top, 20px) + 16px) 24px 0;
+    min-height: 160px;
+    max-height: 210px;
+    overflow: hidden;
+
+    .hb-content {
+      max-width: 1140px;
+      margin: 0 auto;
+    }
+
+    /* Close the gap: pull bus + ZOOM burst toward the text block */
+    .hb-bus {
+      right: calc(50% - 540px + 24px);
+      bottom: 52px;
+      width: 150px;
+    }
+    .hb-boom {
+      right: calc(50% - 540px + 180px);
+      bottom: 110px;
+    }
+    .hb-hero {
+      right: calc(50% - 540px + 90px);
+      top: 40px;
+    }
+    .hb-streaks {
+      bottom: 56px;
+    }
+  }
+
+  .home-wrap {
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 16px 24px 120px;
+  }
+
+  /* SEARCH & ROUTE BAR: unified grid 2fr 1fr 1fr */
+  .route-selectors {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 12px;
+    align-items: stretch;
+    margin-top: 16px;
+
+    .pill-card {
+      height: auto;
+      min-height: 60px;
+    }
+
+    .conditions-strip {
+      border-radius: 999px;
+      min-height: 60px;
+    }
+
+    .home-reminder {
+      grid-column: 1 / -1;
+    }
+  }
+
+  /* UNIFIED TOOLBAR: modes left, view+sort right in one row */
+  .home-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin: 16px 0 14px;
+  }
+
+  .categories-grid {
+    margin-bottom: 0;
+    gap: 12px;
+    justify-content: flex-start;
+    flex-shrink: 0;
+  }
+
+  .sticky-controls {
+    position: static;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .view-toggle-wrapper {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+
+    .segmented-control {
+      height: 44px;
+      min-width: 280px;
+      flex-shrink: 0;
+    }
+
+    .filter-row {
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+  }
+
+  .list-viewport {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 16px;
+  }
+
+  .map-viewport .map-shell {
+    height: calc(100vh - 320px);
+    min-height: 480px;
+  }
+}
+
+/* Tablet: 2-col route bar, toolbar wraps */
+@media (min-width: 768px) and (max-width: 991px) {
+  .home-wrap {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  .hero-banner .hb-content {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  .route-selectors {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 10px;
+  }
+  .home-toolbar {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .sticky-controls {
+    margin: 0;
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
 /* --- ACCESSIBILITY --- */
 @media (prefers-reduced-motion: reduce) {
   *,
