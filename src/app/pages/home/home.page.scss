@@ -1348,6 +1348,51 @@ ion-content.home-content {
   }
 }
 
+.map-zoom {
+  position: absolute;
+  right: 16px;
+  bottom: 76px;
+  z-index: 800;
+  display: flex;
+  flex-direction: column;
+  border: 1.5px solid var(--primary-navy);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--bg-white);
+  box-shadow: 2px 2px 0 var(--ink);
+
+  button {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    color: var(--text-main);
+    cursor: pointer;
+    ion-icon {
+      font-size: 20px;
+    }
+    &:first-child {
+      border-bottom: 1.5px solid var(--border-color);
+    }
+    &:active {
+      background: #eef2ff;
+    }
+    &:focus-visible {
+      outline: 2px solid var(--primary-navy);
+      outline-offset: -2px;
+    }
+  }
+}
+
+/* Safety: Leaflet's built-in top-left zoom must never render —
+   the custom bottom-right +/- group is the only zoom UI. */
+.map-shell .leaflet-control-zoom {
+  display: none;
+}
+
 .fab-locate {
   position: absolute;
   bottom: 16px;
