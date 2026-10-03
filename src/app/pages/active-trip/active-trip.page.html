@@ -8,9 +8,15 @@
       <div class="header-mid">
         <span class="eyebrow">Live Tracking</span>
         <h1>{{ trip.from }} <ion-icon name="chevron-forward-outline"></ion-icon> {{ trip.to }}</h1>
+        @if (!arrived && etaLabel) {
+          <span class="eta-pill">Arriving in {{ etaLabel }}{{ etaClock ? ' · ' + etaClock : '' }}</span>
+        } @else if (arrived) {
+          <span class="eta-pill">Arrived</span>
+        }
       </div>
-      <button class="icon-btn" (click)="shareTrip()" aria-label="Share trip">
-        <ion-icon name="share-social-outline"></ion-icon>
+      <button class="ticket-pill" (click)="viewTicket()" aria-label="View ticket">
+        <ion-icon name="ticket-outline"></ion-icon>
+        View Ticket
       </button>
     </div>
 
@@ -25,6 +31,37 @@
       <ion-icon name="navigate-outline"></ion-icon>
       <span>{{ nextStopLabel }}</span>
     </p>
+
+    <!-- BOTTOM SHEET CARD: status + next stop + progress -->
+    <div class="status-card">
+      <div class="status-top">
+        <span class="live-dot" [class.done]="arrived" aria-hidden="true"></span>
+        <strong>{{ statusLabel }}</strong>
+        @if (etaLabel) {
+          <span class="status-eta">{{ etaLabel }}</span>
+        }
+      </div>
+      <p class="status-next">{{ nextStopLabel }}</p>
+      <div class="progress-dots" aria-hidden="true">
+        <div class="pnode done">
+          <span class="pdot"></span>
+          <span class="plbl">Origin</span>
+          <small>{{ trip.from }}</small>
+        </div>
+        <span class="pline" [class.done]="progressPercent > 5"></span>
+        <div class="pnode" [class.done]="progressPercent > 50">
+          <span class="pdot"></span>
+          <span class="plbl">Next stop</span>
+          <small>{{ nextStopName }}</small>
+        </div>
+        <span class="pline" [class.done]="arrived"></span>
+        <div class="pnode" [class.done]="arrived">
+          <span class="pdot"></span>
+          <span class="plbl">Destination</span>
+          <small>{{ trip.to }}</small>
+        </div>
+      </div>
+    </div>
 
     <!-- RIDE IDENTITY (shared vehicle + driver cards) -->
     <app-ride-cards [booking]="booking"></app-ride-cards>
@@ -156,7 +193,7 @@
       Emergency
     </button>
     <button class="footer-cta" (click)="shareTrip()">
-      Share Live Location
+      Share Live Trip
       <ion-icon name="share-social-outline"></ion-icon>
     </button>
   </div>

@@ -1,5 +1,4 @@
-# byaHero — page screenshots
-
+# ByaHero v2 — Page Screenshots
 
 
 | # | File | Route |

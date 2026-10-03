@@ -268,9 +268,35 @@ export class ActiveTripPage implements AfterViewInit, OnDestroy {
     return `${minsLeft} min`;
   }
 
+  /** Bottom-sheet status line: schedule state in one glance. */
+  get statusLabel(): string {
+    if (this.booking?.status === 'cancelled') return 'Cancelled';
+    if (this.hasArrived || this.booking?.status === 'completed') return 'Arrived';
+    if (this.stage === 'boarding') return 'Boarding · On Schedule';
+    if (this.stage === 'arriving') return 'Almost There · On Schedule';
+    return 'In Transit · On Schedule';
+  }
+
+  /** Wall-clock ETA (departure + catalog duration), e.g. "8:45 PM". */
+  get etaClock(): string {
+    const dep = this.departureTime();
+    if (!dep || this.hasArrived) return '';
+    try {
+      const eta = new Date(dep.getTime() + this.tripMinutes * 60000);
+      return eta.toLocaleTimeString('en-PH', { hour: 'numeric', minute: '2-digit' });
+    } catch {
+      return '';
+    }
+  }
+
+  /** Short next-stop name for the progress dots. */
+  get nextStopName(): string {
+    const next = this.timelineView.nextStop ?? this.timelineView.currentStop;
+    return next?.name ?? this.trip.to;
+  }
+
   /** Next-stop line uses the canonical current/next stops. */
-  get nextStopLabel(): string {
-    const view = this.timelineView;
+  get nextStopLabel(): string {    const view = this.timelineView;
     if (this.booking?.status === 'cancelled') return 'Booking cancelled — no live tracking';
     if (this.hasArrived || view.mode === 'completed') {
       return `Arrived at ${this.trip.to} Terminal`;
