@@ -43,6 +43,8 @@ import {
   bus,
   search,
   locateOutline,
+  addOutline,
+  removeOutline,
   starSharp,
   handLeftOutline,
   flash,
@@ -103,6 +105,8 @@ addIcons({
   bus: bus,
   search: search,
   'locate-outline': locateOutline,
+  'add-outline': addOutline,
+  'remove-outline': removeOutline,
   'star-sharp': starSharp,
   'hand-left-outline': handLeftOutline,
   flash: flash,
@@ -886,6 +890,9 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
       {
         center: start,
         zoom: 6,
+        // Custom +/- buttons (bottom-right) replace the default top-left
+        // control, which sat underneath the On-time/Delayed legend.
+        zoomControl: false,
       },
     );
 
@@ -1652,6 +1659,15 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
     return this.pickupService.coordsFor(
       place,
     );
+  }
+
+  /** Custom map zoom (wired to the +/- buttons — default control is off). */
+  zoomIn() {
+    this.map?.zoomIn();
+  }
+
+  zoomOut() {
+    this.map?.zoomOut();
   }
 
   locateMe() {

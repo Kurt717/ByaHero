@@ -383,6 +383,15 @@
           <span class="legend-dot red"></span>Delayed
         </div>
 
+        <div class="map-zoom" role="group" aria-label="Map zoom">
+          <button type="button" (click)="zoomIn()" aria-label="Zoom in">
+            <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+          </button>
+          <button type="button" (click)="zoomOut()" aria-label="Zoom out">
+            <ion-icon name="remove-outline" aria-hidden="true"></ion-icon>
+          </button>
+        </div>
+
         <button
           class="fab-locate"
           [class.loading]="locating"
