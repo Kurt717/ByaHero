@@ -26,6 +26,9 @@ ion-content.review-content {
   padding: calc(env(safe-area-inset-top, 20px) + 24px) 16px 64px;
   max-width: 480px;
   margin: 0 auto;
+  /* Never allow page-level horizontal scroll from inner rows. */
+  overflow-x: clip;
+  min-width: 0;
 }
 
 /* --- HEADER (beacon mark, matches Bookings) --- */
@@ -292,6 +295,10 @@ ion-content.review-content {
     gap: 12px;
     margin-top: 16px;
 
+    > * {
+      min-width: 0;
+    }
+
     .skip-btn,
     .save-btn {
       min-height: 48px;
@@ -304,6 +311,9 @@ ion-content.review-content {
 
     .skip-btn {
       flex: 0 0 auto;
+      /* Override the standalone full-width rule below: inside this row
+         Skip is a side-by-side action, otherwise Save is pushed off-screen. */
+      width: auto;
       background: transparent;
       border: 1.5px solid var(--primary-navy);
       color: var(--primary-navy);
