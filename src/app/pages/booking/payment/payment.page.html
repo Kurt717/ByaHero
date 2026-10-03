@@ -40,9 +40,20 @@
                 </span>
               </div>
             }
+            <div class="receipt-row">
+              <span>Base Fare ({{ booking.passengerCount }} × {{ booking.formatCurrency(booking.seatFare) }})</span>
+              <span>{{ booking.formatCurrency(booking.seatFare * booking.passengerCount) }}</span>
+            </div>
             @if (booking.totalDiscount) {
               <div class="receipt-row">
-                <span>Passenger discount</span>
+                <span
+                  >Discount Applied
+                  @for (p of booking.passengers; track p; let last = $last) {
+                    @if (p.type !== 'regular') {
+                      <span class="seat-tag">{{ typeLabel(p.type) }} 20%</span>
+                    }
+                  }</span
+                >
                 <span class="discount-value"
                   >− {{ booking.formatCurrency(booking.totalDiscount) }}</span
                   >
@@ -62,7 +73,7 @@
             </div>
             <div class="receipt-divider"></div>
             <div class="receipt-row total">
-              <span>Total</span>
+              <span>Total Payable</span>
               <span>{{ booking.formatCurrency(booking.total) }}</span>
             </div>
           </div>
@@ -94,13 +105,60 @@
           </div>
 
           @if (booking.discountedCount) {
-              <p class="id-reminder">
-                <ion-icon name="information-circle-outline"></ion-icon>
-                {{ booking.discountedCount }} discounted fare{{ booking.discountedCount >
-                1 ? 's' : '' }} — the conductor will ask to see a valid ID before
-                boarding.
+            <div class="id-verify-card">
+              <div class="id-verify-head">
+                <ion-icon name="id-card-outline"></ion-icon>
+                <strong>ID verification ({{ booking.passengerCount - booking.unverifiedCount }}/{{ booking.passengerCount }})</strong>
+              </div>
+              @for (p of booking.passengers; track p; let i = $index) {
+                @if (p.type !== 'regular') {
+                  <div class="id-verify-row" [class.done]="booking.isPassengerVerified(p)">
+                    <ion-icon
+                      [name]="booking.isPassengerVerified(p) ? 'checkmark-circle' : 'information-circle-outline'"
+                    ></ion-icon>
+                    <span class="idv-text">
+                      Passenger {{ i + 1 }} · {{ typeLabel(p.type) }}
+                      <small>
+                        @if (!p.idType || !(p.idNumber ?? '').trim()) {
+                          ID type + number required
+                        } @else if (!p.idImage) {
+                          Front ID upload required
+                        } @else if (!p.idConfirmed) {
+                          Confirmation checkbox required
+                        } @else {
+                          Verified
+                        }
+                      </small>
+                    </span>
+                    @if (!booking.isPassengerVerified(p)) {
+                      <button type="button" class="idv-fix" (click)="gotoDetails()">Fix</button>
+                    }
+                  </div>
+                }
+              }
+              <p class="id-verify-note">
+                Physical ID must be presented to the bus conductor upon boarding.
+                Misrepresentation may result in fare adjustments or booking cancellation.
               </p>
-            }
+              @if (!booking.allIdsVerified) {
+                <button type="button" class="idv-cta" (click)="gotoDetails()">
+                  Complete ID verification
+                  <ion-icon name="chevron-forward-outline"></ion-icon>
+                </button>
+              }
+            </div>
+            <label class="terms-row">
+              <input type="checkbox" [(ngModel)]="idConfirm" />
+              <span class="checkbox-box" [class.checked]="idConfirm">
+                @if (idConfirm) {
+                  <ion-icon name="checkmark-circle"></ion-icon>
+                }
+              </span>
+              <span class="terms-text"
+                >I confirm this ID is valid and belongs to the passenger</span
+              >
+            </label>
+          }
             <!-- PAYMENT METHODS -->
             <div class="section">
               <p class="section-title">Payment Method</p>

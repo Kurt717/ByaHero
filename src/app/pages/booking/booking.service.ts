@@ -49,6 +49,12 @@ export interface PassengerEntry {
   id: string;
   type: PassengerType;
   idNumber?: string;
+  /** Discounted-fare verification (required before payment). */
+  idType?: string;
+  /** Front ID preview: data-URL for images, file name for PDFs. */
+  idImage?: string;
+  idImageKind?: 'image' | 'pdf';
+  idConfirmed?: boolean;
 }
 
 export interface PassengerTypeMeta {
@@ -70,6 +76,16 @@ export const PASSENGER_TYPE_META: Record<PassengerType, PassengerTypeMeta> = {
   },
   pwd: { label: 'PWD', short: 'PWD', discount: 0.2, requiresId: true },
 };
+
+/** ID document options per discounted fare type. */
+export const ID_TYPE_OPTIONS: Record<Exclude<PassengerType, 'regular'>, string[]> = {
+  student: ['School ID', 'Certificate of Registration', 'Student Driver License'],
+  senior: ['OSCA ID', 'Senior Citizen ID'],
+  pwd: ['PWD ID'],
+};
+
+/** Max ID upload size: 5MB. */
+export const MAX_ID_UPLOAD_BYTES = 5 * 1024 * 1024;
 
 @Injectable({ providedIn: 'root' })
 export class BookingService {
@@ -204,7 +220,44 @@ export class BookingService {
 
   setPassengerType(id: string, type: PassengerType) {
     const p = this.passengers.find((p) => p.id === id);
-    if (p) p.type = type;
+    if (!p || p.type === type) return;
+    p.type = type;
+    // Switching fare type resets ID verification — a new category needs
+    // its own document, number and confirmation.
+    p.idType = undefined;
+    p.idImage = undefined;
+    p.idImageKind = undefined;
+    p.idConfirmed = false;
+    if (type === 'regular') p.idNumber = undefined;
+  }
+
+  setPassengerIdDoc(id: string, patch: Partial<Pick<PassengerEntry, 'idType' | 'idNumber' | 'idImage' | 'idImageKind' | 'idConfirmed'>>) {
+    const p = this.passengers.find((p) => p.id === id);
+    if (p) Object.assign(p, patch);
+  }
+
+  idOptionsFor(type: PassengerType): string[] {
+    return type === 'regular' ? [] : (ID_TYPE_OPTIONS[type] ?? []);
+  }
+
+  /** One discounted passenger is verified when number + front ID preview + checkbox are all done. */
+  isPassengerVerified(p: PassengerEntry): boolean {
+    if (!PASSENGER_TYPE_META[p.type].requiresId) return true;
+    return (
+      !!p.idType &&
+      !!(p.idNumber ?? '').trim() &&
+      !!p.idImage &&
+      p.idConfirmed === true
+    );
+  }
+
+  /** Every discounted passenger verified — gates Proceed to Payment. */
+  get allIdsVerified(): boolean {
+    return this.passengers.every((p) => this.isPassengerVerified(p));
+  }
+
+  get unverifiedCount(): number {
+    return this.passengers.filter((p) => !this.isPassengerVerified(p)).length;
   }
 
   startBooking(trip: TripSummary) {

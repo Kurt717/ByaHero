@@ -13,6 +13,8 @@ import {
   checkmarkCircle,
   lockClosedOutline,
   informationCircleOutline,
+  idCardOutline,
+  shieldCheckmarkOutline,
   pricetagOutline,
   chevronForwardOutline,
 } from 'ionicons/icons';
@@ -36,6 +38,8 @@ addIcons({
   'checkmark-circle': checkmarkCircle,
   'lock-closed-outline': lockClosedOutline,
   'information-circle-outline': informationCircleOutline,
+  'id-card-outline': idCardOutline,
+  'shield-checkmark-outline': shieldCheckmarkOutline,
   'pricetag-outline': pricetagOutline,
   'chevron-forward-outline': chevronForwardOutline,
 });
@@ -66,6 +70,7 @@ export class PaymentPage implements OnInit {
   private pickupService = inject(PickupService);
 
   agreed = false;
+  idConfirm = false;
   cardNumber = '';
   cardExpiry = '';
   cardCvv = '';
@@ -108,6 +113,8 @@ export class PaymentPage implements OnInit {
     addIcons({
       arrowBackOutline,
       informationCircleOutline,
+      idCardOutline,
+      shieldCheckmarkOutline,
       lockClosedOutline,
       checkmarkCircle,
     });
@@ -185,6 +192,12 @@ export class PaymentPage implements OnInit {
     ) {
       return `Your wallet balance (₱ ${this.profileService.readWallet().balance}) is lower than the total. Top up on the Profile tab first.`;
     }
+    if (this.booking.discountedCount && !this.booking.allIdsVerified) {
+      return `${this.booking.unverifiedCount} discounted fare${this.booking.unverifiedCount > 1 ? 's' : ''} still need${this.booking.unverifiedCount > 1 ? '' : 's'} ID type, ID number and front ID upload. Tap “Complete ID verification” below.`;
+    }
+    if (this.booking.discountedCount && !this.idConfirm) {
+      return 'Confirm the discounted ID is valid and belongs to the passenger to continue.';
+    }
     if (!this.agreed) {
       return 'Accept the fare and cancellation policy to finish booking.';
     }
@@ -193,10 +206,17 @@ export class PaymentPage implements OnInit {
 
   get canPay(): boolean {
     if (this.processing) return false;
+    if (this.booking.discountedCount && (!this.booking.allIdsVerified || !this.idConfirm)) {
+      return false;
+    }
     if (this.booking.paymentMethod === 'wallet') {
       return this.agreed && this.walletBalance >= this.booking.total;
     }
     return this.agreed && this.cardIsValid;
+  }
+
+  gotoDetails() {
+    this.router.navigateByUrl('/booking/trip');
   }
 
   goBack() {

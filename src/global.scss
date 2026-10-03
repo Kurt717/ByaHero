@@ -547,22 +547,64 @@ $wide:    "(min-width: 1280px) and (min-height: 560px)";
     }
   }
 
-  /* ---------- AUTH: split screen ---------- */
+  /* ---------- AUTH: split screen — left panel mirrors the mobile cover ---------- */
   html:not(#bh) :is(app-login, app-signup) {
     .top-section {
-      position: fixed; top: 0; left: 0; bottom: 0; width: 46%; height: auto; padding: 0 72px;
-      display: flex; flex-direction: column; justify-content: center; gap: 16px;
+      position: fixed; top: 0; left: 0; bottom: 0; width: 46%; height: auto;
+      padding: 48px 60px;
+      display: flex; flex-direction: column; justify-content: center; align-items: flex-start;
+      overflow: hidden auto;
       background:
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 200' fill='none'%3E%3Cpath d='M20 170C120 170 130 60 220 70S330 30 380 30' stroke='%238FA3FF' stroke-opacity='.55' stroke-width='3' stroke-dasharray='2 9' stroke-linecap='round'/%3E%3Ccircle cx='20' cy='170' r='9' fill='%23060a28' stroke='%23fff' stroke-width='4'/%3E%3Ccircle cx='380' cy='30' r='9' fill='%23DC2626' stroke='%23fff' stroke-width='4'/%3E%3C/svg%3E") 72px calc(100% - 72px) / min(420px, 70%) no-repeat,
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 200' fill='none'%3E%3Cpath d='M20 170C120 170 130 60 220 70S330 30 380 30' stroke='%238FA3FF' stroke-opacity='.55' stroke-width='3' stroke-dasharray='2 9' stroke-linecap='round'/%3E%3Ccircle cx='20' cy='170' r='9' fill='%23060a28' stroke='%23fff' stroke-width='4'/%3E%3Ccircle cx='380' cy='30' r='9' fill='%23DC2626' stroke='%23fff' stroke-width='4'/%3E%3C/svg%3E") 60px calc(100% - 56px) / min(400px, 72%) no-repeat,
         radial-gradient(rgba(255, 255, 255, .05) 1px, transparent 1.3px) 0 0 / 10px 10px,
         linear-gradient(160deg, var(--bh-navy-deep) 0%, var(--bh-navy-mid) 100%);
       &::before {
-        content: "Your hero on the way."; max-width: 460px; text-wrap: balance;
-        font: 800 46px/1.08 "Plus Jakarta Sans", -apple-system, sans-serif; letter-spacing: -.03em; color: #fff;
+        content: "Your hero on the way."; order: 0; max-width: 460px; text-wrap: balance;
+        font: 800 44px/1.08 "Plus Jakarta Sans", -apple-system, sans-serif; letter-spacing: -.03em; color: #fff;
       }
       &::after {
-        content: "Book buses and UV Express across North Luzon. Fixed fares, real seats, live tracking."; max-width: 380px;
-        font: 500 16px/1.55 "Plus Jakarta Sans", -apple-system, sans-serif; color: rgba(255, 255, 255, .72);
+        content: "Book buses and UV Express across North Luzon. Fixed fares, real seats, live tracking.";
+        order: 1; max-width: 380px; margin-top: 12px;
+        font: 500 15.5px/1.55 "Plus Jakarta Sans", -apple-system, sans-serif; color: rgba(255, 255, 255, .72);
+      }
+
+      /* Mobile cover art, restaged for the wide panel (same markup as phone). */
+      .burst-bg {
+        display: block;
+        opacity: 0.55;
+        pointer-events: none;
+      }
+      .hero-balloon {
+        display: block;
+        order: 2;
+        max-width: 360px;
+        width: 100%;
+        margin-top: 30px;
+      }
+      .hero-bus {
+        display: block;
+        order: 3;
+        position: relative;
+        right: auto;
+        bottom: auto;
+        width: min(360px, 82%);
+        margin: 22px 0 0 48px;
+      }
+      .hero-pow {
+        display: flex;
+        position: absolute;
+        top: 42px;
+        right: 48px;
+        width: 84px;
+        height: 84px;
+      }
+      .zoom-word {
+        display: block;
+        position: absolute;
+        left: 40px;
+        bottom: 18px;
+        font-size: 120px;
+        pointer-events: none;
       }
     }
     .bottom-sheet {
@@ -585,6 +627,7 @@ $wide:    "(min-width: 1280px) and (min-height: 560px)";
       grid-template-areas: "art title" "art desc";
       column-gap: 72px; align-items: center; text-align: left;
     }
+    .slide.active > * { min-width: 0; max-width: 100%; }
     .illustration-container {
       grid-area: art; width: min(440px, 100%); margin: 0 auto; padding: 40px;
       background: radial-gradient(circle at 30% 18%, #e0e7ff, var(--bh-tint) 70%); border-radius: 48px;
@@ -963,8 +1006,9 @@ $wide:    "(min-width: 1280px) and (min-height: 560px)";
 }
 
 /* =====================================================================
-   OVERLAYS (alerts / action sheets / toasts) — on-theme pop-art comics
-   Matches the app's navy border + yellow accent + dot-grid motif.
+   OVERLAYS (alerts / action sheets / toasts) — ByaHero light sheets.
+   White card + brand ribbon + badge icon + pill actions.
+   One place styles every ion-alert in the app.
    ===================================================================== */
 html:not(#bh) {
   ion-alert, ion-action-sheet, ion-toast { --ion-color-primary: #151d48; }
@@ -972,204 +1016,228 @@ html:not(#bh) {
   /* scrim */
   ion-backdrop {
     --backdrop-opacity: 1;
-    background: rgba(15, 23, 42, 0.55);
+    background: rgba(6, 10, 40, 0.55);
   }
 
-  /* ---------- ALERT ---------- */
+  /* ---------- ALERT — light premium ByaHero sheet ----------
+     Centered icon badge + navy title + pill actions. No heavy header
+     block: the whole card is white, brand shows in the badge + buttons. */
   ion-alert {
-    --max-width: 340px;
+    --max-width: 280px;
     --backdrop-opacity: 1;
     font-family: "Plus Jakarta Sans", sans-serif;
 
     .alert-wrapper {
-      background-color: #ffffff;
-      background-image: radial-gradient(rgba(21, 29, 72, 0.055) 1px, transparent 1.3px);
-      background-size: 7px 7px;
-      border: 1.5px solid #151d48;
-      border-radius: 20px;
-      box-shadow: 4px 4px 0 rgba(21, 29, 72, 0.18);
+      position: relative;
+      background: #ffffff;
+      border: 1px solid rgba(30, 39, 73, 0.1);
+      border-radius: 18px;
+      box-shadow: 0 12px 32px rgba(30, 39, 73, 0.16);
       overflow: hidden;
+      animation: bh-alert-in 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+
+      /* Sleek brand tri-color stripe across the very top */
+      &::before {
+        content: "";
+        display: block;
+        height: 3px;
+        background: linear-gradient(90deg, #1E2749 0 34%, #F6C444 34% 67%, #E04747 67% 100%);
+      }
     }
 
-    /* Yellow pop-art header strip — close X lives in its top-right */
+    /* Tight white header — title only, no icon */
     .alert-head {
       position: relative;
-      padding: 0;
-      padding-right: 34px;
-      background-color: #151d48;
-      background-image: radial-gradient(rgba(255, 255, 255, 0.12) 1px, transparent 1.3px);
-      background-size: 7px 7px;
-      border-bottom: 1.5px solid #151d48;
+      padding: 14px 20px 0;
+      background: #ffffff;
+      border-bottom: none;
     }
 
-    /* Close button — top-right ✕, injected by presentAlert() */
+    /* No top-right × — action buttons below dismiss the dialog.
+       Kept as a safety net in case any page still injects one. */
     .alert-close-x {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      z-index: 2;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 28px;
-      height: 28px;
-      padding: 0;
-      border: none;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.12);
-      color: #ffffff;
-      font-size: 13px;
-      font-weight: 700;
-      line-height: 1;
-      cursor: pointer;
-      transition: background-color 0.15s ease, transform 0.12s ease;
-      &:hover {
-        background: rgba(255, 255, 255, 0.24);
-      }
-      &:active {
-        transform: scale(0.9);
-      }
+      display: none !important;
     }
 
     .alert-title {
       display: block;
-      padding: 16px 20px 4px;
-      font-weight: 900;
-      font-size: 16px;
-      line-height: 1.25;
-      color: #ffffff;
-      text-align: left;
+      padding: 0;
+      font-weight: 800;
+      font-size: 15px;
+      line-height: 1.3;
+      color: #1E2749;
+      text-align: center;
       letter-spacing: -0.01em;
-
-      /* Yellow accent stamp on title */
-      &::before {
-        content: "★ ";
-        color: #ffe066;
-        font-size: 13px;
-      }
     }
 
     .alert-sub-title {
-      padding: 2px 20px 14px;
-      color: rgba(255, 255, 255, 0.7);
-      font-size: 12px;
+      padding: 6px 2px 0;
+      margin-top: 0;
+      color: #5B6478;
+      font-size: 12.5px;
       font-weight: 600;
-      text-align: left;
+      line-height: 1.5;
+      text-align: center;
     }
 
-    /* Body area */
+    /* Body — centered, calm gray */
     .alert-message {
-      color: #374151;
-      font-size: 14px;
+      color: #5B6478;
+      font-size: 12.5px;
       font-weight: 500;
-      line-height: 1.55;
-      text-align: left;
-      padding: 16px 20px 8px;
+      line-height: 1.5;
+      text-align: center;
+      padding: 6px 18px 0;
+    }
+    .alert-message:empty {
+      display: none;
     }
 
-    .alert-input-group { padding: 14px 18px 4px; }
+    .alert-input-group { padding: 12px 16px 2px; }
     .alert-input {
-      border: 1.5px solid #151d48 !important;
+      min-height: 46px;
+      border: 1px solid rgba(30, 39, 73, 0.2) !important;
       border-radius: 12px;
       background: #f8fafc;
       font-weight: 600;
       font-size: 14px;
-      color: #151d48;
-      box-shadow: 2px 2px 0 rgba(21, 29, 72, 0.12);
-      --highlight-color-valid: #151d48;
-      --highlight-color-invalid: #d32f2f;
+      color: #1E2749;
+      padding-inline-start: 16px;
+      --highlight-color-valid: #1E2749;
+      --highlight-color-invalid: #E04747;
+      --highlight-color-focused: #1E2749;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+      &:focus-within {
+        border-color: #1E2749 !important;
+        box-shadow: 0 0 0 3px rgba(30, 39, 73, 0.08);
+        background: #ffffff;
+      }
     }
 
-    /* Radio / checkbox options */
+    /* Radio / checkbox options — card rows */
     .alert-radio-group,
     .alert-checkbox-group {
-      padding: 8px 18px 4px;
-      border-top: 1px dashed rgba(21, 29, 72, 0.15);
+      padding: 10px 16px 2px;
+      border-top: none;
+      max-height: 38vh;
+    }
+    .alert-tappable {
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      margin-bottom: 8px;
+      min-height: 46px;
+    }
+    .alert-tappable.alert-radio-button.alert-checked,
+    .alert-tappable.alert-checkbox-button.alert-checked {
+      border-color: #1E2749;
+      background: #eef2ff;
     }
     .alert-radio-label,
     .alert-checkbox-label {
-      color: #151d48;
-      font-weight: 600;
-      font-size: 14px;
+      color: #1E2749;
+      font-weight: 700;
+      font-size: 13.5px;
       white-space: normal;
+      padding-top: 11px;
+      padding-bottom: 11px;
     }
     .alert-radio-icon,
     .alert-checkbox-icon {
-      border: 1.5px solid #cbd5e1;
+      border: 1px solid #cbd5e1;
       background: #fff;
       border-radius: 50%;
     }
-    .alert-checkbox-icon { border-radius: 5px; }
-    .alert-radio-inner { background: #151d48; border-radius: 50%; }
-    .alert-checkbox-inner { border-color: #151d48; }
+    .alert-checkbox-icon { border-radius: 7px; }
+    .alert-radio-inner { background: #1E2749; border-radius: 50%; }
+    .alert-checkbox-inner { border-color: #1E2749; }
 
-    /* Button row — compact, right-aligned, sized to the task (HCI:
-       buttons should be large enough to tap, not so large they overwhelm
-       the modal). Always side-by-side, never a stack. */
+    /* Button row — two balanced pills, labels centered in their containers */
     .alert-button-group,
     .alert-button-group.alert-button-group-vertical {
       display: flex;
       flex-direction: row;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-      align-items: center;
+      flex-wrap: nowrap;
+      justify-content: stretch;
+      align-items: stretch;
       gap: 8px;
-      padding: 10px 18px 18px;
-      border-top: 1.5px dashed rgba(21, 29, 72, 0.15);
+      padding: 12px 14px 14px;
+      border-top: none;
+      margin-top: 6px;
     }
 
     .alert-button {
       margin: 0;
-      flex: 0 1 auto;
+      flex: 1 1 0;
       min-width: 0;
       width: auto;
-      min-height: 36px;
-      padding: 0 14px;
-      border-radius: 9px;
+      min-height: 40px;
+      padding: 0 10px;
+      border-radius: 999px;
       font-family: inherit;
       font-weight: 700;
-      font-size: 12.5px;
+      font-size: 13.5px;
+      letter-spacing: -0.01em;
       text-transform: none;
-      color: #151d48;
-      background: transparent;
       opacity: 1 !important;
-      border: 1px solid transparent;
       transition: transform 0.12s ease, filter 0.12s ease;
+      box-shadow: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+
+      .alert-button-inner {
+        justify-content: center;
+        text-align: center;
+      }
 
       &:active {
-        transform: scale(0.96);
-        filter: brightness(0.94);
+        transform: scale(0.97);
+        filter: brightness(0.96);
       }
     }
 
-    /* Primary / confirm button — navy + offset shadow */
+    /* Single-button dialogs — full-width primary */
+    .alert-button-group:has(> .alert-button:only-child) .alert-button {
+      flex: 1 1 100%;
+    }
+
+    /* Primary / confirm — solid navy pill */
     .alert-button:not(.alert-button-role-cancel):not(.alert-button-role-destructive) {
-      background: #151d48;
-      background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1.3px);
-      background-size: 6px 6px;
+      background: #1E2749;
       color: #ffffff;
-      border-color: #151d48;
-      box-shadow: 1.5px 1.5px 0 rgba(21, 29, 72, 0.25);
-      padding: 0 16px;
+      border: 1px solid #1E2749;
+      box-shadow: none;
+      &:hover {
+        filter: brightness(1.15);
+      }
     }
 
-    /* Destructive button — compact red chip */
+    /* Destructive / Log Out — solid red pill, crisp white text */
     .alert-button-role-destructive {
-      color: #d32f2f;
-      border-color: rgba(211, 47, 47, 0.4);
-      background: #fff5f5;
+      background: #E04747;
+      border: 1px solid #E04747;
+      color: #ffffff;
+      box-shadow: none;
+      &:hover {
+        filter: brightness(1.05);
+      }
     }
 
-    /* Cancel / dismiss — quiet text-style action (X top-right also closes) */
+    /* Cancel / Stay — clean ghost button, navy text */
     .alert-button-role-cancel,
     .in-role-cancel {
-      color: #6b7280;
-      border-color: transparent;
-      background: transparent;
+      color: #1E2749;
+      border: 1px solid rgba(30, 39, 73, 0.25);
+      background: #ffffff;
+      box-shadow: none;
+      &:hover {
+        background: #f1f5f9;
+      }
     }
   }
 
-  /* ---------- ACTION SHEET ---------- */
+  /* ---------- ACTION SHEET — same language ---------- */
   ion-action-sheet {
     --backdrop-opacity: 1;
     font-family: "Plus Jakarta Sans", sans-serif;
@@ -1177,34 +1245,48 @@ html:not(#bh) {
 
     .action-sheet-wrapper {
       border: 1.5px solid #151d48;
-      border-radius: 20px 20px 0 0;
-      box-shadow: 0 -4px 0 rgba(21, 29, 72, 0.12), 0 -24px 48px rgba(15, 23, 42, 0.18);
+      border-radius: 24px 24px 0 0;
+      box-shadow: 0 -6px 0 rgba(21, 29, 72, 0.12), 0 -24px 64px rgba(6, 10, 40, 0.28);
       overflow: hidden;
       background: #ffffff;
     }
     .action-sheet-button {
       font-family: inherit;
-      font-weight: 600;
-      font-size: 14px;
-      min-height: 44px;
+      font-weight: 700;
+      font-size: 14.5px;
+      min-height: 52px;
       color: #151d48;
       background: #ffffff;
-      border-top: 1px dashed rgba(21, 29, 72, 0.14);
-      &.action-sheet-cancel { font-weight: 800; color: #151d48; background: #f8fafc; border-top: 1.5px solid rgba(21, 29, 72, 0.15); }
-      &.action-sheet-destructive { color: #d32f2f; }
+      border-top: 1px solid #eef2ff;
+      &.action-sheet-cancel { font-weight: 800; color: #151d48; background: #f8fafc; border-top: 1.5px solid #e2e8f0; }
+      &.action-sheet-destructive { color: #ffffff; background: #d32f2f; font-weight: 800; }
     }
     .action-sheet-group { border-radius: 0; }
     .action-sheet-title {
-      padding: 14px 18px 12px;
-      font-weight: 900;
-      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 18px 14px;
+      font-weight: 800;
+      font-size: 15px;
+      letter-spacing: -0.01em;
       color: #ffffff;
       text-align: left;
-      background-color: #151d48;
-      background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1.3px);
-      background-size: 7px 7px;
+      background: linear-gradient(135deg, #151d48 0%, #1e2a7a 100%);
       border-bottom: none;
-      &::before { content: "★ "; color: #ffe066; }
+      &::before {
+        content: "★";
+        flex: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: #ffe066;
+        color: #151d48;
+        font-size: 12px;
+      }
     }
   }
 
@@ -1213,18 +1295,32 @@ html:not(#bh) {
     --max-width: 420px;
     --background: #151d48;
     --color: #ffffff;
-    --border-radius: 14px;
+    --border-radius: 16px;
     --border-width: 1.5px;
     --border-style: solid;
-    --border-color: #151d48;
-    --box-shadow: 3px 3px 0 rgba(21, 29, 72, 0.2);
+    --border-color: #0a0f33;
+    --box-shadow: 4px 4px 0 rgba(6, 10, 40, 0.3), 0 16px 40px rgba(6, 10, 40, 0.3);
     font-family: "Plus Jakarta Sans", sans-serif;
-    font-weight: 600;
-    font-size: 14px;
-    ::part(container) { min-height: 48px; }
+    font-weight: 700;
+    font-size: 13.5px;
+    ::part(container) { min-height: 52px; padding: 6px 8px; }
     ::part(message) { color: #ffffff; }
-    &.ion-color-danger { --background: var(--bh-red); }
+    &.ion-color-danger { --background: #d32f2f; --border-color: #7f1d1d; }
+    &.ion-color-success { --background: #15803d; --border-color: #14532d; }
   }
+
+  /* scrim — dim + blur so the sheet pops */
+  ion-alert::part(backdrop),
+  ion-action-sheet::part(backdrop) {
+    background: rgba(6, 10, 40, 0.55);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+}
+
+@keyframes bh-alert-in {
+  from { opacity: 0; transform: translateY(10px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 /* =====================================================================

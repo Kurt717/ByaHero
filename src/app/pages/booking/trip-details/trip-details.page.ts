@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonIcon } from '@ionic/angular';
+import { IonContent, IonIcon, ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
 import {
@@ -14,6 +14,9 @@ import {
   chevronForwardOutline,
   closeOutline,
   idCardOutline,
+  cloudUploadOutline,
+  documentTextOutline,
+  trashOutline,
   informationCircleOutline,
   locationOutline,
   sunnyOutline,
@@ -24,8 +27,10 @@ import {
 } from 'ionicons/icons';
 import {
   BookingService,
+  PassengerEntry,
   PassengerType,
   PASSENGER_TYPE_META,
+  MAX_ID_UPLOAD_BYTES,
 } from '../booking.service';
 import {
   LocatedPoint,
@@ -44,6 +49,9 @@ addIcons({
   'chevron-forward-outline': chevronForwardOutline,
   'close-outline': closeOutline,
   'id-card-outline': idCardOutline,
+  'cloud-upload-outline': cloudUploadOutline,
+  'document-text-outline': documentTextOutline,
+  'trash-outline': trashOutline,
   'information-circle-outline': informationCircleOutline,
   'location-outline': locationOutline,
   'sunny-outline': sunnyOutline,
@@ -75,6 +83,7 @@ export class TripDetailsPage implements OnInit {
   booking = inject(BookingService);
   private router = inject(Router);
   private location = inject(Location);
+  private toastController = inject(ToastController);
   private pickupService = inject(PickupService);
   private conditionsService = inject(TravelConditionsService);
 
@@ -95,6 +104,9 @@ export class TripDetailsPage implements OnInit {
       busOutline,
       closeOutline,
       idCardOutline,
+      cloudUploadOutline,
+      documentTextOutline,
+      trashOutline,
       addOutline,
       informationCircleOutline,
       checkmarkCircle,
@@ -198,6 +210,53 @@ export class TripDetailsPage implements OnInit {
     this.booking.pickup = point;
     // Keep the staging area in sync so payment snapshots the same point.
     this.pickupService.setPickup(point);
+  }
+
+  triggerIdUpload(input: HTMLInputElement) {
+    input.click();
+  }
+
+  /** Front-ID upload: JPG/PNG preview rendered, PDF stored by name, 5MB cap. */
+  onIdFile(p: PassengerEntry, event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = '';
+    if (!file) return;
+    const ext = (file.name.split('.').pop() ?? '').toLowerCase();
+    const okType =
+      file.type.startsWith('image/') ||
+      file.type === 'application/pdf' ||
+      ['jpg', 'jpeg', 'png', 'pdf'].includes(ext);
+    if (!okType) {
+      void this.idToast('Only JPG, PNG or PDF files are accepted.');
+      return;
+    }
+    if (file.size > MAX_ID_UPLOAD_BYTES) {
+      void this.idToast('File too large — max 5MB.');
+      return;
+    }
+    if (file.type === 'application/pdf' || ext === 'pdf') {
+      this.booking.setPassengerIdDoc(p.id, { idImage: file.name, idImageKind: 'pdf' });
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.booking.setPassengerIdDoc(p.id, {
+        idImage: String(reader.result ?? ''),
+        idImageKind: 'image',
+      });
+    };
+    reader.readAsDataURL(file);
+  }
+
+  private async idToast(message: string) {
+    const toast = await this.toastController.create({
+      message,
+      duration: 2000,
+      position: 'bottom',
+      color: 'danger',
+    });
+    await toast.present();
   }
 
   goBack() {

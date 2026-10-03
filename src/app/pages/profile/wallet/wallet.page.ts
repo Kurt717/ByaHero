@@ -252,20 +252,10 @@ export class WalletPage implements OnDestroy {
     this.recent = this.walletTx.all().slice(0, 4);
   }
 
-  /** Present an alert with a top-right ✕ close (matched by global overlay styles). */
+  /** Present an alert — dismissal relies solely on the action buttons below. */
   private async presentAlert(options: AlertOptions) {
     const alert = await this.alertController.create(options);
     await alert.present();
-    const head = alert.querySelector('.alert-head') as HTMLElement | null;
-    if (head && !head.querySelector('.alert-close-x')) {
-      const closeBtn = document.createElement('button');
-      closeBtn.type = 'button';
-      closeBtn.className = 'alert-close-x';
-      closeBtn.setAttribute('aria-label', 'Close dialog');
-      closeBtn.textContent = '✕';
-      closeBtn.addEventListener('click', () => void alert.dismiss());
-      head.appendChild(closeBtn);
-    }
     return alert;
   }
 

@@ -456,7 +456,7 @@ ion-content.flow-content {
       box-shadow: 1px 1px 0 var(--ink);
     }
     &:disabled {
-      opacity: 0.4;
+      opacity: 0.5;
       cursor: not-allowed;
     }
   }
@@ -548,6 +548,100 @@ ion-content.flow-content {
     color: var(--primary-navy);
     flex-shrink: 0;
     margin-top: 1px;
+  }
+}
+
+/* --- DISCOUNT ID VERIFICATION CARD --- */
+.id-verify-card {
+  background-color: var(--bg-white);
+  border: 1.5px solid var(--primary-navy);
+  border-radius: 14px;
+  padding: 12px;
+  margin: -8px 0 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  .id-verify-head {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12.5px;
+    color: var(--primary-navy);
+    ion-icon {
+      font-size: 16px;
+    }
+  }
+
+  .id-verify-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-page);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 8px 10px;
+    ion-icon {
+      font-size: 16px;
+      color: var(--accent-red);
+      flex-shrink: 0;
+    }
+    &.done ion-icon {
+      color: var(--success-green);
+    }
+    .idv-text {
+      flex: 1;
+      min-width: 0;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-main);
+      small {
+        display: block;
+        font-size: 10.5px;
+        font-weight: 600;
+        color: var(--text-muted);
+      }
+    }
+    .idv-fix {
+      flex-shrink: 0;
+      border: 1px solid var(--primary-navy);
+      background: var(--bg-white);
+      color: var(--primary-navy);
+      border-radius: 999px;
+      font-family: var(--font-family);
+      font-size: 11px;
+      font-weight: 800;
+      padding: 6px 12px;
+      cursor: pointer;
+    }
+  }
+
+  .id-verify-note {
+    margin: 0;
+    font-size: 10.5px;
+    font-weight: 500;
+    color: #9ca3af;
+    line-height: 1.5;
+  }
+
+  .idv-cta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    background: var(--primary-navy);
+    color: #ffffff;
+    border: 1px solid var(--primary-navy);
+    border-radius: 999px;
+    padding: 11px;
+    font-family: var(--font-family);
+    font-size: 12.5px;
+    font-weight: 800;
+    cursor: pointer;
+    ion-icon {
+      font-size: 14px;
+    }
   }
 }
 

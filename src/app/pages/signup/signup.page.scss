@@ -196,14 +196,7 @@ ion-content.auth-content {
 }
 
 @media (min-width: 1024px) {
-  /* Desktop split-screen art lives in global.scss — hide the phone cover. */
-  .burst-bg,
-  .zoom-word,
-  .hero-balloon,
-  .hero-pow,
-  .hero-bus {
-    display: none;
-  }
+  /* Desktop left panel mirrors the mobile cover art — staged in global.scss. */
 }
 
 .back-btn {

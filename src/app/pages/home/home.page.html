@@ -140,7 +140,7 @@
             </g>
           </svg>
           <ion-avatar class="avatar">
-            <img [src]="userAvatar" alt="User" />
+            <img [src]="userAvatar" (error)="$any($event.target).src = fallbackAvatar" alt="User" />
           </ion-avatar>
           <span class="hero-rank">R1</span>
         </div>

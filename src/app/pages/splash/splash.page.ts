@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, NgZone, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, NgZone, OnDestroy, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonContent } from '@ionic/angular';
 import { Router } from '@angular/router';
@@ -20,10 +20,8 @@ export class SplashPage implements AfterViewInit, OnDestroy {
   private raf = 0;
   private timer: any;
 
-  constructor(
-    private router: Router,
-    private zone: NgZone,
-  ) {}
+  private router = inject(Router);
+  private zone = inject(NgZone);
 
   ngAfterViewInit() {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {

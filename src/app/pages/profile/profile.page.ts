@@ -9,7 +9,7 @@ import {
   ToastController,
 } from '@ionic/angular';
 import { Router } from '@angular/router';
-import { DEFAULT_PROFILE_USER, ProfileService } from './profile.service';
+import { DEFAULT_AVATAR, DEFAULT_PROFILE_USER, ProfileService } from './profile.service';
 import { AuthService } from '../../services/auth.service';
 import { TicketService } from '../bookings/ticket.service';
 import { VoucherService } from '../../services/voucher.service';
@@ -124,6 +124,9 @@ export class ProfilePage implements OnDestroy {
   });
 
   private readonly preferencesStorageKey = 'byahero.profile-preferences.v1';
+
+  /** Local fallback if a saved avatar URL ever fails to load. */
+  readonly fallbackAvatar = DEFAULT_AVATAR;
 
   constructor() {
     addIcons({
@@ -342,22 +345,10 @@ export class ProfilePage implements OnDestroy {
     this.router.navigateByUrl('/ride-insights?from=profile');
   }
 
-  /** Present an alert with a top-right ✕ close and side-by-side action
-      buttons (matched by the global overlay styles). The ✕ is injected on
-      top of Ionic's navy header, so dismissal never needs a text button. */
+  /** Present an alert — dismissal relies solely on the action buttons below. */
   private async presentAlert(options: AlertOptions) {
     const alert = await this.alertController.create(options);
     await alert.present();
-    const head = alert.querySelector('.alert-head') as HTMLElement | null;
-    if (head && !head.querySelector('.alert-close-x')) {
-      const closeBtn = document.createElement('button');
-      closeBtn.type = 'button';
-      closeBtn.className = 'alert-close-x';
-      closeBtn.setAttribute('aria-label', 'Close dialog');
-      closeBtn.textContent = '✕';
-      closeBtn.addEventListener('click', () => void alert.dismiss());
-      head.appendChild(closeBtn);
-    }
     return alert;
   }
 
@@ -374,6 +365,7 @@ export class ProfilePage implements OnDestroy {
       header: 'Log out?',
       message: 'You can log back in with your email and password.',
       buttons: [
+        { text: 'Stay', role: 'cancel' },
         {
           text: 'Log Out',
           role: 'destructive',

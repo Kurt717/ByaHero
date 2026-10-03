@@ -73,11 +73,16 @@ ion-content.onboarding-screen {
 /* --- 2. CAROUSEL: circle / iris wipe with a hint of spin --- */
 .carousel-container {
   flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  /* `safe` keeps the top reachable when content outgrows the box
+     (short screens / enlarged text) instead of slicing it off. */
+  justify-content: safe center;
   width: 100%;
+  min-width: 0;
   overflow: hidden;
   position: relative;
   --wx: 50%;
@@ -92,6 +97,8 @@ ion-content.onboarding-screen {
   align-items: center;
   text-align: center;
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
 
   &.active {
     display: flex;
@@ -171,10 +178,11 @@ ion-content.onboarding-screen {
   animation: contentFadeUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.18s both;
 }
 
-/* --- ILLUSTRATION: comic panel --- */
+/* --- ILLUSTRATION: comic panel (never wider than its column) --- */
 .illustration-container {
   position: relative;
-  width: min(300px, 78vw);
+  width: min(300px, 100%);
+  min-width: 0;
   margin-bottom: 32px;
   padding: 18px 16px 12px;
   background-color: #f8fafc;
@@ -183,19 +191,21 @@ ion-content.onboarding-screen {
   border: 2px solid var(--primary-navy);
   border-radius: 24px;
   box-shadow: 5px 5px 0 rgba(21, 29, 72, 0.9);
-  overflow: visible;
+  overflow: hidden;
   svg {
     width: 100%;
+    max-width: 100%;
     height: auto;
     display: block;
-    overflow: visible;
+    overflow: hidden;
   }
 }
 
+/* Badge lives inside the card so the carousel's overflow can never slice it. */
 .pow-badge {
   position: absolute;
-  top: -16px;
-  right: -12px;
+  top: 10px;
+  right: 10px;
   padding: 7px 12px;
   font-size: 13px;
   font-weight: 800;
@@ -464,6 +474,35 @@ ion-content.onboarding-screen {
       background-color: var(--bg-gray);
       opacity: 0.7;
     }
+  }
+}
+
+/* --- SHORT SCREENS (iPhone SE height and below): compact the stack so the
+   carousel never has to slice the illustration's top off. --- */
+@media (max-height: 740px) {
+  .illustration-container {
+    width: min(240px, 100%);
+    margin-bottom: 18px;
+    padding: 14px 12px 10px;
+  }
+  .slide-title {
+    font-size: 25px;
+    margin-bottom: 10px;
+  }
+  .slide-description {
+    font-size: 14.5px;
+    max-width: 300px;
+  }
+  .pagination-dots {
+    margin-top: 16px;
+    margin-bottom: 24px;
+  }
+  .primary-btn {
+    height: 52px;
+  }
+  .bottom-actions {
+    gap: 14px;
+    padding-bottom: 16px;
   }
 }
 

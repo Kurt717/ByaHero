@@ -184,15 +184,100 @@
                   }
                 </div>
                 @if (requiresId(p.type)) {
-                  <div class="id-field">
-                    <ion-icon name="id-card-outline"></ion-icon>
-                    <input
-                      type="text"
-                      [(ngModel)]="p.idNumber"
-                      placeholder="{{ idPlaceholder(p.type) }} ID no. (optional)"
+                  <div class="id-card">
+                    <div class="id-card-head">
+                      <ion-icon name="id-card-outline"></ion-icon>
+                      <span>{{ idPlaceholder(p.type) }} verification</span>
+                      @if (booking.isPassengerVerified(p)) {
+                        <span class="verified-tag">Verified</span>
+                      } @else {
+                        <span class="pending-tag">Required</span>
+                      }
+                    </div>
+                    <label class="id-row">
+                      <span class="id-row-lbl">ID type *</span>
+                      <select
+                        [ngModel]="p.idType ?? ''"
+                        (ngModelChange)="booking.setPassengerIdDoc(p.id, { idType: $event || undefined })"
+                      >
+                        <option value="" disabled>Select ID type</option>
+                        @for (opt of booking.idOptionsFor(p.type); track opt) {
+                          <option [value]="opt">{{ opt }}</option>
+                        }
+                      </select>
+                    </label>
+                    <label class="id-row">
+                      <span class="id-row-lbl">ID number *</span>
+                      <input
+                        type="text"
+                        [(ngModel)]="p.idNumber"
+                        placeholder="Enter ID number"
+                        autocomplete="off"
+                      />
+                    </label>
+                    <div
+                      class="upload-box"
+                      [class.has-file]="!!p.idImage"
+                      (click)="triggerIdUpload(fileInput)"
+                      role="button"
+                      tabindex="0"
+                      (keyup.enter)="triggerIdUpload(fileInput)"
+                      aria-label="Upload front of ID"
+                    >
+                      @if (!p.idImage) {
+                        <ion-icon name="cloud-upload-outline"></ion-icon>
+                        <strong>Tap to upload front of ID</strong>
+                        <small>JPG, PNG, PDF · max 5MB · camera ok</small>
+                      } @else if (p.idImageKind === 'pdf') {
+                        <ion-icon name="document-text-outline"></ion-icon>
+                        <strong class="file-name">{{ p.idImage }}</strong>
+                        <small>PDF attached — tap to replace</small>
+                      } @else {
+                        <img [src]="p.idImage" alt="ID preview" />
+                        <small>Tap to replace</small>
+                      }
+                      <input
+                        #fileInput
+                        type="file"
+                        hidden
+                        accept=".jpg,.jpeg,.png,.pdf,image/*"
+                        (change)="onIdFile(p, $event)"
                       />
                     </div>
-                  }
+                    @if (p.idImage) {
+                      <button
+                        type="button"
+                        class="remove-file-btn"
+                        (click)="booking.setPassengerIdDoc(p.id, { idImage: undefined, idImageKind: undefined })"
+                      >
+                        <ion-icon name="trash-outline"></ion-icon>
+                        Remove file
+                      </button>
+                    }
+                    <label class="id-check">
+                      <input
+                        type="checkbox"
+                        [ngModel]="p.idConfirmed ?? false"
+                        (ngModelChange)="booking.setPassengerIdDoc(p.id, { idConfirmed: $event })"
+                      />
+                      <span>I confirm this ID is valid and belongs to the passenger.</span>
+                    </label>
+                    <div class="id-price">
+                      <span>Base {{ booking.formatCurrency(booking.seatFare) }}</span>
+                      <span class="disc"
+                        >− {{ booking.formatCurrency(booking.seatFare - booking.fareForPassenger(p)) }} ({{
+                          idPlaceholder(p.type)
+                        }}
+                        20%)</span
+                      >
+                      <strong>{{ booking.formatCurrency(booking.fareForPassenger(p)) }}</strong>
+                    </div>
+                    <p class="compliance-note">
+                      Physical ID must be presented to the bus conductor upon boarding.
+                      Misrepresentation may result in fare adjustments or booking cancellation.
+                    </p>
+                  </div>
+                }
                 </div>
               }
             </div>
