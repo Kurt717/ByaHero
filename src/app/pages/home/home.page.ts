@@ -1671,20 +1671,49 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
   }
 
   locateMe() {
+    // Every tap visibly focuses the map: GPS fix when available,
+    // route overview when it is not (denied/timeout/unsupported).
     if (!navigator.geolocation) {
-      this.locateMessage =
-        'Location not supported on this device';
-
-      this.clearLocateMessage();
+      this.focusRoute(
+        'Location not supported — showing route',
+      );
 
       return;
     }
 
     this.locating = true;
 
+    let settled = false;
+
+    const timer =
+      setTimeout(
+        () => {
+          if (settled) return;
+
+          settled = true;
+
+          this.zone.run(
+            () => {
+              this.locating = false;
+
+              this.focusRoute(
+                'GPS timed out — showing route',
+              );
+            },
+          );
+        },
+        9000,
+      );
+
     navigator.geolocation.getCurrentPosition(
       (pos) =>
         this.zone.run(() => {
+          if (settled) return;
+
+          settled = true;
+
+          clearTimeout(timer);
+
           this.locating = false;
 
           const coords: [
@@ -1729,6 +1758,8 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
               },
             ).addTo(this.map);
 
+          this.map.invalidateSize();
+
           this.map.flyTo(
             coords,
             14,
@@ -1740,12 +1771,17 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
 
       () =>
         this.zone.run(() => {
+          if (settled) return;
+
+          settled = true;
+
+          clearTimeout(timer);
+
           this.locating = false;
 
-          this.locateMessage =
-            'Location permission denied';
-
-          this.clearLocateMessage();
+          this.focusRoute(
+            'Location unavailable — showing route',
+          );
         }),
 
       {
@@ -1753,6 +1789,51 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
         timeout: 8000,
       },
     );
+  }
+
+  /** Fallback focus: frame the current route so the button never no-ops. */
+  private focusRoute(message?: string) {
+    if (this.map) {
+      this.map.invalidateSize();
+
+      if (this.routeLine) {
+        this.map.flyToBounds(
+          this.routeLine.getBounds(),
+          {
+            padding: [40, 40],
+            duration: 800,
+          },
+        );
+      } else {
+        const origin =
+          this.resolveCoords(
+            this.origin,
+          );
+
+        const dest =
+          this.resolveCoords(
+            this.destination,
+          );
+
+        this.map.flyToBounds(
+          L.latLngBounds(
+            origin,
+            dest,
+          ),
+          {
+            padding: [40, 40],
+            duration: 800,
+          },
+        );
+      }
+    }
+
+    if (message) {
+      this.locateMessage =
+        message;
+
+      this.clearLocateMessage();
+    }
   }
 
   private userIcon(): L.DivIcon {
