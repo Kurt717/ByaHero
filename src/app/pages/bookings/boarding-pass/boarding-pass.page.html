@@ -28,8 +28,8 @@
         }
         <div class="pass-route">
           <div class="rl-end">
-            <span class="rl-label">Origin</span>
-            <span class="rl-city">{{ b.from }}</span>
+            <span class="rl-label">Boards at</span>
+            <span class="rl-city">{{ b.boardStopName || b.from }}</span>
           </div>
           <div class="rl-mid">
             <span class="rl-dot"></span>
@@ -39,8 +39,8 @@
             <span class="rl-dot dest"></span>
           </div>
           <div class="rl-end right">
-            <span class="rl-label">Destination</span>
-            <span class="rl-city">{{ b.to }}</span>
+            <span class="rl-label">Gets off at</span>
+            <span class="rl-city">{{ b.alightStopName || b.to }}</span>
           </div>
         </div>
 
@@ -49,6 +49,12 @@
             <span class="cell-lbl">Operator</span>
             <span class="cell-val">{{ b.operator }}</span>
           </div>
+          @if (b.plate) {
+            <div class="cell">
+              <span class="cell-lbl">Plate</span>
+              <span class="cell-val">{{ b.plate }}</span>
+            </div>
+          }
           <div class="cell">
             <span class="cell-lbl">Seat</span>
             <span class="cell-val">{{ b.seat }}</span>

@@ -129,6 +129,11 @@ export class RebookPage implements OnInit {
 
   // --- Original journey context ---
 
+  /** Boarding → alighting stretch of the original (falls back to from → to). */
+  originalPair(b: Booking): string {
+    return this.ticketService.segmentPair(b);
+  }
+
   get paxCount(): number {
     const b = this.original;
     if (!b) return 1;

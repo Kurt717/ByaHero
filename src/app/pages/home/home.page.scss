@@ -641,6 +641,35 @@ ion-content.home-content {
         outline: none;
       }
 
+      /* Grab-style place buttons reuse the pill halves. */
+      &.place-btn {
+        background: transparent;
+        border: none;
+        font-family: var(--font-family);
+        cursor: pointer;
+        min-width: 0;
+        text-align: left;
+
+        .place-text {
+          flex: 1;
+          min-width: 0;
+          font-size: 14px;
+          font-weight: 600;
+          color: var(--text-main);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        &:active {
+          background: rgba(21, 29, 72, 0.05);
+        }
+        &:focus-visible {
+          outline: 2px solid var(--primary-navy);
+          outline-offset: -2px;
+        }
+      }
+
       &:focus-within .route-dot {
         transform: scale(1.15);
       }
@@ -657,6 +686,26 @@ ion-content.home-content {
       ion-icon {
         font-size: 16px;
         margin: 0 6px;
+      }
+
+      /* Swap control between pickup and destination. */
+      &.swap-btn {
+        background: transparent;
+        border-top: none;
+        border-bottom: none;
+        font-family: var(--font-family);
+        cursor: pointer;
+        color: var(--primary-navy);
+        ion-icon {
+          font-size: 18px;
+        }
+        &:active {
+          background: rgba(21, 29, 72, 0.05);
+          ion-icon { transform: rotate(180deg); }
+        }
+        ion-icon {
+          transition: transform 0.25s ease;
+        }
       }
     }
   }
@@ -815,6 +864,20 @@ ion-content.home-content {
   .home-reminder {
     display: block;
   }
+}
+
+/* Segment fare preview for the chosen pair (outside the grid). */
+.pair-preview {
+  margin: 0 0 12px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--primary-navy);
+  background: #eef2ff;
+  border: 1.5px solid var(--primary-navy);
+  border-radius: 12px;
+  box-shadow: 2px 2px 0 var(--ink);
+  padding: 9px 14px;
+  line-height: 1.5;
 }
 
 /* --- 3. CATEGORIES --- */
@@ -1229,6 +1292,17 @@ ion-content.home-content {
           margin-top: auto;
         }
       }
+    }
+
+    .seg-line {
+      margin: 0 0 12px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--primary-navy);
+      background: #eef2ff;
+      border-radius: 10px;
+      padding: 8px 10px;
+      line-height: 1.5;
     }
 
     .card-bottom {

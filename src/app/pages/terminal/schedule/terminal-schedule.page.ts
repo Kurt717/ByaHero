@@ -24,6 +24,12 @@ import { RouteStopsService, type TimedRouteStop } from '../../../services/route-
 import { RouteStopTimelineComponent } from '../../../components/route-stop-timeline/route-stop-timeline.component';
 import { BookingService } from '../../booking/booking.service';
 import { PickupService } from '../../../services/pickup.service';
+import {
+  NetworkService,
+  seatIdsForLayout,
+  vehicleById,
+} from '../../../services/network.service';
+import { SeatService } from '../../../services/seat.service';
 
 addIcons({
   'arrow-back-outline': arrowBackOutline,
@@ -70,6 +76,8 @@ export class TerminalSchedulePage implements OnInit {
   private routeStops = inject(RouteStopsService);
   private bookingService = inject(BookingService);
   private pickupService = inject(PickupService);
+  private network = inject(NetworkService);
+  private seatService = inject(SeatService);
 
   terminal: TerminalInfo | null = null;
   days: DayOption[] = [];
@@ -205,6 +213,57 @@ export class TerminalSchedulePage implements OnInit {
   /** Stop count for a departure's route (board rows stay compact). */
   stopCount(dep: TerminalDeparture): number {
     return this.routeStops.stopsForRoute(dep.routeId).length;
+  }
+
+  /**
+   * Expandable downstream fares for a departure: every town/terminal ahead
+   * of this terminal on the corridor, with the segment fare and seats left
+   * on that segment for the selected date. Empty when off-corridor.
+   */
+  downstreamFares(dep: TerminalDeparture): {
+    town: string;
+    fare: number;
+    seatsLeft: number;
+  }[] {
+    if (!this.terminal) return [];
+    const resolved = this.network.resolveTrip(dep.operator, dep.from, dep.to);
+    if (!resolved) return [];
+    const corridor = resolved.corridor;
+    const boardIdx = corridor.stops.findIndex((s) =>
+      s.name.toLowerCase().includes(this.terminal!.city.toLowerCase()) ||
+      this.terminal!.city.toLowerCase().includes(
+        s.name.replace(/ terminal$/i, '').toLowerCase(),
+      ),
+    );
+    if (boardIdx < 0) return [];
+    const forward = resolved.boardSeq < resolved.alightSeq;
+    const downstream = forward
+      ? corridor.stops.filter((s) => s.sequence > boardIdx)
+      : corridor.stops.filter((s) => s.sequence < boardIdx).reverse();
+    const vehicle = vehicleById(resolved.trip.vehicleId);
+    const seatIds = vehicle ? seatIdsForLayout(vehicle.layout) : [];
+    const board = corridor.stops[boardIdx];
+    return downstream
+      .filter((s) => s.kind !== 'roadside')
+      .map((s) => {
+        const fare = this.network.fareFor({
+          corridorId: corridor.id,
+          operatorId: resolved.operatorId ?? resolved.trip.operatorId,
+          serviceClassId: vehicle?.serviceClassId ?? 'aircon',
+          boardStopId: board.id,
+          alightStopId: s.id,
+        });
+        const seatsLeft = seatIds.length
+          ? this.seatService.availabilityForSegment(
+              `${resolved.trip.tripId}|${this.selectedDate}`,
+              seatIds,
+              Math.min(board.sequence, s.sequence),
+              Math.max(board.sequence, s.sequence),
+              corridor.stops.length - 1,
+            ).available
+          : 0;
+        return { town: s.name, fare, seatsLeft };
+      });
   }
 
   /** Canonical stop preview for the currently filtered destination —

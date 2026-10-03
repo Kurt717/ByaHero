@@ -20,6 +20,9 @@
         <p class="hero-eyebrow">COMPARE TRIPS</p>
         <h1 class="hero-name">{{ routeTitle }}</h1>
         <p class="hero-loc">{{ travelDate }} · {{ terminal.name }}</p>
+        @if (pairLabel) {
+          <p class="hero-pair" aria-live="polite">{{ pairLabel }} · same pair, every operator</p>
+        }
       </header>
 
       <!-- SORT -->
@@ -88,6 +91,11 @@
                     }
                   </div>
                 </div>
+                @if (option.segmentFare != null) {
+                  <p class="seg-line" aria-live="polite">
+                    Your stretch · ₱{{ option.segmentFare }} · {{ option.segmentSeats }} seat{{ option.segmentSeats === 1 ? '' : 's' }} left
+                  </p>
+                }
                 <button
                   type="button"
                   class="select-btn"

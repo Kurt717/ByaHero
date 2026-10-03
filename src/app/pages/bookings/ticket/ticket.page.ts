@@ -207,6 +207,19 @@ if (!this.booking) {
     return `Driver ${id.driver}`;
   }
 
+  /** Service class label for a stored class id ('' when legacy/unknown). */
+  classLabel(classId: string | undefined): string {
+    if (!classId) return '—';
+    const labels: Record<string, string> = {
+      ordinary: 'Ordinary',
+      aircon: 'Aircon',
+      deluxe: 'Deluxe',
+      'uv-express': 'UV Express',
+      shared: 'Shared Van',
+    };
+    return labels[classId] ?? '—';
+  }
+
   luggageLabel(): string {
     if (!this.booking) return '';
     return this.luggageService.summaryLabel(this.booking.bookingRef);
@@ -457,13 +470,23 @@ async cancelBooking() {
       ? b.seatIds
       : this.parseSeats(b.seat);
     if (seats.length) {
-      this.seatService.freeSeatsByTrip(
-        b.operator,
-        b.from,
-        b.to,
-        b.date,
-        seats,
-      );
+      const seg = this.ticketService.segmentFor(b);
+      if (seg) {
+        // Ref-scoped release: only this booking's interval is freed —
+        // other riders sharing the seats keep theirs.
+        this.seatService.freeSeatsByRef(
+          `${seg.tripId}|${b.date}`,
+          b.bookingRef,
+        );
+      } else {
+        this.seatService.freeSeatsByTrip(
+          b.operator,
+          b.from,
+          b.to,
+          b.date,
+          seats,
+        );
+      }
     }
 
     if (amount > 0) {

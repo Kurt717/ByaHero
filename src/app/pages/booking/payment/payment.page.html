@@ -18,6 +18,14 @@
           <span>{{ trip.operator }}</span>
           <span>{{ trip.from }} → {{ trip.to }}</span>
         </div>
+        @if (booking.hasNetworkSegment) {
+          <div class="receipt-row segment">
+            <span>{{ booking.segmentLabel }} · {{ booking.serviceClassLabel }} · {{ booking.segmentKm }} km</span>
+          </div>
+          <div class="receipt-row note">
+            <span>Prototype demo fare — not an official LTFRB rate</span>
+          </div>
+        }
         @for (p of booking.passengers; track p; let i = $index) {
           <div
             class="passenger-fare-row"

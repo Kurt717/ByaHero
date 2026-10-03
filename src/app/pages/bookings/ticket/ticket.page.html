@@ -53,12 +53,12 @@
           <span class="band-chip" [ngClass]="b.status">{{ statusLabel() }}</span>
         </div>
 
-        <!-- ROUTE BANNER -->
+        <!-- ROUTE BANNER (boarding → alighting; corridor as secondary) -->
         <section class="stub-route">
           <div class="route-line">
             <div class="rl-end">
-              <span class="rl-label">Origin</span>
-              <span class="rl-city">{{ b.from }}</span>
+              <span class="rl-label">Boards at</span>
+              <span class="rl-city">{{ b.boardStopName || b.from }}</span>
             </div>
             <div class="rl-mid">
               <span class="rl-dot"></span>
@@ -68,10 +68,13 @@
               <span class="rl-dot dest"></span>
             </div>
             <div class="rl-end right">
-              <span class="rl-label">Destination</span>
-              <span class="rl-city">{{ b.to }}</span>
+              <span class="rl-label">Gets off at</span>
+              <span class="rl-city">{{ b.alightStopName || b.to }}</span>
             </div>
           </div>
+          @if (b.boardStopName) {
+            <p class="route-sub">{{ b.from }} → {{ b.to }} · full trip route</p>
+          }
         </section>
 
         <!-- DETAIL GRID -->
@@ -142,6 +145,16 @@
             <span class="cell-lbl">Your ride</span>
             <span class="cell-val">{{ rideLine() }} · {{ rideSub() }}</span>
           </div>
+          @if (b.plate || b.serviceClassId) {
+            <div class="cell">
+              <span class="cell-lbl">Plate</span>
+              <span class="cell-val">{{ b.plate || '—' }}</span>
+            </div>
+            <div class="cell">
+              <span class="cell-lbl">Class</span>
+              <span class="cell-val">{{ classLabel(b.serviceClassId) }}</span>
+            </div>
+          }
         </section>
 
         <section class="stub-copy">

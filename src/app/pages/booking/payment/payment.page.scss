@@ -179,6 +179,24 @@ ion-content.flow-content {
         color: var(--primary-navy);
       }
     }
+
+    &.segment {
+      span {
+        font-size: 12.5px;
+        font-weight: 800;
+        color: var(--primary-navy);
+      }
+    }
+
+    &.note {
+      padding-top: 0;
+      span {
+        font-size: 10.5px;
+        font-weight: 600;
+        font-style: italic;
+        color: var(--text-muted);
+      }
+    }
   }
 
   .receipt-divider {

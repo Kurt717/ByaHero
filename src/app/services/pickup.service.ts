@@ -83,6 +83,15 @@ export class PickupService {
     laoag: [18.196, 120.5936],
     sagada: [17.0928, 120.9008],
     banaue: [16.9107, 121.0594],
+    pagudpud: [18.561, 120.786],
+    bontoc: [17.091, 120.977],
+    tabuk: [17.418, 121.444],
+    aparri: [18.354, 121.638],
+    'san fernando': [16.615, 120.317],
+    dagupan: [16.043, 120.333],
+    alaminos: [16.156, 119.981],
+    baler: [15.759, 121.562],
+    bayombong: [16.487, 121.15],
   };
 
   /** Terminals with real coordinates, from the existing search data. */
@@ -121,6 +130,15 @@ export class PickupService {
     laoag: 'Laoag City',
     sagada: 'Sagada',
     banaue: 'Banaue',
+    pagudpud: 'Pagudpud',
+    bontoc: 'Bontoc',
+    tabuk: 'Tabuk City',
+    aparri: 'Aparri',
+    'san fernando': 'San Fernando City',
+    dagupan: 'Dagupan City',
+    alaminos: 'Alaminos',
+    baler: 'Baler',
+    bayombong: 'Bayombong',
   };
 
   /** Best-effort city-center lookup for a free-text place (home parity). */
