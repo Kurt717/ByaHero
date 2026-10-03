@@ -21,6 +21,11 @@ import {
 import { BookingService } from '../../booking/booking.service';
 import { PickupService } from '../../../services/pickup.service';
 import { SeatService } from '../../../services/seat.service';
+import {
+  NetworkService,
+  seatIdsForLayout,
+  vehicleById,
+} from '../../../services/network.service';
 
 addIcons({
   'arrow-back-outline': arrowBackOutline,
@@ -41,6 +46,10 @@ interface CompareOption {
   durationMinutes: number;
   arrival: string;
   soldOut: boolean;
+  /** Segment fare/seats for the session's board→alight pair when this
+   *  departure serves it (same pair, this operator + class). */
+  segmentFare?: number;
+  segmentSeats?: number;
 }
 
 /**
@@ -66,6 +75,7 @@ export class ComparePage implements OnInit {
   private bookingService = inject(BookingService);
   private pickupService = inject(PickupService);
   private seatService = inject(SeatService);
+  private network = inject(NetworkService);
 
   terminal: TerminalInfo | null = null;
   travelDate = '';
@@ -138,6 +148,7 @@ export class ComparePage implements OnInit {
           durationMinutes,
           arrival: this.arrivalFor(dep.timeMinutes, durationMinutes),
           soldOut: this.isSoldOut(dep),
+          ...this.segmentFor(dep),
         } satisfies CompareOption;
       });
     return list.sort((a, b) => {
@@ -157,6 +168,55 @@ export class ComparePage implements OnInit {
     return this.destFilter === 'all'
       ? `FROM ${this.terminal.city.toUpperCase()}`
       : `${this.departuresFrom(this.destFilter)} → ${this.destFilter}`;
+  }
+
+  /** Session pair header ('' when the session has no corridor segment). */
+  get pairLabel(): string {
+    return this.bookingService.hasNetworkSegment
+      ? `For ${this.bookingService.segmentLabel}`
+      : '';
+  }
+
+  /** Segment fare + seats for the session pair on one departure (same
+   *  board→alight pair, this departure's operator + class). */
+  private segmentFor(dep: TerminalDeparture): {
+    segmentFare?: number;
+    segmentSeats?: number;
+  } {
+    const booking = this.bookingService;
+    if (!booking.hasNetworkSegment) return {};
+    const corridor = this.network.corridor(booking.corridorId);
+    const depResolved = this.network.resolveTrip(dep.operator, dep.from, dep.to);
+    if (!corridor || !depResolved || depResolved.corridor.id !== corridor.id) {
+      return {};
+    }
+    const board = corridor.stops[booking.boardSeq!];
+    const alight = corridor.stops[booking.alightSeq!];
+    if (!board || !alight) return {};
+    const depLo = Math.min(depResolved.boardSeq, depResolved.alightSeq);
+    const depHi = Math.max(depResolved.boardSeq, depResolved.alightSeq);
+    const riderLo = Math.min(booking.boardSeq!, booking.alightSeq!);
+    const riderHi = Math.max(booking.boardSeq!, booking.alightSeq!);
+    if (riderLo < depLo || riderHi > depHi) return {};
+    const vehicle = vehicleById(depResolved.trip.vehicleId);
+    const segmentFare = this.network.fareFor({
+      corridorId: corridor.id,
+      operatorId: depResolved.operatorId ?? depResolved.trip.operatorId,
+      serviceClassId: vehicle?.serviceClassId ?? 'aircon',
+      boardStopId: board.id,
+      alightStopId: alight.id,
+    });
+    const seatIds = vehicle ? seatIdsForLayout(vehicle.layout) : [];
+    const segmentSeats = seatIds.length
+      ? this.seatService.availabilityForSegment(
+          `${depResolved.trip.tripId}|${this.travelDate}`,
+          seatIds,
+          riderLo,
+          riderHi,
+          corridor.stops.length - 1,
+        ).available
+      : 0;
+    return { segmentFare, segmentSeats };
   }
 
   private departuresFrom(dest: string): string {

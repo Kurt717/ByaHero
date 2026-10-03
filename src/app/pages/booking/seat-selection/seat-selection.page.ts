@@ -13,9 +13,11 @@ import { BookingService } from '../booking.service';
 import {
   SeatService,
   SeatAvailability,
-  SEAT_COLS,
-  SEAT_ROWS,
 } from '../../../services/seat.service';
+import {
+  corridorById,
+  stopById,
+} from '../../../services/network.service';
 
 addIcons({
   'arrow-back-outline': arrowBackOutline,
@@ -31,8 +33,11 @@ interface Seat {
   status: SeatStatus;
 }
 
-const ROWS = SEAT_ROWS;
-const COLS: readonly string[] = SEAT_COLS;
+interface SeatRow {
+  num: number;
+  left: Seat[];
+  right: Seat[];
+}
 
 @Component({
   selector: 'app-seat-selection',
@@ -48,10 +53,12 @@ export class SeatSelectionPage implements OnInit {
   private seatService = inject(SeatService);
 
   seats: Seat[] = [];
-  rowNumbers: number[] = Array.from({ length: ROWS }, (_, i) => i + 1);
+  seatRows: SeatRow[] = [];
   availability: SeatAvailability | null = null;
   /** Available seats matching the session preference (empty when none set). */
   matchingSet: Set<string> = new Set();
+  /** Informational notes for seats that free up later on this trip. */
+  freeLaterNotes: string[] = [];
 
   constructor() {
     addIcons({ arrowBackOutline, navigateOutline, chevronForwardOutline, peopleOutline });
@@ -66,18 +73,28 @@ export class SeatSelectionPage implements OnInit {
   }
 
   buildSeatMap() {
-    const key = this.seatService.keyFor(this.booking);
-    const availability = this.seatService.availabilityFor(
-      this.booking.trip!.seatsLeft,
-      key,
-    );
+    const availability = this.seatService.availabilityForBooking(this.booking);
     this.availability = availability;
     const bookedSet = availability.bookedSet;
     const alreadySelected = new Set(this.booking.selectedSeats);
 
+    // Render from the vehicle layout (deluxe 2+1, ordinary 2+3, vans…).
+    const layout = this.seatService.layoutForBooking(this.booking);
+    const columns = layout
+      ? layout.columns
+      : ['A', 'B', '|', 'C', 'D'];
+    const rows = layout ? layout.rows : 10;
+    const splitAt = columns.indexOf('|');
+    const leftCols = (splitAt < 0 ? columns : columns.slice(0, splitAt)).filter(
+      (c) => c !== '|',
+    );
+    const rightCols = (splitAt < 0 ? [] : columns.slice(splitAt + 1)).filter(
+      (c) => c !== '|',
+    );
+
     const list: Seat[] = [];
-    for (let r = 1; r <= ROWS; r++) {
-      for (const c of COLS) {
+    for (let r = 1; r <= rows; r++) {
+      for (const c of [...leftCols, ...rightCols]) {
         const id = `${r}${c}`;
         let status: SeatStatus = bookedSet.has(id) ? 'booked' : 'available';
         if (status === 'available' && alreadySelected.has(id))
@@ -86,28 +103,57 @@ export class SeatSelectionPage implements OnInit {
       }
     }
     this.seats = list;
+    this.seatRows = [];
+    for (let r = 1; r <= rows; r++) {
+      const inRow = list.filter((s) => s.row === r);
+      this.seatRows.push({
+        num: r,
+        left: inRow.filter((s) =>
+          leftCols.includes(s.id.slice(-1)),
+        ),
+        right: inRow.filter((s) =>
+          rightCols.includes(s.id.slice(-1)),
+        ),
+      });
+    }
     // Highlight help: available seats satisfying the session preference.
     // Never auto-selects — the commuter still taps an actual seat.
     this.matchingSet = new Set(
       this.booking.hasSeatPreference
-        ? this.seatService.matchingAvailableSeats(
-            this.booking.trip!.seatsLeft,
-            key,
+        ? this.seatService.matchingForBooking(
+            this.booking,
             this.booking.seatPreference,
           )
         : [],
     );
+    this.freeLaterNotes = this.buildFreeLaterNotes(bookedSet);
   }
 
-  seatsInRow(row: number): Seat[] {
-    return this.seats.filter((s) => s.row === row);
-  }
-
-  leftPair(row: number): Seat[] {
-    return this.seatsInRow(row).slice(0, 2);
-  }
-  rightPair(row: number): Seat[] {
-    return this.seatsInRow(row).slice(2, 4);
+  /** 'Seat 12 is taken until Santiago' — seats blocked on the rider's
+   *  segment that free up later are informational only. */
+  private buildFreeLaterNotes(bookedSet: Set<string>): string[] {
+    const seg = this.seatService.segmentForBooking(this.booking);
+    if (!seg) return [];
+    const corridor = corridorById(seg.corridorId);
+    if (!corridor) return [];
+    const depKey = `${seg.tripId}|${this.booking.travelDate}`;
+    const board = Math.min(seg.boardSeq, seg.alightSeq);
+    const alight = Math.max(seg.boardSeq, seg.alightSeq);
+    const notes: string[] = [];
+    for (const seatId of bookedSet) {
+      if (notes.length >= 3) break;
+      const freeAt = this.seatService.freeAtSeq(
+        depKey,
+        seatId,
+        board,
+        alight,
+        seg.lastSeq,
+      );
+      if (freeAt == null) continue;
+      const stop = stopById(corridor, corridor.stops[freeAt]?.id ?? '');
+      if (stop) notes.push(`Seat ${seatId} is taken until ${stop.name}`);
+    }
+    return notes;
   }
 
   toggleSeat(seat: Seat) {

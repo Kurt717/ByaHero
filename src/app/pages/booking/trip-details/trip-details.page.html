@@ -43,6 +43,23 @@
           </p>
         }
       </div>
+      <!-- YOUR TRIP (read-only recap — pickup + destination were chosen on Home) -->
+      @if (segmentSummary; as seg) {
+        <div class="section">
+          <p class="section-title">Your Trip</p>
+          <div class="stops-card recap">
+            <p class="segment-line" aria-live="polite">
+              {{ booking.segmentLabel }} · {{ booking.serviceClassLabel }}
+            </p>
+            <p class="segment-sub">
+              {{ seg.km }} km · boards {{ seg.boardEta || '—' }} · arrives {{ seg.alightEta || '—' }} · {{ seg.fare }}/seat
+            </p>
+            <button type="button" class="change-home" (click)="changeOnHome()">
+              Change pickup or destination on Home
+            </button>
+          </div>
+        </div>
+      }
       <!-- TRAVEL CONDITIONS (contextual sample — secondary to booking facts) -->
       @if (tripConditions; as cond) {
         <div class="section">

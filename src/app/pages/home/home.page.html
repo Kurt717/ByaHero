@@ -174,23 +174,37 @@
 
     <!-- 2. ROUTE SELECTORS (Flat, Bordered Pills) -->
     <div class="route-selectors">
-      <!-- Primary Route Pill -->
+      <!-- Primary Route Pill (Grab-style: tap to pick a place) -->
       <div class="pill-card primary-route">
-        <div class="input-half">
+        <button
+          type="button"
+          class="input-half place-btn"
+          (click)="openPicker('origin')"
+          [attr.aria-label]="'Set pickup point, currently ' + origin"
+          [title]="origin"
+        >
           <div class="route-dot origin-dot"></div>
-          <input type="text" [(ngModel)]="origin" placeholder="Origin" />
-        </div>
-        <div class="separator-icon">
-          <ion-icon name="chevron-forward-outline"></ion-icon>
-        </div>
-        <div class="input-half">
+          <span class="place-text">{{ origin }}</span>
+        </button>
+        <button
+          type="button"
+          class="separator-icon swap-btn"
+          (click)="swapOriginDestination()"
+          aria-label="Swap pickup point and destination"
+          [title]="'Swap'"
+        >
+          <ion-icon name="swap-vertical-outline"></ion-icon>
+        </button>
+        <button
+          type="button"
+          class="input-half place-btn"
+          (click)="openPicker('destination')"
+          [attr.aria-label]="'Set destination, currently ' + destination"
+          [title]="destination"
+        >
           <div class="route-dot dest-dot"></div>
-          <input
-            type="text"
-            [(ngModel)]="destination"
-            placeholder="Destination"
-            />
-        </div>
+          <span class="place-text">{{ destination }}</span>
+        </button>
       </div>
 
       <!-- Secondary Info Pill (Solid Red) -->
@@ -238,6 +252,11 @@
         <app-trip-reminder-card class="home-reminder"></app-trip-reminder-card>
       }
     </div>
+
+    <!-- SEGMENT FARE PREVIEW for the chosen pair (prototype demo fare) -->
+    @if (pairFarePreview) {
+      <p class="pair-preview" aria-live="polite">{{ pairFarePreview }}</p>
+    }
 
     <!-- 3+4. UNIFIED TOOLBAR: categories left, view+sort right on desktop -->
     <div class="home-toolbar">
@@ -344,6 +363,12 @@
                 <p class="dest-text"><strong>{{ route.to }}</strong></p>
               </div>
             </div>
+            @if (segmentInfoFor(route); as seg) {
+              <p class="seg-line" aria-live="polite">
+                {{ route.operator }} · {{ seg.classLabel }} · {{ seg.boardName }} → {{ seg.alightName }} ·
+                ₱{{ seg.fare }} · {{ seg.seatsLeft }} seat{{ seg.seatsLeft === 1 ? '' : 's' }} left on your stretch@if (seg.etaAtPickup) { · at pickup {{ seg.etaAtPickup }} }
+              </p>
+            }
             <div class="card-bottom">
               <span class="seats">{{ route.seats }}</span>
               <div class="card-actions hail-only">
@@ -455,5 +480,16 @@
         </div>
         <button class="hail-cancel" (click)="cancelHail()">Cancel</button>
       </div>
+    }
+
+    <!-- PLACE PICKER (Grab-style From/To sheet, local test build) -->
+    @if (pickerFor) {
+      <app-place-picker
+        [fieldLabel]="pickerFor === 'origin' ? 'Pickup point' : 'Destination'"
+        [currentValue]="pickerFor === 'origin' ? origin : destination"
+        [limitOrigin]="pickerFor === 'destination' ? origin : ''"
+        (picked)="onPlacePicked($event)"
+        (dismissed)="closePicker()"
+      ></app-place-picker>
     }
   </ion-content>

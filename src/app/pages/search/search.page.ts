@@ -25,6 +25,7 @@ import {
   arrowForwardOutline,
   star,
   businessOutline,
+  swapVerticalOutline,
 } from 'ionicons/icons';
 import { BookingService, TripSummary } from '../booking/booking.service';
 import {
@@ -32,6 +33,17 @@ import {
   TerminalInfo,
 } from '../../services/route-catalog.service';
 import { PickupService } from '../../services/pickup.service';
+import {
+  NetworkService,
+  seatIdsForLayout,
+  tripById,
+  vehicleById,
+} from '../../services/network.service';
+import { SeatService } from '../../services/seat.service';
+import {
+  PlacePickerComponent,
+  PlacePick,
+} from '../../components/place-picker/place-picker.component';
 
 addIcons({
   'arrow-back-outline': arrowBackOutline,
@@ -53,6 +65,7 @@ addIcons({
   'arrow-forward-outline': arrowForwardOutline,
   star: star,
   'business-outline': businessOutline,
+  'swap-vertical-outline': swapVerticalOutline,
 });
 
 type Category = 'bus' | 'uv' | 'shared' | 'all';
@@ -89,7 +102,7 @@ type SearchScope = 'all' | 'terminals' | 'routes' | 'places';
 @Component({
   selector: 'app-search',
   standalone: true,
-  imports: [FormsModule, IonContent, IonIcon, DecimalPipe],
+  imports: [FormsModule, IonContent, IonIcon, DecimalPipe, PlacePickerComponent],
   templateUrl: './search.page.html',
   styleUrls: ['./search.page.scss'],
 })
@@ -98,8 +111,14 @@ export class SearchPage {
   private bookingService = inject(BookingService);
   private catalog = inject(RouteCatalogService);
   private pickupService = inject(PickupService);
+  private network = inject(NetworkService);
+  private seatService = inject(SeatService);
 
   query = '';
+  /** Pair filter shared with Home: same corridor-segment rules. */
+  origin = '';
+  destination = '';
+  pickerFor: 'origin' | 'destination' | null = null;
   activeCategory: Category = 'all';
   scope: SearchScope = 'all';
   sortBy: SortOption = 'Fastest';
@@ -191,6 +210,46 @@ popularRoutes: RouteCard[] = [
       mode: 'shared',
       rating: 4.9,
     },
+    // Full-span corridor runs so pair filtering has buses to show.
+    {
+      id: 'r32',
+      operator: 'Victory Liner',
+      from: 'Tuguegarao',
+      to: 'Manila (PITX)',
+      fare: '₱ 650',
+      duration: '9h 30m',
+      eta: '3 min away',
+      seats: '14 seats left',
+      status: 'on-time',
+      mode: 'bus',
+      rating: 4.8,
+    },
+    {
+      id: 'r1',
+      operator: 'Florida Bus Line',
+      from: 'Tuguegarao',
+      to: 'Manila (PITX)',
+      fare: '₱ 620',
+      duration: '9h 30m',
+      eta: '4 min away',
+      seats: '18 seats left',
+      status: 'on-time',
+      mode: 'bus',
+      rating: 4.4,
+    },
+    {
+      id: 'r33',
+      operator: 'Victory Liner',
+      from: 'Manila (PITX)',
+      to: 'Tuguegarao',
+      fare: '₱ 650',
+      duration: '9h 30m',
+      eta: '6 min away',
+      seats: '11 seats left',
+      status: 'on-time',
+      mode: 'bus',
+      rating: 4.7,
+    },
   ];
 
   /** Terminal directory — single source in the catalog. */
@@ -220,7 +279,7 @@ popularRoutes: RouteCard[] = [
   }
 
 constructor() {
-    addIcons({searchOutline,closeCircleOutline,micOutline,arrowForwardOutline,chevronForwardOutline,locationOutline,chevronDownOutline,bus,star,mapOutline,arrowBackOutline,closeOutline,heart,heartOutline,businessOutline,});
+    addIcons({searchOutline,closeCircleOutline,micOutline,arrowForwardOutline,chevronForwardOutline,locationOutline,chevronDownOutline,bus,star,mapOutline,arrowBackOutline,closeOutline,heart,heartOutline,businessOutline,swapVerticalOutline,});
   }
 
   get displayedDestinations(): Destination[] {
@@ -256,7 +315,100 @@ constructor() {
       if (this.sortBy === 'Cheapest') return this.priceValue(a) - this.priceValue(b);
       if (this.sortBy === 'Rated') return b.rating - a.rating;
       return this.durationMinutes(a) - this.durationMinutes(b);
+    }).filter((route) => this.pairServes(route));
+  }
+
+  openPicker(field: 'origin' | 'destination') {
+    this.pickerFor = field;
+  }
+
+  closePicker() {
+    this.pickerFor = null;
+  }
+
+  onPlacePicked(place: PlacePick) {
+    if (this.pickerFor === 'origin') this.origin = place.label;
+    else if (this.pickerFor === 'destination') this.destination = place.label;
+    this.pickerFor = null;
+  }
+
+  swapPair() {
+    const current = this.origin;
+    this.origin = this.destination;
+    this.destination = current;
+  }
+
+  clearPair() {
+    this.origin = '';
+    this.destination = '';
+  }
+
+  get hasPair(): boolean {
+    return this.origin.trim() !== '' && this.destination.trim() !== '';
+  }
+
+  /** Same corridor-segment rule as Home (minus the live bus position —
+   *  Search has no sim): corridor span, direction order, seat on stretch. */
+  private pairServes(route: RouteCard): boolean {
+    if (!this.hasPair) return true;
+    const pair = this.network.resolveTrip('', this.origin, this.destination);
+    const r = this.network.resolveTrip(route.operator, route.from, route.to);
+    if (!pair || !r || r.corridor.id !== pair.corridor.id) return false;
+    const forward = r.boardSeq < r.alightSeq;
+    if (forward !== pair.boardSeq < pair.alightSeq) return false;
+    const riderLo = Math.min(pair.boardSeq, pair.alightSeq);
+    const riderHi = Math.max(pair.boardSeq, pair.alightSeq);
+    if (
+      riderLo < Math.min(r.boardSeq, r.alightSeq) ||
+      riderHi > Math.max(r.boardSeq, r.alightSeq)
+    ) {
+      return false;
+    }
+    const today = new Date().toDateString();
+    const vehicle = vehicleById(r.trip.vehicleId);
+    const seatIds = vehicle ? seatIdsForLayout(vehicle.layout) : [];
+    if (!seatIds.length) return true;
+    return (
+      this.seatService.availabilityForSegment(
+        `${r.trip.tripId}|${today}`,
+        seatIds,
+        riderLo,
+        riderHi,
+        r.corridor.stops.length - 1,
+      ).available >= 1
+    );
+  }
+
+  /** Stretch fare + seats-left for a card under the active pair. */
+  segmentInfoFor(route: RouteCard): { fare: number; seatsLeft: number } | null {
+    if (!this.hasPair) return null;
+    const pair = this.network.resolveTrip('', this.origin, this.destination);
+    const r = this.network.resolveTrip(route.operator, route.from, route.to);
+    if (!pair || !r || r.corridor.id !== pair.corridor.id) return null;
+    const riderLo = Math.min(pair.boardSeq, pair.alightSeq);
+    const riderHi = Math.max(pair.boardSeq, pair.alightSeq);
+    const board = pair.corridor.stops[pair.boardSeq];
+    const alight = pair.corridor.stops[pair.alightSeq];
+    const vehicle = vehicleById(r.trip.vehicleId);
+    const today = new Date().toDateString();
+    const fare = this.network.fareFor({
+      corridorId: pair.corridor.id,
+      operatorId: r.operatorId ?? r.trip.operatorId,
+      serviceClassId: vehicle?.serviceClassId ?? 'aircon',
+      boardStopId: board.id,
+      alightStopId: alight.id,
     });
+    const seatIds = vehicle ? seatIdsForLayout(vehicle.layout) : [];
+    const seatsLeft = seatIds.length
+      ? this.seatService.availabilityForSegment(
+          `${r.trip.tripId}|${today}`,
+          seatIds,
+          riderLo,
+          riderHi,
+          pair.corridor.stops.length - 1,
+        ).available
+      : 0;
+    return { fare, seatsLeft };
   }
 
   goBack() {

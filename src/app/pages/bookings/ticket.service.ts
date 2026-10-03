@@ -1,6 +1,14 @@
 import { Injectable, inject } from '@angular/core';
 import { BookingService } from '../booking/booking.service';
 import { ProfileService } from '../profile/profile.service';
+import {
+  corridorById,
+  normalizeOperatorId,
+  operatorById,
+  stopById,
+  tripById,
+  vehicleById,
+} from '../../services/network.service';
 
 export type BookingStatus =
   | 'confirmed'
@@ -40,6 +48,21 @@ export interface Booking {
    *  History/audit context only — the new booking keeps its own ref.
    *  Absent on ordinary bookings and older stored records. */
   rebookedFrom?: string;
+  // ------------------------------------------------ network segment fields
+  // Present on bookings made after the corridor model; absent on v1
+  // records, which render as full-route trips (from → to).
+  corridorId?: string;
+  tripId?: string;
+  operatorId?: string;
+  serviceClassId?: string;
+  boardStopId?: string;
+  boardStopName?: string;
+  alightStopId?: string;
+  alightStopName?: string;
+  boardSeq?: number;
+  alightSeq?: number;
+  segmentKm?: number;
+  plate?: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -136,9 +159,83 @@ createFromCheckout(checkout: BookingService): Booking | null {
       pickupLat: checkout.pickup?.lat,
       pickupLng: checkout.pickup?.lng,
       ...(checkout.rebookedFrom ? { rebookedFrom: checkout.rebookedFrom } : {}),
+      // Network segment snapshot (absent on legacy sessions).
+      ...(checkout.hasNetworkSegment
+        ? {
+            corridorId: checkout.corridorId!,
+            tripId: checkout.tripId!,
+            operatorId: checkout.operatorId ?? undefined,
+            serviceClassId: checkout.serviceClassId ?? undefined,
+            boardStopId: checkout.boardStopId!,
+            alightStopId: checkout.alightStopId!,
+            boardStopName: this.stopName(checkout.corridorId!, checkout.boardStopId!),
+            alightStopName: this.stopName(checkout.corridorId!, checkout.alightStopId!),
+            boardSeq: checkout.boardSeq!,
+            alightSeq: checkout.alightSeq!,
+            segmentKm: checkout.segmentKm,
+            plate: this.plateFor(checkout.tripId!),
+          }
+        : {}),
     };
 
     return this.add(booking);
+  }
+
+  /** Boarding → alighting display pair; v1 records fall back to from → to. */
+  segmentPair(b: Booking): string {
+    if (b.boardStopName && b.alightStopName) {
+      return `${b.boardStopName} → ${b.alightStopName}`;
+    }
+    return `${b.from} → ${b.to}`;
+  }
+
+  /** Canonical operator id for a booking (normalized legacy name or stored). */
+  operatorIdFor(b: Booking): string | null {
+    return b.operatorId ?? normalizeOperatorId(b.operator);
+  }
+
+  /** Network segment for a booking, or null for v1 full-route records. */
+  segmentFor(b: Booking): {
+    corridorId: string;
+    tripId: string;
+    boardSeq: number;
+    alightSeq: number;
+    lastSeq: number;
+  } | null {
+    if (
+      b.corridorId == null ||
+      b.tripId == null ||
+      b.boardSeq == null ||
+      b.alightSeq == null
+    ) {
+      return null;
+    }
+    const corridor = corridorById(b.corridorId);
+    if (!corridor) return null;
+    return {
+      corridorId: b.corridorId,
+      tripId: b.tripId,
+      boardSeq: b.boardSeq,
+      alightSeq: b.alightSeq,
+      lastSeq: corridor.stops.length - 1,
+    };
+  }
+
+  private stopName(corridorId: string, stopId: string): string | undefined {
+    const corridor = corridorById(corridorId);
+    return corridor ? (stopById(corridor, stopId)?.name ?? undefined) : undefined;
+  }
+
+  private plateFor(tripId: string): string | undefined {
+    const trip = tripById(tripId);
+    const vehicle = trip ? vehicleById(trip.vehicleId) : null;
+    return vehicle?.plate;
+  }
+
+  /** Display operator name (normalized; falls back to the stored string). */
+  operatorNameFor(b: Booking): string {
+    const id = this.operatorIdFor(b);
+    return (id && operatorById(id)?.name) || b.operator;
   }
 
   updateStatus(

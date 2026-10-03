@@ -38,6 +38,7 @@ import {
   type TimedRouteStop,
 } from '../../services/route-stops.service';
 import { RideIdentityService } from '../../services/ride-identity.service';
+import { corridorById } from '../../services/network.service';
 import { RideCardsComponent } from '../../components/ride-cards/ride-cards.component';
 import { RouteStopTimelineComponent } from '../../components/route-stop-timeline/route-stop-timeline.component';
 
@@ -163,9 +164,49 @@ export class ActiveTripPage implements AfterViewInit, OnDestroy {
   /** Map display position, seeded deterministically from departure + device
    *  time (see derivedProgress). Refreshing restores the same position. */
   private busProgress = this.initialBusProgress();
-  /** True once the estimated arrival has passed. Marker parks at the
-   *  destination and the timeline reads all-done. */
-  private hasArrived = this.derivedProgress() >= 1;
+  /** Arrival is relative to the rider's OWN alighting stop (segment end),
+   *  not the corridor end. Legacy bookings without a segment use 1. */
+  private hasArrived = this.derivedProgress() >= this.arrivalThreshold();
+
+  /** Progress fraction at which this rider gets off (km share of the trip). */
+  private arrivalThreshold(): number {
+    const seg = this.booking ? this.ticketService.segmentFor(this.booking) : null;
+    if (!seg) return 1;
+    const corridor = corridorById(seg.corridorId);
+    if (!corridor) return 1;
+    const firstKm = corridor.stops[0].km;
+    const lastKm = corridor.stops[corridor.stops.length - 1].km;
+    const span = Math.abs(lastKm - firstKm);
+    if (span <= 0) return 1;
+    const lo = Math.min(seg.boardSeq, seg.alightSeq);
+    const hi = Math.max(seg.boardSeq, seg.alightSeq);
+    const boardKm = corridor.stops[lo]?.km ?? firstKm;
+    const alightKm = corridor.stops[hi]?.km ?? lastKm;
+    const frac = Math.abs(alightKm - boardKm) / span;
+    return Math.min(1, Math.max(0.05, frac));
+  }
+
+  /** Display name of the rider's own alighting stop (falls back to to). */
+  get alightingName(): string {
+    const seg = this.booking ? this.ticketService.segmentFor(this.booking) : null;
+    if (seg) {
+      const corridor = corridorById(seg.corridorId);
+      const stop = corridor?.stops[Math.max(seg.boardSeq, seg.alightSeq)];
+      if (stop) return stop.name;
+    }
+    return `${this.trip.to} Terminal`;
+  }
+
+  /** Coordinates of the rider's alighting stop (map parks here on arrival). */
+  private alightingCoords(): [number, number] {
+    const seg = this.booking ? this.ticketService.segmentFor(this.booking) : null;
+    if (seg) {
+      const corridor = corridorById(seg.corridorId);
+      const stop = corridor?.stops[Math.max(seg.boardSeq, seg.alightSeq)];
+      if (stop) return [stop.lat, stop.lng];
+    }
+    return this.destCoords;
+  }
 
   constructor() {
       addIcons({arrowBackOutline,chevronForwardOutline,chevronDownOutline,chevronUpOutline,shareSocialOutline,navigateOutline,locateOutline,addOutline,removeOutline,refreshOutline,star,chatbubbleEllipsesOutline,callOutline,checkmarkCircle,ticketOutline,alertOutline});}
@@ -348,7 +389,7 @@ export class ActiveTripPage implements AfterViewInit, OnDestroy {
   get nextStopLabel(): string {    const view = this.timelineView;
     if (this.booking?.status === 'cancelled') return 'Booking cancelled — no live tracking';
     if (this.hasArrived || view.mode === 'completed') {
-      return `Arrived at ${this.trip.to} Terminal`;
+      return `Arrived at ${this.alightingName}`;
     }
     const next = view.nextStop ?? view.currentStop;
     if (!next) return `Next stop: ${this.trip.to} Terminal`;
@@ -423,7 +464,7 @@ export class ActiveTripPage implements AfterViewInit, OnDestroy {
     }
     if (!this.arrivalAlertsEnabled()) return;
     void this.showToast(
-      `You have arrived at ${this.trip.to} Terminal. Safe travels, Kabyahe!`,
+      `You have arrived at ${this.alightingName}. Safe travels, Kabyahe!`,
     );
   }
 
@@ -555,7 +596,7 @@ export class ActiveTripPage implements AfterViewInit, OnDestroy {
     }
 
     const startPos = this.hasArrived
-      ? this.destCoords
+      ? this.alightingCoords()
       : this.interpolate(this.originCoords, this.destCoords, this.busProgress);
 
     this.map = L.map(host, {

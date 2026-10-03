@@ -137,6 +137,17 @@ ion-content.compare-content {
     font-weight: 600;
     color: rgba(255, 255, 255, 0.85);
   }
+  .hero-pair {
+    position: relative;
+    margin: 8px 0 0;
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--primary-navy);
+    background: var(--pop-yellow);
+    border-radius: 999px;
+    padding: 5px 12px;
+  }
 }
 
 /* --- SORT CHIPS --- */
@@ -328,8 +339,7 @@ ion-content.compare-content {
         padding: 4px 10px;
         border-radius: 999px;
         text-transform: uppercase;
-        white-space: nowrap;
-        &.available {
+        white-space: nowrap;        &.available {
           color: var(--success-green);
           background: rgba(22, 163, 74, 0.1);
           border: 1px solid var(--success-green);
@@ -346,6 +356,16 @@ ion-content.compare-content {
         }
       }
     }
+  }
+  .seg-line {
+    margin: 0 0 10px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--primary-navy);
+    background: #eef2ff;
+    border-radius: 10px;
+    padding: 8px 10px;
+    line-height: 1.5;
   }
   .select-btn {
     display: inline-flex;

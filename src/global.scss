@@ -1419,3 +1419,11 @@ html:not(#bh) {
   transform: translateY(1px);
   filter: brightness(0.94);
 }
+
+/* Place picker overlay: hide the floating tab bar while choosing a place,
+ * so the sheet + backdrop own the viewport on every tab. Toggled by
+ * PlacePickerComponent (body.pp-open), cleaned up on destroy. */
+body.pp-open .floating-nav-container {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}

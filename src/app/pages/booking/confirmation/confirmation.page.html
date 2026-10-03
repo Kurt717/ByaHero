@@ -41,6 +41,11 @@
               <span class="place">{{ trip.to }}</span>
             </div>
           </div>
+          @if (booking.hasNetworkSegment) {
+            <p class="segment-line">
+              {{ booking.segmentLabel }} · {{ booking.serviceClassLabel }} · {{ booking.segmentKm }} km
+            </p>
+          }
           <div class="meta-row">
             <span class="meta"
               ><ion-icon name="calendar-outline"></ion-icon>{{ booking.travelDate

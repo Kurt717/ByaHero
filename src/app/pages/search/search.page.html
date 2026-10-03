@@ -75,6 +75,44 @@
       }
     </div>
 
+    <!-- PAIR FILTER — same pickup + destination rule as Home -->
+    <div class="pair-row" role="group" aria-label="Pickup and destination filter">
+      <button
+        type="button"
+        class="pair-btn"
+        (click)="openPicker('origin')"
+        [attr.aria-label]="'Set pickup point' + (origin ? ', currently ' + origin : '')"
+      >
+        <span class="pair-dot origin"></span>
+        <span class="pair-text">{{ origin || 'Pickup' }}</span>
+      </button>
+      <button
+        type="button"
+        class="pair-swap"
+        (click)="swapPair()"
+        aria-label="Swap pickup and destination"
+      >
+        <ion-icon name="swap-vertical-outline"></ion-icon>
+      </button>
+      <button
+        type="button"
+        class="pair-btn"
+        (click)="openPicker('destination')"
+        [attr.aria-label]="'Set destination' + (destination ? ', currently ' + destination : '')"
+      >
+        <span class="pair-dot dest"></span>
+        <span class="pair-text">{{ destination || 'Destination' }}</span>
+      </button>
+      @if (origin || destination) {
+        <button type="button" class="pair-clear" (click)="clearPair()" aria-label="Clear pickup and destination">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+      }
+    </div>
+    @if (hasPair) {
+      <p class="pair-note" aria-live="polite">Buses {{ origin }} → {{ destination }} only</p>
+    }
+
     <!-- 2B. SCOPE FILTERS — terminals, routes, or places first -->
     <div class="scope-row" role="group" aria-label="Search scope">
       <button
@@ -230,6 +268,11 @@
                     </span>
                     <span class="rc-to">{{ route.to }}</span>
                   </div>
+                  @if (segmentInfoFor(route); as seg) {
+                    <p class="rc-seg" aria-live="polite">
+                      Your stretch · ₱{{ seg.fare }} · {{ seg.seatsLeft }} seat{{ seg.seatsLeft === 1 ? '' : 's' }} left
+                    </p>
+                  }
 
                   <div class="rc-foot">
                     <div class="rc-meta">
@@ -280,4 +323,15 @@
       </div>
     </div>
   </div>
+
+  <!-- PLACE PICKER sheet -->
+  @if (pickerFor) {
+    <app-place-picker
+      [fieldLabel]="pickerFor === 'origin' ? 'Pickup point' : 'Destination'"
+      [currentValue]="pickerFor === 'origin' ? origin : destination"
+      [limitOrigin]="pickerFor === 'destination' ? origin : ''"
+      (picked)="onPlacePicked($event)"
+      (dismissed)="closePicker()"
+    ></app-place-picker>
+  }
 </ion-content>

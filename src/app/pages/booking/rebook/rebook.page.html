@@ -22,6 +22,9 @@
         <div class="original-main">
           <span class="pow-label">YOUR ORIGINAL RIDE</span>
           <p class="original-route">{{ original.from }} → {{ original.to }}</p>
+          @if (originalPair(original) !== original.from + ' → ' + original.to) {
+            <p class="original-meta">Your stretch: {{ originalPair(original) }}</p>
+          }
           <p class="original-meta">
             {{ original.date }} · {{ original.time }} · {{ original.operator }}
           </p>
