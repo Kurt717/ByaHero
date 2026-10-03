@@ -76,7 +76,6 @@ export class TrustedContactsPage {
       ],
     });
     await alert.present();
-    this.injectCloseX(alert);
   }
 
   async remove(contact: TrustedContact) {
@@ -98,18 +97,6 @@ export class TrustedContactsPage {
       ],
     });
     await alert.present();
-  }
-
-  private injectCloseX(alert: HTMLIonAlertElement) {
-    const head = alert.querySelector('.alert-head') as HTMLElement | null;
-    if (!head || head.querySelector('.alert-close-x')) return;
-    const close = document.createElement('button');
-    close.type = 'button';
-    close.className = 'alert-close-x';
-    close.setAttribute('aria-label', 'Close dialog');
-    close.textContent = '✕';
-    close.addEventListener('click', () => void alert.dismiss());
-    head.appendChild(close);
   }
 
   private async showToast(message: string) {

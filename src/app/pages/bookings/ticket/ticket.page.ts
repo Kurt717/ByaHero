@@ -23,6 +23,8 @@ import {
   wifiOutline,
   briefcaseOutline,
   refreshOutline,
+  navigateOutline,
+  ticketOutline,
 } from 'ionicons/icons';
 import { TicketService, Booking } from '../ticket.service';
 import { TripReminderCardComponent } from '../../../components/trip-reminder-card/trip-reminder-card.component';
@@ -57,6 +59,8 @@ addIcons({
   'wifi-outline': wifiOutline,
   'briefcase-outline': briefcaseOutline,
   'refresh-outline': refreshOutline,
+  'navigate-outline': navigateOutline,
+  'ticket-outline': ticketOutline,
 });
 
 @Component({
@@ -114,6 +118,8 @@ passenger = { name: 'Juan Dela Cruz', phone: '+63 917 000 1234' };
       wifiOutline,
       briefcaseOutline,
       refreshOutline,
+      navigateOutline,
+      ticketOutline,
     });
   }
 
@@ -265,6 +271,13 @@ if (!this.booking) {
     if (!this.booking) return;
     this.ticketService.open(this.booking);
     this.router.navigateByUrl(`/boarding-pass/${this.booking.bookingRef}`);
+  }
+
+  /** Upcoming → live tracking for this exact booking. */
+  trackLive() {
+    if (!this.booking) return;
+    this.ticketService.open(this.booking);
+    this.router.navigateByUrl(`/active-trip?ref=${this.booking.bookingRef}`);
   }
 
   /** Alternatives never touch this booking — the rebook page only reads it. */
