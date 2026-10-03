@@ -1,7 +1,0 @@
-{
-  "name": "byahero",
-  "integrations": {
-    "capacitor": {}
-  },
-  "type": "angular-standalone"
-}
