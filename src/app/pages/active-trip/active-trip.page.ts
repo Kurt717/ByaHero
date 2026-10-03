@@ -12,9 +12,14 @@ import {
   chatbubbleEllipsesOutline,
   navigateOutline,
   locateOutline,
+  addOutline,
+  removeOutline,
+  refreshOutline,
   star,
   checkmarkCircle,
   chevronForwardOutline,
+  chevronDownOutline,
+  chevronUpOutline,
   ticketOutline,
   sunnyOutline,
   cloudyOutline,
@@ -44,9 +49,14 @@ addIcons({
   'chatbubble-ellipses-outline': chatbubbleEllipsesOutline,
   'navigate-outline': navigateOutline,
   'locate-outline': locateOutline,
+  'add-outline': addOutline,
+  'remove-outline': removeOutline,
+  'refresh-outline': refreshOutline,
   star: star,
   'checkmark-circle': checkmarkCircle,
   'chevron-forward-outline': chevronForwardOutline,
+  'chevron-down-outline': chevronDownOutline,
+  'chevron-up-outline': chevronUpOutline,
   'ticket-outline': ticketOutline,
   'sunny-outline': sunnyOutline,
   'cloudy-outline': cloudyOutline,
@@ -97,6 +107,23 @@ export class ActiveTripPage implements AfterViewInit, OnDestroy {
 
   @ViewChild('mapEl') mapEl?: ElementRef<HTMLDivElement>;
 
+  /** Progressive disclosure (Hick/Miller): stops list starts collapsed to
+   *  the next stops; expanding reveals the rest. One flag drives it. */
+  stopsExpanded = false;
+
+  toggleStops() {
+    this.stopsExpanded = !this.stopsExpanded;
+  }
+
+  /** Map load lifecycle (Doherty/CLS): skeleton first, never a blank box. */
+  mapLoading = true;
+  mapFailed = false;
+  private tileErrors = 0;
+  private routeLine: L.Polyline | null = null;
+  private resizeObserver: ResizeObserver | null = null;
+  private mapRaf = 0;
+  private resizeTimer: any = null;
+
   /** The timeline always follows the booking opened via `?ref=` when present
    *  (multiple active bookings), otherwise the current active booking. */
   booking: Booking | null = this.resolveBooking();
@@ -141,10 +168,12 @@ export class ActiveTripPage implements AfterViewInit, OnDestroy {
   private hasArrived = this.derivedProgress() >= 1;
 
   constructor() {
-      addIcons({arrowBackOutline,chevronForwardOutline,shareSocialOutline,navigateOutline,locateOutline,star,chatbubbleEllipsesOutline,callOutline,checkmarkCircle,ticketOutline,alertOutline});}
+      addIcons({arrowBackOutline,chevronForwardOutline,chevronDownOutline,chevronUpOutline,shareSocialOutline,navigateOutline,locateOutline,addOutline,removeOutline,refreshOutline,star,chatbubbleEllipsesOutline,callOutline,checkmarkCircle,ticketOutline,alertOutline});}
 
   ngAfterViewInit() {
-    setTimeout(() => this.initMap(), 60);
+    // rAF: init after the map host has a real box (no fixed-timeout guess).
+    this.mapRaf = requestAnimationFrame(() => this.initMap());
+    this.observeMapHost();
     this.maybeAnnounceArrival();
     // Best-effort refresh of the traveler's current location so pickup
     // distances and Alerts stay honest. Silent: keeps the old fix on failure.
@@ -156,7 +185,27 @@ export class ActiveTripPage implements AfterViewInit, OnDestroy {
 
   ngOnDestroy() {
     if (this.busInterval) clearInterval(this.busInterval);
+    if (this.mapRaf) cancelAnimationFrame(this.mapRaf);
+    if (this.resizeTimer) clearTimeout(this.resizeTimer);
+    this.resizeObserver?.disconnect();
+    this.resizeObserver = null;
     this.map?.remove();
+    this.map = null;
+  }
+
+  /** Re-flow Leaflet when the host box changes (rotate, resize, split). */
+  private observeMapHost() {
+    const host = this.mapEl?.nativeElement;
+    if (!host || typeof ResizeObserver === 'undefined') return;
+    this.resizeObserver = new ResizeObserver(() => {
+      if (this.resizeTimer) clearTimeout(this.resizeTimer);
+      this.resizeTimer = setTimeout(() => {
+        if (!this.map) return;
+        this.map.invalidateSize();
+        this.refitBounds(false);
+      }, 150);
+    });
+    this.resizeObserver.observe(host);
   }
 
   private resolveBooking(): Booking | null {
@@ -305,12 +354,27 @@ export class ActiveTripPage implements AfterViewInit, OnDestroy {
     if (!next) return `Next stop: ${this.trip.to} Terminal`;
     const eta = next.etaLabel ? ` · ETA ${next.etaLabel}` : this.etaLabel ? ` · ETA ${this.etaLabel}` : '';
     const prefix = view.mode === 'preview' ? 'First stop' : 'Next stop';
-    return `${prefix}: ${next.name}${eta} (simulated position)`;
+    return `${prefix}: ${next.name}${eta}`;
   }
 
   /** Template-facing arrival state (timeline reached Arrived). */
   get arrived(): boolean {
     return this.hasArrived;
+  }
+
+  /** Live (pre-arrival, non-cancelled) tracking state. */
+  get isLive(): boolean {
+    return !this.hasArrived && this.booking?.status !== 'cancelled';
+  }
+
+  /** Cancelled state: no live progress, static timeline. */
+  get isCancelled(): boolean {
+    return this.booking?.status === 'cancelled';
+  }
+
+  /** Arrived but not yet confirmed: single primary action state. */
+  get needsConfirm(): boolean {
+    return this.hasArrived && !!this.booking && this.booking.status !== 'completed' && this.booking.status !== 'cancelled';
   }
 
   /** True once the user confirms arrival via TicketService.updateStatus. */
@@ -406,7 +470,30 @@ export class ActiveTripPage implements AfterViewInit, OnDestroy {
 
   recenter() {
     if (!this.map || !this.busMarker) return;
+    this.map.invalidateSize();
     this.map.panTo(this.busMarker.getLatLng(), { animate: true });
+  }
+
+  zoomIn() {
+    this.map?.zoomIn();
+  }
+
+  zoomOut() {
+    this.map?.zoomOut();
+  }
+
+  /** Retry tile layer after a failure (map never stays a blank box). */
+  retryMap() {
+    this.tileErrors = 0;
+    this.mapFailed = false;
+    this.mapLoading = true;
+    if (this.map) {
+      this.map.remove();
+      this.map = null;
+    }
+    this.busMarker = null;
+    this.routeLine = null;
+    this.mapRaf = requestAnimationFrame(() => this.initMap());
   }
 
   async shareTrip() {
@@ -460,21 +547,62 @@ export class ActiveTripPage implements AfterViewInit, OnDestroy {
   private initMap() {
     if (!this.mapEl || this.map) return;
 
-    this.map = L.map(this.mapEl.nativeElement, { zoomControl: false }).setView(
-      this.interpolate(this.originCoords, this.destCoords, this.busProgress),
-      8,
-    );
+    const host = this.mapEl.nativeElement;
+    // Host must have a real box; otherwise retry on the next frame.
+    if (host.clientWidth === 0 || host.clientHeight === 0) {
+      this.mapRaf = requestAnimationFrame(() => this.initMap());
+      return;
+    }
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    const startPos = this.hasArrived
+      ? this.destCoords
+      : this.interpolate(this.originCoords, this.destCoords, this.busProgress);
+
+    this.map = L.map(host, {
+      zoomControl: false,
+      // Cooperative gestures: page scroll is never trapped.
+      scrollWheelZoom: false,
+      dragging: true,
+      touchZoom: true,
+      doubleClickZoom: true,
+      boxZoom: false,
+      keyboard: true,
+    }).setView(startPos, 8);
+
+    // Re-enable scroll zoom only with Ctrl (desktop convention).
+    this.map.on('click', () => this.map?.scrollWheelZoom.disable());
+    host.addEventListener('wheel', (e) => {
+      if (!this.map) return;
+      if (e.ctrlKey) {
+        this.map.scrollWheelZoom.enable();
+      } else {
+        this.map.scrollWheelZoom.disable();
+      }
+    }, { passive: true });
+
+    const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
       attribution: '&copy; OpenStreetMap contributors',
-    }).addTo(this.map);
+    });
+    tiles.on('tileerror', () => {
+      this.tileErrors++;
+      // A few bad tiles are normal; many in a row means offline/blocked.
+      if (this.tileErrors > 8) {
+        this.mapFailed = true;
+        this.mapLoading = false;
+      }
+    });
+    tiles.on('load', () => {
+      this.mapLoading = false;
+    });
+    tiles.addTo(this.map);
 
-    const routeLine = L.polyline([this.originCoords, this.destCoords], {
+    // Arrival: solid completed route. Live: dashed in-progress route.
+    this.routeLine = L.polyline([this.originCoords, this.destCoords], {
       color: '#151D48',
       weight: 4,
-      opacity: 0.55,
-      dashArray: '1, 10',
+      opacity: this.hasArrived ? 1 : 0.55,
+      ...(this.hasArrived ? {} : { dashArray: '1, 10' }),
       lineCap: 'round',
     }).addTo(this.map);
 
@@ -482,21 +610,54 @@ export class ActiveTripPage implements AfterViewInit, OnDestroy {
     this.addPin(this.destCoords, '#D32F2F', 'B');
     this.addStopDots();
 
-    this.busMarker = this.busDivMarker(
-      this.interpolate(this.originCoords, this.destCoords, this.busProgress),
-    );
+    this.busMarker = this.busDivMarker(startPos);
     this.busMarker.addTo(this.map);
 
-    this.map.fitBounds(routeLine.getBounds(), { padding: [40, 60] });
+    this.refitBounds(false);
 
-    this.busInterval = setInterval(() => this.stepBus(), 1200);
+    // Settle + reveal: invalidate after paint so tiles fill the real box.
+    requestAnimationFrame(() => {
+      this.map?.invalidateSize();
+      this.refitBounds(false);
+      // Fallback reveal even if the tile 'load' event never fires.
+      setTimeout(() => { this.mapLoading = false; }, 2500);
+    });
+
+    // Live animation only; arrival parks the marker and stops the loop.
+    // Reduced motion: static marker, no interval (WCAG 2.2 AA).
+    const reducedMotion = typeof window !== 'undefined' &&
+      typeof window.matchMedia === 'function' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!reducedMotion && !this.hasArrived && this.booking?.status !== 'completed' && this.booking?.status !== 'cancelled') {
+      this.busInterval = setInterval(() => this.stepBus(), 1200);
+    }
+  }
+
+  private refitBounds(animate = false) {
+    if (!this.map || !this.routeLine) return;
+    try {
+      this.map.fitBounds(this.routeLine.getBounds(), {
+        padding: [40, 60],
+        animate,
+      });
+    } catch {
+      // Non-fatal: map keeps its current view.
+    }
   }
 
   private stepBus() {
     if (this.hasArrived || this.busProgress >= 0.97) return;
     this.busProgress += 0.01;
-    const pos = this.interpolate(this.originCoords, this.destCoords, this.busProgress);
+    const reachedEnd = this.busProgress >= 0.97;
+    const pos = reachedEnd
+      ? this.destCoords
+      : this.interpolate(this.originCoords, this.destCoords, this.busProgress);
     this.busMarker?.setLatLng(pos);
+    if (reachedEnd && this.routeLine) {
+      // Freeze on arrival: solid line, no more motion.
+      this.routeLine.setStyle({ opacity: 1, dashArray: [] });
+      if (this.busInterval) clearInterval(this.busInterval);
+    }
   }
 
   private interpolate(

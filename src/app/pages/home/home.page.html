@@ -239,51 +239,54 @@
       }
     </div>
 
-    <!-- 3. CATEGORIES -->
-    <div class="categories-grid">
-      @for (cat of categories; track cat.id) {
-        <div
-          class="cat-item"
-          [class.active]="activeCategory === cat.id"
-          (click)="setCategory(cat.id)"
-          >
-          <div class="squircle"><ion-icon [name]="cat.icon"></ion-icon></div>
-          <span class="cat-label">{{ cat.label }}</span>
-        </div>
-      }
-    </div>
-
-    <!-- 4. STICKY VIEW TOGGLE & FILTERS -->
-    <div class="sticky-controls">
-      <div class="view-toggle-wrapper">
-        <div class="segmented-control">
-          <button
-            class="seg-btn"
-            [class.active]="selectedView === 'list'"
-            (click)="toggleMapView('list')"
+    <!-- 3+4. UNIFIED TOOLBAR: categories left, view+sort right on desktop -->
+    <div class="home-toolbar">
+      <!-- 3. CATEGORIES -->
+      <div class="categories-grid">
+        @for (cat of categories; track cat.id) {
+          <div
+            class="cat-item"
+            [class.active]="activeCategory === cat.id"
+            (click)="setCategory(cat.id)"
             >
-            <ion-icon name="list-outline"></ion-icon>
-            <span>List View</span>
-          </button>
-          <button
-            class="seg-btn"
-            [class.active]="selectedView === 'map'"
-            (click)="toggleMapView('map')"
-            >
-            <ion-icon name="map-outline"></ion-icon>
-            <span>Map View</span>
-          </button>
-        </div>
+            <div class="squircle"><ion-icon [name]="cat.icon"></ion-icon></div>
+            <span class="cat-label">{{ cat.label }}</span>
+          </div>
+        }
+      </div>
 
-        <div class="filter-row">
-          @for (option of sortOptions; track option) {
-            <span
-              class="filter-pill"
-              [class.active]="sortBy === option"
-              (click)="setSort(option)"
-              >{{ option }}</span
+      <!-- 4. STICKY VIEW TOGGLE & FILTERS -->
+      <div class="sticky-controls">
+        <div class="view-toggle-wrapper">
+          <div class="segmented-control">
+            <button
+              class="seg-btn"
+              [class.active]="selectedView === 'list'"
+              (click)="toggleMapView('list')"
               >
-          }
+              <ion-icon name="list-outline"></ion-icon>
+              <span>List View</span>
+            </button>
+            <button
+              class="seg-btn"
+              [class.active]="selectedView === 'map'"
+              (click)="toggleMapView('map')"
+              >
+              <ion-icon name="map-outline"></ion-icon>
+              <span>Map View</span>
+            </button>
+          </div>
+
+          <div class="filter-row">
+            @for (option of sortOptions; track option) {
+              <span
+                class="filter-pill"
+                [class.active]="sortBy === option"
+                (click)="setSort(option)"
+                >{{ option }}</span
+                >
+            }
+          </div>
         </div>
       </div>
     </div>
@@ -378,6 +381,15 @@
         <div class="map-legend">
           <span class="legend-dot navy"></span>On-time
           <span class="legend-dot red"></span>Delayed
+        </div>
+
+        <div class="map-zoom" role="group" aria-label="Map zoom">
+          <button type="button" (click)="zoomIn()" aria-label="Zoom in">
+            <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+          </button>
+          <button type="button" (click)="zoomOut()" aria-label="Zoom out">
+            <ion-icon name="remove-outline" aria-hidden="true"></ion-icon>
+          </button>
         </div>
 
         <button
