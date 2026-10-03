@@ -1,0 +1,89 @@
+<ion-content fullscreen class="favorites-content">
+  <div class="favorites-wrap">
+    <!-- HEADER -->
+    <div class="page-header">
+      <button class="icon-btn" (click)="goBack()" aria-label="Go back">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </button>
+      <h1>Favorites</h1>
+      @if (favoriteRoutes.length) {
+        <span class="count-badge">{{ favoriteRoutes.length }}</span>
+      }
+    </div>
+
+    @if (favoriteRoutes.length) {
+      <!-- FILTER CHIPS -->
+      <div class="filter-row">
+        @for (f of filters; track f) {
+          <button
+            class="filter-chip"
+            [class.active]="activeFilter === f.key"
+            (click)="setFilter(f.key)"
+            >
+            <ion-icon [name]="f.icon"></ion-icon>
+            <span>{{ f.label }}</span>
+          </button>
+        }
+      </div>
+      <!-- FAVORITE CARDS -->
+      @if (filteredFavorites.length) {
+        <div class="favorites-list">
+          @for (route of filteredFavorites; track route) {
+            <div class="favorite-card">
+              <button
+                class="unfav-btn"
+                (click)="removeFavorite(route.id, $event)"
+                aria-label="Remove from favorites"
+                >
+                <ion-icon name="heart"></ion-icon>
+              </button>
+              <div class="card-top">
+                <div class="op-logo"><ion-icon name="bus-outline"></ion-icon></div>
+                <div class="op-text">
+                  <h4>{{ route.operator }}</h4>
+                  <p>{{ route.savedLabel }} • Used {{ route.useCount }}x</p>
+                </div>
+                <span class="fare">{{ route.fare }}</span>
+              </div>
+              <div class="card-middle">
+                <div class="route-line-vertical">
+                  <span class="dot origin"></span>
+                  <span class="line"></span>
+                  <span class="dot dest"></span>
+                </div>
+                <div class="route-text">
+                  <p><strong>{{ route.from }}</strong></p>
+                  <p><strong>{{ route.to }}</strong></p>
+                </div>
+              </div>
+              <div class="card-bottom">
+                <span class="seats" [ngClass]="route.status">{{ route.seats }}</span>
+                <button class="book-btn" (click)="bookAgain(route)">
+                  Book Again
+                  <ion-icon name="arrow-forward-outline"></ion-icon>
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="empty-state small">
+          <p>No saved routes in this category yet.</p>
+        </div>
+      }
+    } @else {
+      <div class="empty-state">
+        <div class="empty-heart-outline">
+          <ion-icon name="heart-outline"></ion-icon>
+        </div>
+        <h3>No favorites yet</h3>
+        <p>Tap the heart on a route or trip to save it here for quick access.</p>
+        <button class="empty-cta" (click)="goToSearch()">
+          Find a Route
+          <ion-icon name="arrow-forward-outline"></ion-icon>
+        </button>
+      </div>
+    }
+
+  </div>
+</ion-content>

@@ -1,0 +1,242 @@
+:host {
+  --rst-navy: #151d48;
+  --rst-red: #d32f2f;
+  --rst-muted: #6b7280;
+  --rst-border: #e2e8f0;
+  --rst-green: #16a34a;
+  --rst-yellow: #ffe066;
+  --rst-ink: rgba(21, 29, 72, 0.14);
+  --rst-font:
+    "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "SF Pro Display",
+    sans-serif;
+  display: block;
+  font-family: var(--rst-font);
+}
+
+.rst-empty {
+  margin: 0;
+  padding: 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--rst-muted);
+  background: #fff;
+  border: 1.5px dashed var(--rst-border);
+  border-radius: 14px;
+}
+
+.rst-headline {
+  margin: 0 0 10px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--rst-navy);
+}
+
+.rst-current-banner {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: var(--rst-navy);
+  color: #fff;
+  border: 1.5px solid var(--rst-navy);
+  border-radius: 14px;
+  box-shadow: 2px 2px 0 var(--rst-ink);
+  padding: 10px 12px;
+  margin-bottom: 10px;
+
+  strong {
+    font-size: 15px;
+    font-weight: 800;
+    line-height: 1.25;
+  }
+}
+
+.rst-current-tag {
+  align-self: flex-start;
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  background: var(--rst-yellow);
+  color: var(--rst-navy);
+  border-radius: 6px;
+  padding: 2px 6px;
+}
+
+.rst-current-eta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11.5px;
+  font-weight: 600;
+  opacity: 0.92;
+  ion-icon {
+    font-size: 13px;
+  }
+}
+
+.rst-between {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 10px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--rst-navy);
+  ion-icon {
+    font-size: 13px;
+    color: var(--rst-red);
+    flex-shrink: 0;
+  }
+}
+
+.rst-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.rst-row {
+  display: flex;
+  gap: 10px;
+  min-height: 44px;
+}
+
+.rst-marker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 22px;
+  flex-shrink: 0;
+}
+
+.rst-icon {
+  font-size: 20px;
+  color: #cbd5e1;
+  background: #fff;
+  border-radius: 50%;
+  &.done {
+    color: var(--rst-green);
+  }
+  &.now {
+    color: var(--rst-navy);
+    font-size: 24px;
+    outline: 2px solid var(--rst-navy);
+    outline-offset: 1px;
+  }
+}
+
+.rst-line {
+  width: 2px;
+  flex: 1;
+  min-height: 18px;
+  background: var(--rst-border);
+  margin: 2px 0;
+  &.lit {
+    background: var(--rst-green);
+  }
+}
+
+.rst-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-bottom: 14px;
+}
+
+.rst-name-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.rst-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1f2937;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rst-row.current .rst-name {
+  font-weight: 800;
+  color: var(--rst-navy);
+}
+
+.rst-row.completed .rst-name {
+  color: var(--rst-muted);
+  font-weight: 600;
+}
+
+.rst-tag {
+  flex-shrink: 0;
+  font-size: 8.5px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--rst-navy);
+  border: 1px solid var(--rst-navy);
+  border-radius: 6px;
+  padding: 1px 5px;
+  background: #fff;
+  &.now {
+    background: var(--rst-yellow);
+  }
+}
+
+.rst-sub {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--rst-muted);
+  ion-icon {
+    font-size: 12px;
+  }
+}
+
+.rst-now-pill {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  color: #fff;
+  background: var(--rst-red);
+  border-radius: 6px;
+  padding: 1px 6px;
+}
+
+.rst-more,
+.rst-note {
+  margin: 6px 0 0;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--rst-muted);
+}
+
+.rst-note.ok {
+  color: var(--rst-green);
+  font-weight: 700;
+}
+
+/* Compact: tighter rows for boards + preparation cards. */
+.rst.compact {
+  .rst-body {
+    padding-bottom: 10px;
+  }
+  .rst-name {
+    font-size: 12.5px;
+  }
+  .rst-icon.now {
+    font-size: 22px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rst-icon.now {
+    outline-width: 2px;
+  }
+}

@@ -1,0 +1,138 @@
+<ion-content fullscreen class="sub-content">
+  <div class="page">
+    <div class="top-bar">
+      <button class="round-btn" (click)="goBack()" aria-label="Go back">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </button>
+      <div class="bar-text">
+        <h1>Rewards</h1>
+        <p>Kumita ka habang bumibiyahe</p>
+      </div>
+      <span class="beacon"><ion-icon name="trophy-outline"></ion-icon></span>
+    </div>
+
+    <!-- CURRENT RANK HERO -->
+    <section class="rank-hero">
+      <span class="hero-badge">
+        <ion-icon [name]="current.icon"></ion-icon>
+      </span>
+      <div class="hero-text">
+        <span class="hero-tier">{{ current.name }} Kabyahe</span>
+        <span class="hero-points">{{ stats.points }} pts</span>
+      </div>
+      <span class="hero-stamp">{{ index + 1 }} / {{ tiers.length }}</span>
+
+      <div class="hero-bar">
+        <div class="hero-fill" [style.width.%]="progress"></div>
+      </div>
+      @if (next) {
+        <p class="hero-note">{{ toNext }} pts to {{ next.name }}</p>
+      } @else {
+        <p class="hero-note hero-top">You are at the top rank!</p>
+      }
+    </section>
+
+    <!-- PROMO WALLET -->
+    <button class="promo-entry" (click)="openPromoWallet()">
+      <span class="p-icon"><ion-icon name="pricetag-outline"></ion-icon></span>
+      <span class="p-text">
+        <strong>Promo Wallet</strong>
+        <em>{{ promoCount }} deal{{ promoCount === 1 ? '' : 's' }} waiting for your next ride</em>
+      </span>
+      <ion-icon name="chevron-forward-outline" class="p-chev"></ion-icon>
+    </button>
+
+    <!-- TIER LADDER -->
+    <section class="block">
+      <div class="section-head">
+        <h3>Rank ladder</h3>
+        <span class="rule"></span>
+      </div>
+      <div class="ladder">
+        @for (t of tiers; track t.name; let i = $index) {
+          <div
+            class="tier"
+            [class.reached]="stats.points >= t.points"
+            [class.current]="t.name === current.name"
+          >
+            <span class="t-dot"><i></i></span>
+            <div class="t-body">
+              <div class="t-top">
+                <span class="t-name">
+                  <ion-icon [name]="t.icon"></ion-icon>{{ t.name }}
+                </span>
+                @if (t.name === current.name) {
+                  <span class="t-you">You</span>
+                } @else if (i < index) {
+                  <span class="t-ok">Unlocked</span>
+                } @else {
+                  <span class="t-pts">{{ t.points }} pts</span>
+                }
+              </div>
+              <div class="t-perks">
+                @for (p of t.perks; track p) {
+                  <span class="t-perk"><i></i>{{ p }}</span>
+                }
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+
+    <!-- HOW TO EARN -->
+    <section class="block">
+      <div class="section-head">
+        <h3>How to earn points</h3>
+        <span class="rule"></span>
+      </div>
+      <div class="earn-row">
+        <span class="e-icon"><ion-icon name="bus-outline"></ion-icon></span>
+        <span class="e-text"><strong>Book a trip</strong><em>Sekta agad — base points</em></span>
+        <span class="e-pts">+25</span>
+      </div>
+      <div class="earn-row">
+        <span class="e-icon"><ion-icon name="trophy-outline"></ion-icon></span>
+        <span class="e-text"><strong>Complete your ride</strong><em>Finish the trip to double it</em></span>
+        <span class="e-pts">+50</span>
+      </div>
+      <div class="earn-row">
+        <span class="e-icon"><ion-icon name="wallet-outline"></ion-icon></span>
+        <span class="e-text"><strong>Fare savings</strong><em>Every ₱ saved is a point</em></span>
+        <span class="e-pts">1:1</span>
+      </div>
+      <div class="earn-row">
+        <span class="e-icon"><ion-icon name="sparkles-outline"></ion-icon></span>
+        <span class="e-text"><strong>Invite kabyahe</strong><em>Rewards when friends ride</em></span>
+        <span class="e-pts">+50</span>
+      </div>
+    </section>
+
+    <!-- ACTIVITY -->
+    <section class="block">
+      <div class="section-head">
+        <h3>Points activity</h3>
+        <span class="rule"></span>
+      </div>
+      <div class="act-list">
+        @for (a of activity; track a.ref) {
+          <div class="act-row">
+            <span class="a-icon"><ion-icon [name]="a.icon"></ion-icon></span>
+            <div class="a-text">
+              <strong>{{ a.label }}</strong>
+              <span>{{ a.ref }} · {{ a.date }}</span>
+            </div>
+            <span class="a-pts" [class.neutral]="a.pts === 0">+{{ a.pts }}</span>
+          </div>
+        }
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <button class="cta" (click)="bookTrip()">
+      <ion-icon name="flash-outline"></ion-icon>
+      Book a trip to level up
+    </button>
+    <p class="hint">Points refresh automatically with each new booking.</p>
+  </div>
+</ion-content>

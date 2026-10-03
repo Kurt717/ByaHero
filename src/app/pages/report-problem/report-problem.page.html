@@ -1,0 +1,355 @@
+<!-- report-problem.page.html — ride-connected problem reporting, BYAHERO design language -->
+<ion-content fullscreen class="report-content">
+  <div class="report-wrap">
+    <!-- HEADER -->
+    <div class="page-header">
+      <button class="back-btn" (click)="goBack()" aria-label="Go back">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </button>
+      <div class="beacon" aria-hidden="true">
+        <span class="beacon-ring"></span>
+        <ion-icon name="megaphone-outline"></ion-icon>
+      </div>
+      <div class="header-text">
+        <h1>Report a Problem</h1>
+        <p>Saved on this device only</p>
+      </div>
+    </div>
+
+    @if (phase === 'done' && lastReport) {
+      <!-- CONFIRMATION — honest: saved locally, not sent anywhere -->
+      <section class="confirm-card" aria-label="Report confirmation">
+        <div class="confirm-main">
+          <span class="pow-label">REPORT SUBMITTED</span>
+          <p class="confirm-id">{{ lastReport.id }}</p>
+          <p class="confirm-note">Your report has been saved to this device. It was not sent to any company.</p>
+          <dl class="confirm-grid">
+            <div>
+              <dt>Ride</dt>
+              <dd>{{ lastReport.ride.from }} → {{ lastReport.ride.to }}</dd>
+            </div>
+            <div>
+              <dt>Category</dt>
+              <dd>{{ lastReport.categoryLabel }} · {{ lastReport.sub }}</dd>
+            </div>
+            <div>
+              <dt>Submitted</dt>
+              <dd>{{ reportDate(lastReport) }}</dd>
+            </div>
+          </dl>
+          <div class="confirm-actions">
+            <button type="button" class="primary-btn" (click)="viewRide()">View Ride</button>
+            <button type="button" class="ghost-btn" (click)="viewReports()">View Reports</button>
+            <button type="button" class="ghost-btn" (click)="backToBookings()">Back to Bookings</button>
+          </div>
+        </div>
+        <div class="confirm-stub" aria-hidden="true">
+          <span class="stamp">LOGGED</span>
+          <span class="route-motif">
+            <span class="rnode origin"></span>
+            <span class="rdash"></span>
+            <ion-icon name="bus" class="rbus"></ion-icon>
+            <span class="rdash"></span>
+            <span class="rnode dest"></span>
+          </span>
+          <span class="stub-cap">report</span>
+        </div>
+      </section>
+    } @else {
+      <!-- RIDE -->
+      <div class="section-head">
+        <p class="section-title">Your ride</p>
+        <span class="section-rule"></span>
+      </div>
+
+      @if (ride) {
+        <section class="ride-card" aria-label="Selected ride">
+          <div class="ride-main">
+            <span class="ride-route">
+              <span class="place">{{ ride.from }}</span>
+              <ion-icon name="chevron-forward-outline" class="ride-arrow" aria-hidden="true"></ion-icon>
+              <span class="place">{{ ride.to }}</span>
+            </span>
+            <span class="ride-meta">
+              <span class="meta"><ion-icon name="calendar-outline"></ion-icon>{{ ride.date }}</span>
+              <span class="meta"><ion-icon name="time-outline"></ion-icon>{{ ride.time }}</span>
+            </span>
+            <span class="ride-meta">
+              <span class="meta"><ion-icon name="bus"></ion-icon>{{ ride.operator }}</span>
+              <span class="meta bus-no">{{ busLine(ride) }}</span>
+            </span>
+            <span class="ride-meta">
+              <span class="meta ref">{{ ride.bookingRef }} · {{ statusLabel(ride.status) }}</span>
+            </span>
+          </div>
+          <div class="ride-stub" aria-hidden="true">
+            <span class="fare">{{ ride.fare }}</span>
+            <span class="seat">{{ ride.seat }}</span>
+          </div>
+        </section>
+        <button type="button" class="link-btn" (click)="changeRide()">Choose a different ride</button>
+      } @else {
+        @if (eligibleRides.length) {
+          <div class="ride-list" role="list" aria-label="Rides you can report">
+            @for (b of eligibleRides; track b.bookingRef) {
+              <button
+                type="button"
+                class="ride-pick"
+                role="listitem"
+                (click)="selectRide(b)"
+                [attr.aria-label]="'Report an issue on ' + b.from + ' to ' + b.to + ', ' + b.bookingRef"
+              >
+                <span class="pick-main">
+                  <span class="pick-route">{{ b.from }} → {{ b.to }}</span>
+                  <span class="pick-sub">{{ b.date }} · {{ b.operator }} · {{ statusLabel(b.status) }}</span>
+                  <span class="pick-ref">{{ b.bookingRef }}</span>
+                </span>
+                <span class="pick-action">Report Issue</span>
+              </button>
+            }
+          </div>
+        } @else {
+          <div class="empty-state compact">
+            <div class="empty-ticket-outline">
+              <ion-icon name="bus"></ion-icon>
+            </div>
+            <h3>No rides to report yet</h3>
+            <p>Once you book a trip, it will show up here.</p>
+          </div>
+        }
+      }
+
+      @if (ride) {
+        <!-- CATEGORY -->
+        <div class="section-head">
+          <p class="section-title">What went wrong?</p>
+          <span class="section-rule"></span>
+        </div>
+        <div
+          class="cat-grid"
+          role="radiogroup"
+          aria-label="Problem category"
+        >
+          @for (c of categories; track c.id) {
+            <button
+              type="button"
+              role="radio"
+              class="cat-card"
+              [class.selected]="categoryId === c.id"
+              [class.serious]="c.serious"
+              [attr.aria-checked]="categoryId === c.id"
+              [attr.aria-label]="c.label + '. ' + c.tagline"
+              (click)="selectCategory(c.id)"
+            >
+              <span class="cat-icon" aria-hidden="true"><ion-icon [name]="c.icon"></ion-icon></span>
+              <strong>{{ c.label }}</strong>
+              <span class="cat-tag">{{ c.tagline }}</span>
+              @if (categoryId === c.id) {
+                <span class="cat-check" aria-hidden="true"><ion-icon name="checkmark-circle"></ion-icon></span>
+              }
+            </button>
+          }
+        </div>
+
+        <!-- SAFETY → calm emergency strip, never playful -->
+        @if (isSafety) {
+          <button type="button" class="sos-strip" (click)="openEmergency()">
+            <ion-icon name="warning-outline" aria-hidden="true"></ion-icon>
+            <span class="sos-text">
+              <strong>Need immediate help?</strong>
+              <small>Open Emergency Mode — don't wait on a report.</small>
+            </span>
+            <ion-icon name="chevron-forward-outline" aria-hidden="true"></ion-icon>
+          </button>
+        }
+
+        @if (activeCategory) {
+          <!-- SUBCATEGORY -->
+          @if (activeCategory.subs.length > 1) {
+            <p class="field-label" id="sub-label">Which best matches?</p>
+            <div class="chip-row" role="group" aria-labelledby="sub-label">
+              @for (s of activeCategory.subs; track s) {
+                <button
+                  type="button"
+                  class="chip"
+                  [class.on]="sub === s"
+                  [attr.aria-pressed]="sub === s"
+                  (click)="selectSub(s)"
+                >
+                  {{ s }}
+                </button>
+              }
+            </div>
+          }
+
+          <!-- DYNAMIC FOLLOW-UPS -->
+          @if (sub) {
+            @for (f of fields; track f.key) {
+              <div class="field">
+                <label class="field-label" [for]="'fld-' + f.key">
+                  {{ f.label }}@if (!f.required) {
+                    <span class="opt">optional</span>
+                  }
+                </label>
+                @if (f.kind === 'select') {
+                  <div class="chip-row" [attr.aria-label]="f.label">
+                    @for (o of f.options; track o) {
+                      <button
+                        type="button"
+                        class="chip"
+                        [class.on]="answers[f.key] === o"
+                        [attr.aria-pressed]="answers[f.key] === o"
+                        (click)="answers[f.key] = o; error = null"
+                      >
+                        {{ o }}
+                      </button>
+                    }
+                  </div>
+                } @else if (f.kind === 'amount') {
+                  <input
+                    type="text"
+                    inputmode="decimal"
+                    class="text-input"
+                    [id]="'fld-' + f.key"
+                    [(ngModel)]="answers[f.key]"
+                    [placeholder]="f.placeholder ?? ''"
+                    (input)="error = null"
+                  />
+                } @else {
+                  <input
+                    type="text"
+                    class="text-input"
+                    [id]="'fld-' + f.key"
+                    [(ngModel)]="answers[f.key]"
+                    [placeholder]="f.placeholder ?? ''"
+                    maxlength="120"
+                    (input)="error = null"
+                  />
+                }
+                @if (f.hint) {
+                  <p class="field-hint">{{ f.hint }}</p>
+                }
+              </div>
+            }
+
+            <!-- DESCRIPTION -->
+            <div class="field">
+              <label class="field-label" for="report-desc">Tell us what happened</label>
+              <textarea
+                id="report-desc"
+                class="comment-box"
+                rows="4"
+                [maxlength]="maxDescription"
+                placeholder="Tell us what happened so we can understand the issue."
+                [(ngModel)]="description"
+                (input)="error = null"
+                aria-describedby="report-desc-count report-error"
+              ></textarea>
+              <p class="char-count" id="report-desc-count">{{ description.trim().length }} / {{ maxDescription }}</p>
+            </div>
+
+            <!-- ATTACHMENTS (metadata only — nothing is uploaded) -->
+            <div class="field">
+              <p class="field-label">Photos <span class="opt">optional</span></p>
+              <label class="attach-btn" for="report-files">
+                <ion-icon name="attach-outline" aria-hidden="true"></ion-icon>
+                Add a photo
+              </label>
+              <input
+                id="report-files"
+                type="file"
+                accept="image/*"
+                multiple
+                class="visually-hidden"
+                (change)="onFile($event)"
+              />
+              @if (attachments.length) {
+                <ul class="attach-list">
+                  @for (a of attachments; track a.name; let i = $index) {
+                    <li>
+                      <ion-icon name="document-text-outline" aria-hidden="true"></ion-icon>
+                      <span>{{ a.name }}</span>
+                      <button
+                        type="button"
+                        class="attach-remove"
+                        (click)="removeAttachment(i)"
+                        [attr.aria-label]="'Remove ' + a.name"
+                      >
+                        <ion-icon name="close-outline"></ion-icon>
+                      </button>
+                    </li>
+                  }
+                </ul>
+              }
+              <p class="field-hint">Kept on this device only — nothing is uploaded anywhere.</p>
+            </div>
+          }
+        }
+
+        @if (error) {
+          <p class="form-error" id="report-error" role="alert">
+            <ion-icon name="information-circle-outline" aria-hidden="true"></ion-icon>
+            {{ error }}
+          </p>
+        }
+      }
+
+      <!-- PAST REPORTS (picker context) -->
+      @if (!ride && history.length) {
+        <div class="section-head">
+          <p class="section-title">Past reports</p>
+          <span class="section-rule"></span>
+        </div>
+        <div class="history-list">
+          @for (r of history; track r.id) {
+            <div class="history-card">
+              <button
+                type="button"
+                class="history-main"
+                (click)="toggleReport(r.id)"
+                [attr.aria-expanded]="expandedReportId === r.id"
+                [attr.aria-label]="r.categoryLabel + ', ' + r.ride.from + ' to ' + r.ride.to"
+              >
+                <span class="h-icon" aria-hidden="true"><ion-icon [name]="categoryIcon(r)"></ion-icon></span>
+                <span class="h-text">
+                  <strong>{{ r.categoryLabel }}</strong>
+                  <span>{{ r.ride.from }} → {{ r.ride.to }} · {{ reportDate(r) }} · {{ r.id }}</span>
+                </span>
+                <span class="h-status">Submitted</span>
+              </button>
+              @if (expandedReportId === r.id) {
+                <div class="history-detail">
+                  <p class="detail-sub">{{ r.sub }}</p>
+                  <p class="detail-desc">“{{ r.description }}”</p>
+                  @if (r.attachments.length) {
+                    <p class="detail-meta">{{ r.attachments.length }} photo{{ r.attachments.length === 1 ? '' : 's' }} noted (on this device)</p>
+                  }
+                  <p class="detail-meta">Saved locally · not sent anywhere</p>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+    }
+  </div>
+
+  <!-- STICKY SUBMIT -->
+  @if (phase === 'form' && ride && sub) {
+    <div class="submit-bar">
+      <button
+        type="button"
+        class="submit-btn"
+        [disabled]="!canSubmit"
+        (click)="submit()"
+        aria-label="Submit problem report"
+      >
+        @if (submitting) {
+          Submitting…
+        } @else {
+          Submit Report
+        }
+      </button>
+    </div>
+  }
+</ion-content>

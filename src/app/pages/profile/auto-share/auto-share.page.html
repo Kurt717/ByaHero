@@ -1,0 +1,50 @@
+<ion-content fullscreen class="sub-content">
+  <div class="page">
+    <div class="top-bar">
+      <button class="round-btn" (click)="goBack()" aria-label="Go back">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </button>
+      <div class="bar-text">
+        <h1>Auto Share Live Trip</h1>
+        <p>Let trusted people watch your ride</p>
+      </div>
+      <span class="beacon"><ion-icon name="share-social-outline"></ion-icon></span>
+    </div>
+
+    <!-- MASTER SWITCH -->
+    <section class="switch-card">
+      <span class="sc-icon"><ion-icon name="share-social-outline"></ion-icon></span>
+      <div class="sc-text">
+        <h2>Auto Share</h2>
+        <p>{{ on ? 'Sharing every time you ride' : 'Off — you share manually' }}</p>
+      </div>
+      <button
+        class="switch"
+        [class.on]="on"
+        role="switch"
+        [attr.aria-checked]="on"
+        (click)="toggle(!on)"
+      >
+        <span class="knob"></span>
+      </button>
+    </section>
+
+    <!-- WHO SEES -->
+    <section class="block">
+      <div class="section-head">
+        <h3>Who gets your live trip</h3>
+        <span class="rule"></span>
+      </div>
+      <div class="info-row">
+        <ion-icon name="people-outline"></ion-icon>
+        <span>Your Trusted Contacts auto-receive a link when your bus departs.</span>
+      </div>
+      <div class="info-row">
+        <ion-icon name="location-outline"></ion-icon>
+        <span>They can follow your location until you arrive safely.</span>
+      </div>
+    </section>
+
+    <p class="hint">Manage your Trusted Contacts from the Profile menu.</p>
+  </div>
+</ion-content>

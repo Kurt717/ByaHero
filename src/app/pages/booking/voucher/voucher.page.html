@@ -1,0 +1,102 @@
+<ion-content fullscreen class="flow-content">
+  <div class="flow-wrap">
+    <div class="flow-header">
+      <button class="icon-btn" (click)="goBack()" aria-label="Go back">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </button>
+      <span class="flow-title-sm">Vouchers &amp; Promo Codes</span>
+      <span class="flow-spacer"></span>
+    </div>
+
+    <!-- MANUAL CODE ENTRY -->
+    <div class="manual-box">
+      <ion-icon name="pricetag-outline"></ion-icon>
+      <input
+        class="code-input"
+        [(ngModel)]="code"
+        placeholder="Enter promo code"
+        aria-label="Promo code"
+        (keyup.enter)="applyCode()"
+        />
+      <button class="apply-btn" (click)="applyCode()">Apply</button>
+    </div>
+    <p class="manual-hint">Got a code? Type it above — codes like <b>BAGUIO20</b> work here.</p>
+
+    <!-- CURRENTLY APPLIED -->
+    @if (booking.voucher) {
+      <div class="applied-banner">
+        <div>
+          <strong>{{ booking.voucher.code }}</strong>
+          <span>{{ booking.voucher.title }}</span>
+        </div>
+        <div class="applied-total">
+          {{ booking.formatCurrency(booking.voucherDiscount) }} off
+        </div>
+      </div>
+    }
+
+    <p class="section-title">Available for this trip</p>
+
+    <button type="button" class="wallet-link" (click)="openPromoWallet()">
+      <ion-icon name="pricetag-outline"></ion-icon>
+      <span>Open Promo Wallet — saved deals &amp; full details</span>
+      <ion-icon name="chevron-forward-outline"></ion-icon>
+    </button>
+
+    @for (v of vouchers; track v.code) {
+      <div
+        class="voucher-card"
+        [class.used]="v.used && !isApplied(v)"
+        [class.ineligible]="discountFor(v) === 0 && !isApplied(v) && !v.used"
+        >
+        <div class="voucher-cut">
+          <span class="voucher-discount">
+            @if (v.kind === 'percent') {
+              {{ v.value }}%
+            } @else {
+              {{ booking.formatCurrency(v.value) }}
+            }
+          </span>
+          <span class="voucher-off">OFF</span>
+        </div>
+        <div class="voucher-body">
+          <h4>{{ v.title }}</h4>
+          <p>{{ v.detail }}</p>
+          <span class="voucher-meta">
+            Min spend {{ booking.formatCurrency(v.minSpend) }}
+            @if (v.operators?.length) {
+              · {{ v.operators.join(' / ') }} only
+            }
+            @if (v.cap) {
+              · Up to {{ booking.formatCurrency(v.cap) }}
+            }
+          </span>
+        </div>
+        <div class="voucher-action">
+          @if (isApplied(v)) {
+            <button class="used-btn" (click)="remove(v)">
+              <ion-icon name="close-circle"></ion-icon>
+              Remove
+            </button>
+          } @else if (v.used) {
+            <span class="used-label">Used</span>
+          } @else if (discountFor(v) > 0) {
+            <button class="use-btn" (click)="apply(v)">Use</button>
+          } @else {
+            <span class="used-label">{{ reason(v) }}</span>
+          }
+        </div>
+      </div>
+    }
+  </div>
+</ion-content>
+
+<ion-footer class="flow-footer">
+  <p>
+    Total to pay:
+    <strong>{{ booking.formatCurrency(booking.total) }}</strong>
+    @if (booking.voucherDiscount) {
+      <small>(incl. voucher)</small>
+    }
+  </p>
+</ion-footer>

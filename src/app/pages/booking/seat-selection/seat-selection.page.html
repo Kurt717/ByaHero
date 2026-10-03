@@ -1,0 +1,134 @@
+<ion-content fullscreen class="flow-content">
+  @if (booking.trip) {
+    <div class="flow-wrap">
+      <div class="flow-header">
+        <button class="icon-btn" (click)="goBack()" aria-label="Go back">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+        </button>
+        <div class="flow-progress-track">
+          <div class="flow-progress-fill" [style.width]="booking.hailMode ? '50%' : '60%'"></div>
+        </div>
+        <span class="step-count">{{ booking.hailMode ? '2/4' : '3/5' }}</span>
+      </div>
+      <h1 class="flow-title">
+        Select Your Seat{{ booking.passengerCount > 1 ? 's' : '' }}
+      </h1>
+      <p class="flow-sub">
+        Choose {{ booking.passengerCount }} seat{{ booking.passengerCount > 1 ?
+        's' : '' }} · {{ booking.trip.operator }} ({{ booking.formatCurrency(booking.seatFare) }} / seat)
+      </p>
+      @if (booking.hasNetworkSegment) {
+        <p class="flow-sub segment-sub">{{ booking.segmentLabel }} · {{ booking.serviceClassLabel }}</p>
+      }
+      @if (availability) {
+        <div class="avail-chip" [class.low]="availability.available <= 5">
+          <ion-icon name="people-outline"></ion-icon>
+          <span>
+            {{ availability.available }} of {{ availability.total }} seats left —
+            you can book up to {{ booking.maxPassengers }}
+          </span>
+        </div>
+      }
+      <!-- PREFERENCE BANNER (reservations only) -->
+      @if (!booking.hailMode && booking.hasSeatPreference) {
+        <div class="pref-banner" role="status">
+          <span class="pref-tag">{{ booking.preferenceLabel() }}</span>
+          @if (matchingSet.size) {
+            <span class="pref-text">{{ matchingSet.size }} matching seat{{ matchingSet.size === 1 ? '' : 's' }} highlighted below</span>
+          } @else {
+            <span class="pref-text none">No available seats match — pick any open seat, or <button type="button" class="pref-change" (click)="goBack()">change preference</button></span>
+          }
+        </div>
+      }
+      <!-- BUS FRAME -->
+      <div class="bus-frame">
+        <div class="bus-front">
+          <ion-icon name="navigate-outline"></ion-icon>
+          <span>FRONT</span>
+        </div>
+        <div class="seat-grid">
+          @for (row of seatRows; track row.num) {
+            <div class="seat-row">
+              <span class="row-num">{{ row.num }}</span>
+              <div class="seat-pair">
+                @for (seat of row.left; track seat.id) {
+                  <button
+                    class="seat"
+                    [ngClass]="seat.status"
+                    [class.preferred]="isPreferred(seat)"
+                    [disabled]="seat.status === 'booked'"
+                    (click)="toggleSeat(seat)"
+                    [attr.aria-label]="'Seat ' + seat.id + ', ' + seat.status + (isPreferred(seat) ? ', matches your preference' : '')"
+                    >
+                    {{ seat.id }}
+                  </button>
+                }
+              </div>
+              @if (row.right.length) {
+                <div class="aisle-gap"></div>
+                <div class="seat-pair">
+                  @for (seat of row.right; track seat.id) {
+                    <button
+                      class="seat"
+                      [ngClass]="seat.status"
+                      [class.preferred]="isPreferred(seat)"
+                      [disabled]="seat.status === 'booked'"
+                      (click)="toggleSeat(seat)"
+                      [attr.aria-label]="'Seat ' + seat.id + ', ' + seat.status + (isPreferred(seat) ? ', matches your preference' : '')"
+                      >
+                      {{ seat.id }}
+                    </button>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+      @if (freeLaterNotes.length) {
+        <p class="hint-text" role="note">
+          {{ freeLaterNotes.join(' · ') }} — seats free up after their riders get off.
+        </p>
+      }
+      <!-- LEGEND -->
+      <div class="legend-row">
+        <div class="legend-item">
+          <span class="swatch available"></span> Available
+        </div>
+        <div class="legend-item">
+          <span class="swatch selected"></span> Selected
+        </div>
+        <div class="legend-item"><span class="swatch booked"></span> Booked</div>
+        @if (!booking.hailMode && booking.hasSeatPreference && matchingSet.size) {
+          <div class="legend-item"><span class="swatch preferred"></span> Matches preference</div>
+        }
+      </div>
+      @if (booking.selectedSeats.length < booking.passengerCount) {
+        <p
+          class="hint-text"
+          >
+          Tap {{ booking.passengerCount - booking.selectedSeats.length }} more
+          seat{{ (booking.passengerCount - booking.selectedSeats.length) > 1 ? 's' :
+          '' }} to continue
+        </p>
+      }
+    </div>
+  }
+
+  <!-- STICKY FOOTER -->
+  @if (booking.trip) {
+    <div class="flow-footer">
+      <div class="footer-price">
+        <span class="label"
+          >{{ booking.selectedSeats.length }}/{{ booking.passengerCount }} seats ·
+          {{ booking.selectedSeats.join(', ') || '—' }}</span
+          >
+          <span class="value">{{ booking.formatCurrency(booking.subtotal) }}</span>
+        </div>
+        <button class="footer-cta" [disabled]="!canContinue" (click)="continue()">
+          Continue
+          <ion-icon name="chevron-forward-outline"></ion-icon>
+        </button>
+      </div>
+    }
+  </ion-content>

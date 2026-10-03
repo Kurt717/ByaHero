@@ -1,0 +1,96 @@
+<ion-content fullscreen class="flow-content">
+  @if (booking.trip; as trip) {
+    <div class="flow-wrap">
+      <!-- SUCCESS BADGE -->
+      <div class="success-badge">
+        <div class="badge-ring">
+          <ion-icon name="checkmark-outline"></ion-icon>
+        </div>
+      </div>
+      <h1 class="confirm-title">Booking Confirmed!</h1>
+      <p class="confirm-sub">
+        Your seat{{ booking.selectedSeats.length > 1 ? 's are' : ' is' }} reserved
+        with {{ trip.operator }}
+      </p>
+      @if (booking.rebookedFrom) {
+        <p class="rebook-note">
+          <ion-icon name="checkmark-outline" aria-hidden="true"></ion-icon>
+          <span><strong>Rebooked.</strong> Previously booked as {{ booking.rebookedFrom }} — that trip was left untouched.</span>
+        </p>
+      }
+      <!-- E-TICKET -->
+      <div class="ticket">
+        <div class="ticket-main">
+          <div class="ticket-top">
+            <div class="operator">
+              <span class="operator-icon"><ion-icon name="bus"></ion-icon></span>
+              <span class="operator-name">{{ trip.operator }}</span>
+            </div>
+            <span class="status-chip">Confirmed</span>
+          </div>
+          <div class="route-col">
+            <div class="route-line-v">
+              <span class="rnode origin"></span>
+              <span class="rdash"></span>
+              <ion-icon name="bus" class="rbus"></ion-icon>
+              <span class="rdash"></span>
+              <span class="rnode dest"></span>
+            </div>
+            <div class="route-names">
+              <span class="place">{{ trip.from }}</span>
+              <span class="place">{{ trip.to }}</span>
+            </div>
+          </div>
+          @if (booking.hasNetworkSegment) {
+            <p class="segment-line">
+              {{ booking.segmentLabel }} · {{ booking.serviceClassLabel }} · {{ booking.segmentKm }} km
+            </p>
+          }
+          <div class="meta-row">
+            <span class="meta"
+              ><ion-icon name="calendar-outline"></ion-icon>{{ booking.travelDate
+              }}</span
+              >
+              <span class="meta seat">{{ booking.selectedSeats.join(', ') }}</span>
+            </div>
+            @if (confirmedPickup) {
+              <div class="pickup-line">
+                <ion-icon name="location-outline" aria-hidden="true"></ion-icon>
+                <span>
+                  Pickup: {{ confirmedPickup }}@if (confirmedPickupDistance; as dist) {
+                    · {{ dist }}
+                  }
+                </span>
+              </div>
+            }
+          </div>
+          <div class="ticket-stub">
+            <ion-icon name="qr-code-outline" class="qr-icon"></ion-icon>
+            <span class="fare">{{ booking.formatCurrency(booking.total) }}</span>
+            <span class="ref">{{ booking.bookingRef }}</span>
+          </div>
+        </div>
+        <p class="sms-note">
+          Your e-ticket is saved on this device under My Bookings. Show the QR at the gate.
+        </p>
+      </div>
+    }
+
+    <!-- ACTIONS -->
+    @if (booking.trip) {
+      <div class="confirm-actions">
+        <button class="primary-cta" (click)="viewTicket()">
+          <ion-icon name="qr-code-outline"></ion-icon>
+          View E-Ticket
+        </button>
+        <button class="secondary-cta" (click)="viewBookings()">
+          <ion-icon name="list-outline"></ion-icon>
+          View My Bookings
+        </button>
+        <button class="tertiary-cta" (click)="goHome()">
+          <ion-icon name="home-outline"></ion-icon>
+          Back to Home
+        </button>
+      </div>
+    }
+  </ion-content>

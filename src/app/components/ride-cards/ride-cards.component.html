@@ -1,0 +1,115 @@
+<!-- ride-cards.component.html — shared vehicle + driver identity composition -->
+<div class="ride-cards">
+  <!-- ============ VEHICLE IDENTITY PANEL ============ -->
+  <article
+    class="vehicle-card"
+    [class.pending]="!ride.assigned"
+    [attr.aria-label]="ride.assigned ? 'Current ride: bus ' + ride.busNo + ', plate ' + ride.plate : 'Vehicle assignment pending'"
+  >
+    <div class="v-halftone" aria-hidden="true"></div>
+    <svg class="v-speed" viewBox="0 0 200 40" preserveAspectRatio="none" aria-hidden="true">
+      <g stroke="#ffe066" stroke-width="2" opacity="0.5" stroke-linecap="round">
+        <line x1="120" y1="8" x2="196" y2="8" />
+        <line x1="132" y1="18" x2="196" y2="18" />
+        <line x1="112" y1="28" x2="196" y2="28" />
+      </g>
+    </svg>
+
+    <div class="v-top">
+      <span class="v-kicker">{{ ride.context === 'hail' ? 'Current ride · Hail' : 'Current ride' }}</span>
+      @if (ride.assigned) {
+        <span class="v-status" role="status">{{ ride.statusLabel }}</span>
+      } @else {
+        <span class="v-status ghost" role="status">Pending</span>
+      }
+    </div>
+
+    @if (ride.assigned) {
+      <p class="v-kind">Bus</p>
+      <p class="v-number">{{ ride.busNo }}</p>
+
+      <div class="v-route" aria-label="Route {{ from }} to {{ to }}">
+        <span class="v-city">{{ from }}</span>
+        <span class="v-arrow" aria-hidden="true">
+          <span class="v-line"></span>
+          <ion-icon name="chevron-forward-outline"></ion-icon>
+        </span>
+        <span class="v-city dest">{{ to }}</span>
+      </div>
+
+      <div class="v-perf" aria-hidden="true"><span></span><span></span></div>
+
+      <div class="v-foot">
+        <div class="v-plate">
+          <span class="plate-lbl">Plate</span>
+          <span class="plate-num">{{ ride.plate }}</span>
+        </div>
+        <div class="v-op">
+          <span class="op-lbl">Operator</span>
+          <span class="op-name">{{ ride.operator }}</span>
+        </div>
+      </div>
+
+      @if (ride.context === 'hail') {
+        <p class="v-hail">
+          <ion-icon name="navigate-outline" aria-hidden="true"></ion-icon>
+          Your pickup · {{ hailDistanceLabel() }}
+        </p>
+      }
+    } @else {
+      <p class="v-kind">Vehicle</p>
+      <p class="v-number pending-word">Pending</p>
+      <p class="v-pending-note">Assignment pending — your vehicle information will appear here when the operator assigns it.</p>
+    }
+  </article>
+
+  <!-- ============ DRIVER CREW CREDENTIAL ============ -->
+  <article
+    class="driver-card"
+    [class.pending]="!ride.assigned"
+    [attr.aria-label]="ride.assigned ? 'Your driver: ' + ride.driver : 'Driver not yet assigned'"
+  >
+    <div class="d-top">
+      <span class="d-kicker">Your driver</span>
+      <span class="d-badge">
+        <ion-icon name="shield-checkmark-outline" aria-hidden="true"></ion-icon>
+        Crew
+      </span>
+    </div>
+
+    @if (ride.assigned) {
+      <div class="d-id">
+        <span class="d-avatar" aria-hidden="true">{{ initials }}</span>
+        <div class="d-name">
+          <span class="d-first">{{ firstName }}</span>
+          @if (restName) {
+            <span class="d-rest">{{ restName }}</span>
+          }
+          <span class="d-role" [attr.aria-label]="'Rated ' + driverRating + ' out of 5. Current driver, ' + ride.operator">
+            <ion-icon name="star" aria-hidden="true"></ion-icon>
+            {{ driverRating }} · Current driver · {{ ride.operator }}
+          </span>
+        </div>
+      </div>
+      <div class="d-actions">
+        <button type="button" class="d-btn" (click)="messageDriver()" aria-label="Message driver">
+          <ion-icon name="chatbubble-ellipses-outline" aria-hidden="true"></ion-icon>
+          Message driver
+        </button>
+        <button type="button" class="d-btn ghost" (click)="callDriver()" aria-label="Call driver">
+          <ion-icon name="call-outline" aria-hidden="true"></ion-icon>
+          Call
+        </button>
+      </div>
+    } @else {
+      <div class="d-id">
+        <span class="d-avatar dim" aria-hidden="true">?</span>
+        <div class="d-name">
+          <span class="d-first">Not yet</span>
+          <span class="d-rest">Assigned</span>
+          <span class="d-role">Your driver details will appear here when assigned.</span>
+        </div>
+      </div>
+    }
+  </article>
+</div>
