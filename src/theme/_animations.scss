@@ -1,0 +1,86 @@
+/* =====================================================================
+   BYAHERO shared animations — byte-identical copies of the keyframes
+   previously duplicated across page SCSS files.
+   Pages that used these exact definitions now inherit them globally;
+   pages with different distances (home 18px, search 12px) keep their
+   local variants. Reduced-motion guard lives here, once.
+   ===================================================================== */
+
+@keyframes bh-reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Legacy alias: most pages animate `revealUp` (16px). Defined once so
+   page-level duplicates could be removed without visual change. */
+@keyframes revealUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes beaconPing {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.6;
+  }
+  70% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+
+@keyframes byaheroPulse {
+  0% {
+    transform: scale(0.7);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+
+/* burstSpin (home/confirmation) and raySpin (alert-detail/edit-profile)
+   are the same rotation; one shared definition serves both names. */
+@keyframes burstSpin {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+@keyframes raySpin {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}

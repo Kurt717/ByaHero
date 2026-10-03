@@ -1,0 +1,802 @@
+/* =====================================================================
+   ACTIVE TRIP — single source of truth (mobile-first).
+   Breakpoints: 768 (tablet), 1024 (desktop, requires min-height 560px).
+   Visual language: navy #151d48, red #d32f2f, yellow #ffe066,
+   2px navy borders, hard offset shadows, Plus Jakarta Sans.
+   ===================================================================== */
+
+:host {
+  --primary-navy: #151d48;
+  --accent-red: #d32f2f;
+  --bg-page: #f8fafc;
+  --bg-white: #ffffff;
+  --text-main: #1f2937;
+  --text-muted: #6b7280;
+  --text-strong: #334155; /* 4.5:1+ on light fills (replaces muted on grey) */
+  --border-color: #e2e8f0;
+  --ink: rgba(21, 29, 72, 0.14);
+  --pop-yellow: #ffe066;
+  --success-green: #16a34a;
+  --font-family:
+    "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "SF Pro Display",
+    sans-serif;
+  --action-reserve: calc(104px + env(safe-area-inset-bottom, 0px));
+}
+
+ion-content.trip-content {
+  --background: var(--bg-page);
+  font-family: var(--font-family);
+  -webkit-font-smoothing: antialiased;
+}
+
+@keyframes byaheroPulse {
+  0% { transform: scale(0.7); opacity: 0.6; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+
+@keyframes revealUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes skeletonShimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* --- PAGE SCAFFOLD (reserve action-bar height: nothing hides behind it) --- */
+.trip-wrap {
+  display: flex;
+  flex-direction: column;
+  padding: calc(env(safe-area-inset-top, 20px) + 12px) 16px var(--action-reserve);
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100%;
+}
+
+/* --- COMPACT HEADER (route + status live here only) --- */
+.trip-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+
+  .icon-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--bg-white);
+    border: 1.5px solid var(--primary-navy);
+    box-shadow: 2px 2px 0 var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    cursor: pointer;
+    ion-icon { font-size: 20px; color: var(--primary-navy); }
+    &:active { transform: scale(0.92); }
+  }
+
+  .header-mid {
+    flex: 1;
+    min-width: 0;
+    text-align: center;
+
+    .eyebrow {
+      display: block;
+      font-size: 10.5px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+    }
+
+    h1 {
+      margin: 2px 0 0;
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--primary-navy);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      ion-icon { font-size: 12px; color: var(--text-muted); vertical-align: -1px; }
+    }
+
+    .status-pill {
+      display: inline-block;
+      margin-top: 5px;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--primary-navy);
+      background: var(--pop-yellow);
+      border: 1px solid var(--primary-navy);
+      border-radius: 999px;
+      padding: 4px 11px;
+      white-space: nowrap;
+    }
+  }
+
+  .ticket-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    flex-shrink: 0;
+    min-width: 44px;
+    min-height: 44px;
+    background: var(--bg-white);
+    border: 1px solid var(--primary-navy);
+    border-radius: 999px;
+    padding: 8px 12px;
+    font-family: var(--font-family);
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--primary-navy);
+    cursor: pointer;
+    box-shadow: 2px 2px 0 var(--ink);
+    ion-icon { font-size: 18px; }
+    &:active { transform: scale(0.95); }
+  }
+}
+
+/* --- NON-INTERACTIVE STEPPER (list affordance, never tabs) --- */
+.stage-stepper {
+  list-style: none;
+  display: flex;
+  gap: 4px;
+  margin: 0 0 12px;
+  padding: 4px;
+  background: var(--border-color);
+  border: 1.5px solid var(--ink);
+  border-radius: 999px;
+
+  li {
+    flex: 1 1 0;
+    min-width: 0;
+    text-align: center;
+    padding: 10px 4px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    color: var(--text-strong);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    &.active {
+      background: var(--primary-navy);
+      color: #ffffff;
+      box-shadow: 2px 2px 0 var(--ink);
+    }
+  }
+}
+
+/* --- LAYOUT: single column on phone/tablet --- */
+.tracking-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  width: 100%;
+  align-items: start;
+}
+
+.tracking-map {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.tracking-side {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* --- MAP HERO: deterministic box, no entrance fade (CLS ~ 0) --- */
+.map-shell {
+  position: relative;
+  height: 45dvh;
+  min-height: 280px;
+  border-radius: 20px;
+  border: 2px solid var(--primary-navy);
+  box-shadow: 4px 4px 0 var(--ink);
+  overflow: hidden;
+  background: var(--border-color);
+}
+
+.leaflet-host {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--border-color);
+  z-index: 0;
+}
+
+.map-skeleton {
+  position: absolute;
+  inset: 0;
+  z-index: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: linear-gradient(100deg, #e2e8f0 40%, #f1f5f9 50%, #e2e8f0 60%);
+  background-size: 800px 100%;
+  animation: skeletonShimmer 1.4s linear infinite;
+
+  .sk-pin {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--primary-navy);
+    opacity: 0.35;
+  }
+  .sk-line {
+    width: 45%;
+    height: 4px;
+    border-radius: 4px;
+    background: var(--primary-navy);
+    opacity: 0.2;
+  }
+}
+
+.map-fallback {
+  position: absolute;
+  inset: 0;
+  z-index: 410;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--bg-page);
+  padding: 20px;
+  text-align: center;
+
+  svg { width: min(220px, 70%); height: auto; }
+  p {
+    margin: 4px 0 0;
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--primary-navy);
+  }
+  .retry-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 44px;
+    margin-top: 4px;
+    padding: 10px 20px;
+    border-radius: 999px;
+    border: 1.5px solid var(--primary-navy);
+    background: var(--bg-white);
+    color: var(--primary-navy);
+    font-family: var(--font-family);
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 2px 2px 0 var(--ink);
+    ion-icon { font-size: 16px; }
+    &:active { transform: scale(0.95); }
+  }
+}
+
+/* Zoom: buttons only (cooperative gestures in TS); desktop only */
+.map-zoom {
+  display: none;
+}
+
+.fab-recenter {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  z-index: 500;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: var(--bg-white);
+  border: 1.5px solid var(--primary-navy);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary-navy);
+  cursor: pointer;
+  box-shadow: 2px 2px 0 var(--ink);
+  ion-icon { font-size: 20px; }
+  &:active { transform: scale(0.9); }
+}
+
+/* --- ETA + PROGRESS CARD (ETA + progress live here only) --- */
+.status-card {
+  background: var(--bg-white);
+  border: 1.5px solid var(--primary-navy);
+  border-radius: 18px;
+  box-shadow: 2px 2px 0 var(--ink);
+  padding: 14px;
+  animation: revealUp 0.4s ease both;
+
+  .status-top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+
+    .eta-line {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--primary-navy);
+      min-height: 20px; /* fixed slot: no shift while ETA loads */
+    }
+    .progress-pct {
+      font-size: 13px;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      color: var(--primary-navy);
+      background: #eef2ff;
+      border-radius: 999px;
+      padding: 3px 10px;
+      white-space: nowrap;
+    }
+  }
+
+  .status-next {
+    margin: 6px 0 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    min-height: 18px;
+  }
+
+  .progress-dots {
+    display: flex;
+    align-items: flex-start;
+    .pnode {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      flex-shrink: 0;
+      max-width: 110px;
+      .pdot {
+        width: 13px;
+        height: 13px;
+        border-radius: 50%;
+        border: 2px solid var(--primary-navy);
+        background: var(--bg-white);
+      }
+      .plbl {
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--text-strong);
+      }
+      small {
+        font-size: 10.5px;
+        font-weight: 700;
+        color: var(--primary-navy);
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+      }
+      &.done {
+        .pdot { background: var(--primary-navy); }
+        .plbl { color: var(--primary-navy); }
+      }
+    }
+    .pline {
+      flex: 1;
+      height: 2px;
+      background: var(--border-color);
+      margin: 6px 4px 0;
+      border-radius: 2px;
+      &.done { background: var(--primary-navy); }
+    }
+  }
+}
+
+/* --- RIDE IDENTITY (route hidden here: header owns the route fact) --- */
+.tracking-side app-ride-cards {
+  display: block;
+  min-width: 0;
+
+  .v-route {
+    display: none;
+  }
+}
+
+/* --- ROUTE STOPS (progressive disclosure) --- */
+.timeline-section {
+  min-width: 0;
+
+  .section-title {
+    margin: 0 2px 10px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-main);
+  }
+}
+
+.timeline-card {
+  background-color: var(--bg-white);
+  border: 2px solid var(--primary-navy);
+  border-radius: 20px;
+  padding: 16px;
+  box-shadow: 4px 4px 0 var(--ink);
+}
+
+.stops-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  min-height: 44px;
+  margin-top: 8px;
+  padding: 10px 14px;
+  background: transparent;
+  border: none;
+  border-top: 1px dashed var(--border-color);
+  font-family: var(--font-family);
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--primary-navy);
+  cursor: pointer;
+  ion-icon { font-size: 16px; }
+}
+
+/* --- CONDITIONS STRIP (44px+ target) --- */
+.cond-strip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 48px;
+  background: var(--bg-white);
+  border: 1.5px solid var(--primary-navy);
+  border-radius: 14px;
+  box-shadow: 2px 2px 0 var(--ink);
+  padding: 10px 12px;
+  font-family: var(--font-family);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--primary-navy);
+  cursor: pointer;
+  text-align: left;
+  &:active { transform: scale(0.98); }
+  ion-icon { font-size: 18px; flex-shrink: 0; }
+  span { flex: 1; min-width: 0; }
+  .chev { flex: 0 0 auto; font-size: 14px; color: var(--text-muted); }
+  &.caution { background: var(--pop-yellow); }
+  &.advisory {
+    background: #fee2e2;
+    border-color: var(--accent-red);
+    color: var(--accent-red);
+    .chev { color: var(--accent-red); }
+  }
+}
+
+/* --- ARRIVAL CARD (only place with ref + seat besides ticket) --- */
+.arrival-section {
+  min-width: 0;
+
+  .section-title {
+    margin: 0 2px 10px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-main);
+  }
+}
+
+.arrival-card {
+  background-color: var(--bg-white);
+  background-image: radial-gradient(rgba(21, 29, 72, 0.05) 1px, transparent 1.3px);
+  background-size: 8px 8px;
+  border: 1.5px solid var(--primary-navy);
+  border-radius: 20px;
+  padding: 16px;
+  box-shadow: 2px 2px 0 var(--ink);
+
+  .arrival-hero {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+
+    .arrival-check {
+      font-size: 34px;
+      color: var(--success-green);
+      flex-shrink: 0;
+    }
+
+    h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--primary-navy);
+    }
+    p {
+      margin: 2px 0 0;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+  }
+
+  .arrival-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-bottom: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+  }
+
+  .arrival-review {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border-color);
+    margin-top: 12px;
+
+    .stars {
+      display: inline-flex;
+      gap: 2px;
+      ion-icon {
+        font-size: 18px;
+        color: var(--border-color);
+        &.lit {
+          color: var(--pop-yellow);
+          filter: drop-shadow(0 0 1px var(--primary-navy));
+        }
+      }
+    }
+    .review-note {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--primary-navy);
+    }
+  }
+}
+
+/* --- SINGLE ACTION BAR (thumb zone, one primary per state) --- */
+.action-bar {
+  position: fixed;
+  bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(480px, calc(100% - 24px));
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(12px);
+  border: 1.5px solid var(--primary-navy);
+  border-radius: 20px;
+  padding: 10px;
+  z-index: 1000;
+  box-shadow: 0 12px 32px rgba(6, 10, 40, 0.2);
+
+  .btn-primary {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 52px;
+    background: var(--primary-navy);
+    color: #ffffff;
+    border: 1.5px solid var(--primary-navy);
+    border-radius: 14px;
+    padding: 12px 18px;
+    font-family: var(--font-family);
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 2px 2px 0 var(--ink);
+    ion-icon { font-size: 17px; }
+    &:active { transform: scale(0.97); }
+  }
+
+  /* Von Restorff: Emergency is the ONLY red element in the bar. */
+  .btn-emergency {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 52px;
+    min-width: 44px;
+    padding: 12px 16px;
+    background: #fdecea;
+    color: var(--accent-red);
+    border: 1.5px solid var(--accent-red);
+    border-radius: 14px;
+    font-family: var(--font-family);
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+    flex-shrink: 0;
+    ion-icon { font-size: 17px; }
+    &:active { transform: scale(0.95); }
+  }
+
+  .btn-emergency-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    min-height: 52px;
+    background: #fdecea;
+    color: var(--accent-red);
+    border: 1.5px solid var(--accent-red);
+    border-radius: 14px;
+    cursor: pointer;
+    flex-shrink: 0;
+    ion-icon { font-size: 20px; }
+    &:active { transform: scale(0.92); }
+  }
+}
+
+/* --- VISIBLE FOCUS (never hidden behind the bar: reserve covers it) --- */
+.trip-wrap button:focus-visible,
+.action-bar button:focus-visible,
+.map-shell button:focus-visible {
+  outline: 3px solid var(--primary-navy);
+  outline-offset: 2px;
+}
+
+/* --- TABLET (768+): centered, taller map --- */
+@media (min-width: 768px) {
+  .trip-wrap {
+    max-width: 720px;
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+
+  .map-shell {
+    height: 400px;
+  }
+
+  .ticket-pill .ticket-label {
+    display: inline;
+  }
+}
+
+/* --- DESKTOP (1024+ and tall enough): two panes, ONE page scroll --- */
+@media (min-width: 1024px) and (min-height: 560px) {
+  .trip-wrap {
+    max-width: 1280px;
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+
+  .trip-header {
+    max-width: 1280px;
+  }
+
+  .trip-header h1 {
+    font-size: 17px;
+  }
+
+  .stage-stepper {
+    max-width: 640px;
+  }
+
+  .tracking-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(360px, 430px);
+    gap: 28px;
+    align-items: start;
+  }
+
+  /* Map pane: sticky hero, full height. Details: normal flow (page scrolls). */
+  .tracking-map {
+    position: sticky;
+    top: 16px;
+  }
+
+  .map-shell {
+    height: calc(100dvh - 210px);
+    min-height: 480px;
+  }
+
+  /* Custom zoom on desktop (mobile uses pinch). */
+  .map-zoom {
+    position: absolute;
+    right: 12px;
+    bottom: 68px;
+    z-index: 500;
+    display: flex;
+    flex-direction: column;
+    border: 1.5px solid var(--primary-navy);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--bg-white);
+    box-shadow: 2px 2px 0 var(--ink);
+
+    button {
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: none;
+      color: var(--primary-navy);
+      cursor: pointer;
+      font-size: 20px;
+      &:first-child { border-bottom: 1px solid var(--border-color); }
+      &:active { background: #eef2ff; }
+    }
+  }
+
+  /* Ride cards stay single-column inside the 400px rail. */
+  .tracking-side app-ride-cards .ride-cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* Pinned to the details pane (right column), not full-width. */
+  .action-bar {
+    left: auto;
+    transform: none;
+    right: max(32px, calc((100vw - 1280px) / 2 + 32px));
+    width: min(406px, calc(100vw - 48px));
+  }
+}
+
+/* --- SHORT LANDSCAPE (single scroll, compact hero) --- */
+@media (max-height: 559px) {
+  .map-shell {
+    height: 220px;
+    min-height: 200px;
+  }
+  .trip-wrap {
+    padding-bottom: var(--action-reserve);
+  }
+}
+
+/* --- 320px REFLOW --- */
+@media (max-width: 360px) {
+  .trip-wrap {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+  .action-bar {
+    width: calc(100% - 16px);
+    gap: 8px;
+    padding: 8px;
+  }
+  .trip-header h1 {
+    font-size: 13.5px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .map-skeleton { animation: none; }
+}

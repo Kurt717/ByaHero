@@ -1,0 +1,155 @@
+<!-- compare.page.html — fare comparison for scheduled departures -->
+<ion-content fullscreen class="compare-content">
+  @if (terminal) {
+    <div class="compare-wrap">
+      <!-- HEADER -->
+      <header class="compare-hero" aria-label="Fare comparison header">
+        <div class="hero-fx" aria-hidden="true">
+          <div class="hero-sunburst"></div>
+          <div class="hero-halftone"></div>
+        </div>
+        <div class="hero-top">
+          <button type="button" class="back-btn" (click)="goBack()" aria-label="Back to schedule">
+            <ion-icon name="arrow-back-outline"></ion-icon>
+          </button>
+          <span class="live-sticker">
+            <ion-icon name="swap-horizontal-outline" aria-hidden="true"></ion-icon>
+            COMPARE
+          </span>
+        </div>
+        <p class="hero-eyebrow">COMPARE TRIPS</p>
+        <h1 class="hero-name">{{ routeTitle }}</h1>
+        <p class="hero-loc">{{ travelDate }} · {{ terminal.name }}</p>
+        @if (pairLabel) {
+          <p class="hero-pair" aria-live="polite">{{ pairLabel }} · same pair, every operator</p>
+        }
+      </header>
+
+      <!-- SORT -->
+      @if (options.length > 1) {
+        <div class="sort-row" role="group" aria-label="Sort comparison">
+          @for (opt of sortOptions; track opt.id) {
+            <button
+              type="button"
+              class="sort-chip"
+              [class.active]="sort === opt.id"
+              [attr.aria-pressed]="sort === opt.id"
+              (click)="setSort(opt.id)"
+            >
+              {{ opt.label }}
+            </button>
+          }
+        </div>
+      }
+
+      <!-- OPTIONS -->
+      @if (options.length > 1) {
+        <div class="option-list" role="list" aria-label="Trips to compare">
+          @for (option of options; track option.dep.id) {
+            <article
+              class="option-ticket"
+              role="listitem"
+              [class.soldout]="option.soldOut"
+              [attr.aria-label]="option.dep.time + ' ' + option.dep.operator + ' ' + option.dep.fare + (option.soldOut ? ', sold out' : '')"
+            >
+              <div class="option-fare-band">
+                <p class="fare">{{ formatFare(option.fareValue) }}</p>
+                <p class="fare-sub">base fare / seat</p>
+              </div>
+              <span class="option-perf" aria-hidden="true"></span>
+              <div class="option-main">
+                <p class="option-time">
+                  {{ option.dep.time }}
+                  <span class="arrive">→ {{ option.arrival }} arr.</span>
+                </p>
+                <p class="option-route">
+                  {{ option.dep.from }}
+                  <span class="route-arrow" aria-hidden="true">→</span>
+                  <strong>{{ option.dep.to }}</strong>
+                </p>
+                <div class="fact-grid">
+                  <div class="fact">
+                    <span class="fact-label">Duration</span>
+                    <span class="fact-value">{{ option.dep.duration }}</span>
+                  </div>
+                  <div class="fact">
+                    <span class="fact-label">Operator</span>
+                    <span class="fact-value op">{{ option.dep.operator }}</span>
+                  </div>
+                  <div class="fact">
+                    <span class="fact-label">Seats</span>
+                    <span class="fact-value">{{ option.dep.seats }}</span>
+                  </div>
+                  <div class="fact">
+                    <span class="fact-label">Status</span>
+                    @if (option.soldOut) {
+                      <span class="status-pill gone">Sold out</span>
+                    } @else if (option.dep.status === 'delayed') {
+                      <span class="status-pill delayed">Delayed · reservable</span>
+                    } @else {
+                      <span class="status-pill available">Available</span>
+                    }
+                  </div>
+                </div>
+                @if (option.segmentFare != null) {
+                  <p class="seg-line" aria-live="polite">
+                    Your stretch · ₱{{ option.segmentFare }} · {{ option.segmentSeats }} seat{{ option.segmentSeats === 1 ? '' : 's' }} left
+                  </p>
+                }
+                <button
+                  type="button"
+                  class="select-btn"
+                  [disabled]="option.soldOut"
+                  (click)="select(option)"
+                  [attr.aria-label]="option.soldOut ? 'Sold out' : 'Select ' + option.dep.time + ' trip by ' + option.dep.operator"
+                >
+                  {{ option.soldOut ? 'SOLD OUT' : 'SELECT THIS TRIP' }}
+                  @if (!option.soldOut) {
+                    <ion-icon name="chevron-forward-outline" aria-hidden="true"></ion-icon>
+                  }
+                </button>
+              </div>
+            </article>
+          }
+        </div>
+        <p class="compare-note">
+          Base trip fares before vouchers and passenger discounts — applied at
+          payment. The operator assigns the vehicle and driver.
+        </p>
+      } @else {
+        <div class="empty-state" role="status">
+          <div class="empty-ticket-outline">
+            <ion-icon name="ticket-outline" aria-hidden="true"></ion-icon>
+          </div>
+          <h3>
+            @if (options.length === 1) {
+              1 scheduled trip available
+            } @else {
+              No trips to compare
+            }
+          </h3>
+          <p>
+            @if (options.length === 1) {
+              Only one departure matches this date — view it directly instead
+              of comparing.
+            } @else {
+              No departures match this date. Try another travel date or
+              destination.
+            }
+          </p>
+          @if (options.length === 1 && !options[0].soldOut) {
+            <button type="button" class="empty-cta" (click)="select(options[0])">
+              View trip
+              <ion-icon name="chevron-forward-outline" aria-hidden="true"></ion-icon>
+            </button>
+          } @else {
+            <button type="button" class="empty-cta" (click)="goBack()">
+              Back to schedule
+              <ion-icon name="chevron-forward-outline" aria-hidden="true"></ion-icon>
+            </button>
+          }
+        </div>
+      }
+    </div>
+  }
+</ion-content>

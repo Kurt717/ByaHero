@@ -1,0 +1,1983 @@
+
+:host {
+  /* Color Scheme from Image 2 */
+  --primary-navy: #151d48;
+  --primary-navy-bg: #1a237e;
+  --primary-navy-dark: #0d47a1;
+  --accent-red: #d32f2f;
+  --bg-page: #f8fafc;
+  --bg-white: #ffffff;
+  --text-main: #1f2937;
+  --text-muted: #6b7280;
+
+  --border-color: #e2e8f0;
+  --ink: rgba(21, 29, 72, 0.14);
+  --pop-yellow: #ffe066; /* Flat pop-art highlight, used sparingly on key data */
+  --font-family:
+    "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "SF Pro Display",
+    sans-serif;
+}
+
+ion-content.home-content {
+  --background: var(--bg-page);
+  font-family: var(--font-family);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* --- CLEAN HERO BANNER: deep-navy gradient, no illustrations, no outline --- */
+.hero-banner {
+  position: relative;
+  margin: 0  -16px -1px;
+  padding: calc(env(safe-area-inset-top, 20px) + 20px) 16px 64px;
+  background-image:
+    radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1.3px),
+    linear-gradient(160deg, #060a28 0%, #0f1d6b 100%);
+  background-size:
+    10px 10px,
+    100% 100%;
+  border: none;
+  outline: none;
+  box-shadow: none;
+  border-radius: 0;
+  overflow: hidden;
+
+  /* clean sky: gradient + dot texture only (illustrations removed) */
+
+
+
+
+  /* superhero action backdrop: giant slow-spinning ray burst */
+  .hb-burst {
+    position: absolute;
+    left: 50%;
+    bottom: -200px;
+    z-index: 0;
+    width: 470px;
+    height: 470px;
+    translate: -50% 0;
+    border-radius: 50%;
+    background: repeating-conic-gradient(
+      rgba(255, 255, 255, 0.07) 0 6deg,
+      transparent 6deg 12deg,
+      rgba(211, 47, 47, 0.10) 12deg 15deg,
+      transparent 15deg 21deg
+    );
+    -webkit-mask-image: radial-gradient(closest-side, #000 30%, transparent 72%);
+    mask-image: radial-gradient(closest-side, #000 30%, transparent 72%);
+    pointer-events: none;
+    animation: burstSpin 46s linear infinite;
+  }
+
+  /* Ben-Day dot clusters fading out at the edges */
+  .hb-dots {
+    position: absolute;
+    z-index: 0;
+    width: 110px;
+    height: 70px;
+    pointer-events: none;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.35) 1.4px, transparent 1.7px);
+    background-size: 8px 8px;
+    -webkit-mask-image: radial-gradient(circle at 20% 30%, #000 0%, transparent 72%);
+    mask-image: radial-gradient(circle at 20% 30%, #000 0%, transparent 72%);
+
+    &.d1 {
+      top: 12px;
+      left: -8px;
+    }
+    &.d2 {
+      top: 8px;
+      right: -14px;
+      background-image: radial-gradient(rgba(211, 47, 47, 0.5) 1.4px, transparent 1.7px);
+      -webkit-mask-image: radial-gradient(circle at 80% 25%, #000 0%, transparent 70%);
+      mask-image: radial-gradient(circle at 80% 25%, #000 0%, transparent 70%);
+    }
+  }
+
+  /* full-width speed streaks racing behind the card */
+  .hb-streaks {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 64px;
+    z-index: 0;
+    width: 100%;
+    height: 44px;
+    pointer-events: none;
+
+    line {
+      animation: streakMarch 1.6s linear infinite;
+    }
+    line:nth-child(2) { animation-delay: 0.4s; }
+    line:nth-child(3) { animation-delay: 0.8s; }
+    line:nth-child(4) { animation-delay: 1.1s; }
+  }
+
+  /* caped flyer diving in from the top-right */
+  .hb-hero {
+    position: absolute;
+    top: 54px;
+    right: 5%;
+    z-index: 1;
+    width: 62px;
+    height: auto;
+    overflow: visible;
+    pointer-events: none;
+    animation: heroFly 3.4s ease-in-out infinite;
+  }
+
+  .hb-hero .hero-cape {
+    transform-box: fill-box;
+    transform-origin: right center;
+    animation: capeWave 1.2s ease-in-out infinite;
+  }
+
+  /* action-word starburst pinned above the bus */
+  .hb-boom {
+    position: absolute;
+    right: 118px;
+    bottom: 74px;
+    z-index: 1;
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffe066;
+    clip-path: polygon(
+      50% 0%, 61% 12%, 75% 5%, 79% 20%, 94% 20%, 91% 35%,
+      100% 45%, 90% 55%, 95% 70%, 80% 70%, 76% 86%, 62% 79%,
+      50% 92%, 38% 79%, 24% 86%, 20% 70%, 5% 70%, 10% 55%,
+      0% 45%, 9% 35%, 6% 20%, 21% 20%, 25% 5%, 39% 12%
+    );
+    filter: drop-shadow(2px 2px 0 rgba(6, 10, 40, 0.9));
+    pointer-events: none;
+    animation: boomWiggle 2.6s ease-in-out infinite;
+
+    span {
+      color: #d32f2f;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.02em;
+      transform: rotate(-12deg);
+    }
+  }
+
+  /* small flat hero marks in the top strip */
+  .hb-mark {
+    position: absolute;
+    z-index: 1;
+    pointer-events: none;
+    &.m-bolt {
+      top: 12px;
+      right: 6%;
+      width: 15px;
+    }
+    &.m-star {
+      top: 20px;
+      left: 30%;
+      width: 17px;
+    }
+    &.m-glass {
+      top: 14px;
+      left: 8%;
+      width: 15px;
+    }
+  }
+
+  /* tiny flat sparkles in the top padding strip */
+  .hb-twinkle {
+    position: absolute;
+    z-index: 1;
+    width: 10px;
+    height: 10px;
+    background: var(--pop-yellow);
+    border-radius: 2px;
+    transform: rotate(45deg);
+    pointer-events: none;
+    opacity: 0.85;
+    &.t1 {
+      top: 18px;
+      right: 10%;
+    }
+    &.t2 {
+      top: 24px;
+      left: 32%;
+      width: 7px;
+      height: 7px;
+      background: #ffffff;
+      opacity: 0.6;
+    }
+  }
+
+  /* the hero bus: masked windshield, lightning belt, streaming cape */
+  .hb-bus {
+    position: absolute;
+    right: 14px;
+    bottom: 6px;
+    z-index: 1;
+    width: 140px;
+    height: auto;
+    pointer-events: none;
+    animation: busBob 2.6s ease-in-out infinite;
+  }
+
+  .hb-cape {
+    transform-box: fill-box;
+    transform-origin: right center;
+    animation: capeWave 1.1s ease-in-out infinite;
+  }
+
+  .hb-dust circle { animation: dustPuff 1.4s ease-out infinite; }
+  .hb-dust circle:nth-child(2) { animation-delay: 0.35s; }
+  .hb-dust circle:nth-child(3) { animation-delay: 0.7s; }
+  .hb-speed2 line { animation: speedStreak 0.9s linear infinite; }
+  .hb-speed2 line:nth-child(2) { animation-delay: 0.3s; }
+
+  /* twinkling top-strip sparkles + lively hero marks */
+  .hb-twinkle { animation: twinklePop 2.2s ease-in-out infinite; }
+  .hb-twinkle.t2 { animation-delay: 1.1s; }
+
+  /* hero marks come alive: bolt pulses, star turns, glass shimmers */
+  .hb-mark.m-bolt {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: boltPulse 1.8s ease-in-out infinite;
+  }
+  .hb-mark.m-star {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: starSpin 7s linear infinite;
+  }
+  .hb-mark.m-glass { animation: glassShimmer 3s ease-in-out infinite; }
+
+  /* visor: wave with double red-accent arcs at the banner base.
+     Bleeds 2px past the edge so sub-pixel rounding can never leave a
+     navy hairline where the wave meets the page. */
+  .hb-seam {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -2px;
+    width: 100%;
+    height: 52px;
+    pointer-events: none;
+  }
+
+  .hb-content {
+    position: relative;
+    z-index: 2;
+  }
+}
+
+
+@keyframes burstSpin {
+  to { transform: rotate(360deg); }
+}
+@keyframes streakMarch {
+  0% { opacity: 0; translate: -26px 0; }
+  35% { opacity: 1; }
+  100% { opacity: 0; translate: 26px 0; }
+}
+@keyframes heroFly {
+  0%, 100% { translate: 0 0; rotate: -3deg; }
+  50% { translate: -8px 8px; rotate: 3deg; }
+}
+@keyframes capeWave {
+  0%, 100% { skew: 0deg; scale: 1; }
+  50% { skew: 0deg 6deg; scale: 1.06 0.94; }
+}
+@keyframes boomWiggle {
+  0%, 100% { rotate: -6deg; scale: 1; }
+  50% { rotate: 6deg; scale: 1.1; }
+}
+
+/* --- HERO BANNER SUPERHERO MOTION (card + red arcs untouched) --- */
+@keyframes busBob {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -3px; }
+}
+@keyframes dustPuff {
+  0% { opacity: 0; translate: 6px 0; scale: 0.6; }
+  40% { opacity: 0.9; }
+  100% { opacity: 0; translate: -8px 2px; scale: 1.3; }
+}
+@keyframes speedStreak {
+  0% { opacity: 0; translate: -7px 0; }
+  40% { opacity: 0.8; }
+  100% { opacity: 0; translate: 9px 0; }
+}
+@keyframes twinklePop {
+  0%, 100% { scale: 1; opacity: 0.85; }
+  50% { scale: 0.55; opacity: 0.4; }
+}
+@keyframes boltPulse {
+  0%, 100% { scale: 1; }
+  50% { scale: 1.25; }
+}
+@keyframes starSpin {
+  to { transform: rotate(360deg); }
+}
+@keyframes glassShimmer {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+
+.home-wrap {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0 16px 120px;
+  background: var(--bg-page);
+}
+
+/* --- ENTRANCE KEYFRAMES --- */
+@keyframes revealUp {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+@keyframes revealCard {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes contentFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes navSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes statusPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.55);
+  }
+  70% {
+    box-shadow: 0 0 0 9px rgba(255, 255, 255, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+  }
+}
+
+@keyframes floatMarker {
+  from {
+    transform: translate(-50%, -50%) translateY(0);
+  }
+  to {
+    transform: translate(-50%, -50%) translateY(-6px);
+  }
+}
+
+
+/* --- 1. HERO IDENTITY ROW (inside the comic banner) --- */
+.hero-identity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  .avatar-wrap {
+    position: relative;
+    width: 56px;
+    height: 56px;
+    flex-shrink: 0;
+
+    .avatar-burst {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 92px;
+      height: 92px;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      /* Slow rotation for that dynamic comic-book feel */
+      animation: burstSpin 18s linear infinite;
+    }
+
+    .avatar {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: none;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+      z-index: 2;
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .hero-rank {
+      position: absolute;
+      bottom: -8px;
+      left: -4px;
+      z-index: 3;
+      background-color: var(--pop-yellow);
+      background-image: radial-gradient(
+        rgba(21, 29, 72, 0.12) 1px,
+        transparent 1.2px
+      );
+      background-size: 4px 4px;
+      color: var(--primary-navy);
+      font-size: 9px;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 6px;
+      border: none;
+      transform: rotate(-6deg);
+      box-shadow: 1.5px 1.5px 0 rgba(255, 255, 255, 0.25);
+    }
+
+    &:active .avatar {
+      transform: scale(0.92);
+    }
+  }
+
+  .hero-type {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+    background-color: #ffffff;
+    border: none;
+    border-radius: 14px;
+    padding: 8px 14px 9px;
+    box-shadow: 0 6px 16px rgba(6, 10, 40, 0.35);
+    /* Flat speech-bubble tail pointing at the hero's avatar centre. */
+    &::after {
+      content: "";
+      position: absolute;
+      left: -16px;
+      top: 50%;
+      transform: translateY(-50%);
+      border: 6px solid transparent;
+      border-right-color: #ffffff;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      ion-icon {
+        font-size: 11px;
+        color: var(--accent-red);
+      }
+    }
+
+    .hero-name {
+      margin: 3px 0 2px;
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--primary-navy);
+      letter-spacing: -0.02em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      /* Vintage comic-print misregistration: offset cyan/magenta plates behind the main type */
+      text-shadow:
+        -1.5px 0 0 rgba(0, 200, 255, 0.45),
+        1.5px 0 0 rgba(255, 0, 110, 0.4);
+    }
+
+    .hero-sub {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 600;
+      color: rgba(21, 29, 72, 0.72);
+      max-width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .favorites-btn {
+    background-color: var(--accent-red);
+    background-image: radial-gradient(
+      rgba(255, 255, 255, 0.2) 1px,
+      transparent 1.2px
+    );
+    background-size: 5px 5px;
+    border: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    box-shadow: 3px 3px 0 rgba(255, 255, 255, 0.25);
+    transition:
+      transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1),
+      background-color 0.2s ease;
+
+    &:active {
+      transform: scale(0.88);
+      background-color: #b3261e;
+    }
+
+    ion-icon {
+      font-size: 22px;
+      color: #ffffff;
+    }
+  }
+}
+
+
+/* --- 2. ROUTE SELECTORS --- */
+.route-selectors {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+  margin-bottom: 14px;
+  opacity: 0;
+  animation: revealUp 0.55s 0.08s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+
+  .pill-card {
+    border-radius: 999px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+  }
+
+  .primary-route {
+    position: relative;
+    background: var(--bg-white);
+    border: 1.5px solid var(--primary-navy);
+    box-shadow: 2px 2px 0 var(--ink);
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease;
+
+    &:focus-within {
+      border-color: var(--primary-navy);
+      box-shadow: 2px 2px 0 var(--ink);
+    }
+
+    /* Ticket-stub notches — punched-out circles at the pill's edges */
+    // &::before, &::after {
+    //   content: '';
+    //   position: absolute;
+    //   top: 50%;
+    //   width: 14px; height: 14px;
+    //   background: var(--primary-navy-bg);
+    //   border-radius: 50%;
+    //   transform: translateY(-50%);
+    //   z-index: 1;
+    // }
+    &::before {
+      left: -7px;
+    }
+    &::after {
+      right: -7px;
+    }
+
+    .input-half {
+      flex: 1;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 16px;
+
+      .route-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        transition: transform 0.2s ease;
+      }
+      .origin-dot {
+        border: 3px solid var(--primary-navy);
+        background: transparent;
+      }
+      .dest-dot {
+        background: var(--accent-red);
+        border: 3px solid #fee2e2;
+      }
+
+      input {
+        width: 100%;
+        border: none;
+        background: transparent;
+        font-family: var(--font-family);
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-main);
+        outline: none;
+      }
+
+      /* Grab-style place buttons reuse the pill halves. */
+      &.place-btn {
+        background: transparent;
+        border: none;
+        font-family: var(--font-family);
+        cursor: pointer;
+        min-width: 0;
+        text-align: left;
+
+        .place-text {
+          flex: 1;
+          min-width: 0;
+          font-size: 14px;
+          font-weight: 600;
+          color: var(--text-main);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        &:active {
+          background: rgba(21, 29, 72, 0.05);
+        }
+        &:focus-visible {
+          outline: 2px solid var(--primary-navy);
+          outline-offset: -2px;
+        }
+      }
+
+      &:focus-within .route-dot {
+        transform: scale(1.15);
+      }
+    }
+
+    .separator-icon {
+      color: #9ca3af;
+      align-self: stretch;
+      display: flex;
+      align-items: center;
+      padding: 10px 0;
+      border-left: 1.5px dashed var(--border-color);
+      border-right: 1.5px dashed var(--border-color);
+      ion-icon {
+        font-size: 16px;
+        margin: 0 6px;
+      }
+
+      /* Swap control between pickup and destination. */
+      &.swap-btn {
+        background: transparent;
+        border-top: none;
+        border-bottom: none;
+        font-family: var(--font-family);
+        cursor: pointer;
+        color: var(--primary-navy);
+        ion-icon {
+          font-size: 18px;
+        }
+        &:active {
+          background: rgba(21, 29, 72, 0.05);
+          ion-icon { transform: rotate(180deg); }
+        }
+        ion-icon {
+          transition: transform 0.25s ease;
+        }
+      }
+    }
+  }
+
+  .secondary-info {
+    background-color: var(--accent-red);
+    background-image:
+      radial-gradient(
+        circle at 100% 0%,
+        transparent 0%,
+        transparent 25%,
+        var(--accent-red) 65%
+      ),
+      radial-gradient(rgba(0, 0, 0, 0.14) 1px, transparent 1.3px);
+    background-size:
+      auto,
+      7px 7px;
+    justify-content: space-between;
+    padding: 0 20px 0 16px;
+    cursor: pointer;
+    border: 1.5px solid var(--primary-navy);
+    box-shadow: 2px 2px 0 var(--ink);
+    transition:
+      transform 0.15s cubic-bezier(0.16, 1, 0.3, 1),
+      filter 0.15s ease;
+
+    &:active {
+      transform: scale(0.98);
+      filter: brightness(0.94);
+    }
+
+    .info-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #ffffff;
+      .status-indicator {
+        width: 12px;
+        height: 12px;
+        background: #ffffff;
+        clip-path: polygon(
+          50% 0%,
+          61% 35%,
+          100% 50%,
+          61% 65%,
+          50% 100%,
+          39% 65%,
+          0% 50%,
+          39% 35%
+        );
+        animation: statusPulse 1.8s ease-in-out infinite;
+      }
+      span {
+        font-size: 14px;
+        font-weight: 700;
+      }
+      .trip-pill-main {
+        font-size: 14px;
+        font-weight: 700;
+        line-height: 1.1;
+      }
+      .trip-pill-sub {
+        display: block;
+        font-size: 11px;
+        font-weight: 500;
+        opacity: 0.85;
+        line-height: 1.2;
+      }
+    }
+    .forward-icon {
+      color: #ffffff;
+      font-size: 18px;
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    &:active .forward-icon {
+      transform: translateX(3px);
+    }
+  }
+
+  /* Compact travel-conditions strip — deliberately quieter than the
+     booking pills above it. */
+  .conditions-strip {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    background: var(--bg-white);
+    background-image: radial-gradient(
+      rgba(21, 29, 72, 0.05) 1px,
+      transparent 1.3px
+    );
+    background-size: 7px 7px;
+    border: 1.5px solid var(--primary-navy);
+    border-radius: 18px;
+    box-shadow: 2px 2px 0 var(--ink);
+    padding: 10px 14px;
+    font-family: var(--font-family);
+    text-align: left;
+    cursor: pointer;
+    &:active {
+      transform: scale(0.98);
+    }
+
+    .cond-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      background: var(--primary-navy);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      ion-icon {
+        font-size: 18px;
+        color: #ffffff;
+      }
+    }
+
+    .cond-text {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      .cond-top {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        strong {
+          font-size: 12.5px;
+          font-weight: 800;
+          color: var(--primary-navy);
+          text-transform: uppercase;
+          letter-spacing: 0.6px;
+        }
+      }
+      .cond-sub {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text-muted);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+
+    .forward-icon {
+      color: var(--text-muted);
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+  }
+
+  /* Reminder card sits in the same stack — host pages gate it. */
+  .home-reminder {
+    display: block;
+  }
+}
+
+/* Segment fare preview for the chosen pair (outside the grid). */
+.pair-preview {
+  margin: 0 0 12px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--primary-navy);
+  background: #eef2ff;
+  border: 1.5px solid var(--primary-navy);
+  border-radius: 12px;
+  box-shadow: 2px 2px 0 var(--ink);
+  padding: 9px 14px;
+  line-height: 1.5;
+}
+
+/* --- 3. CATEGORIES --- */
+/* --- 3+4. STICKY CONTROL BAR (categories + view toggle + sort filters) ---
+   Pins to the top of the screen while the trip list / map scrolls below. */
+.sticky-controls {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  margin: 0 -16px;
+  padding: calc(env(safe-area-inset-top, 0px) + 8px) 16px 8px;
+  background: var(--bg-page);
+  border-bottom: none;
+  box-shadow: none;
+
+  .view-toggle-wrapper { margin-bottom: 0; }
+}
+
+.categories-grid {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  opacity: 0;
+  animation: revealUp 0.55s 0.16s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+
+  .cat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+
+    .squircle {
+      width: 60px;
+      height: 60px;
+      background: var(--bg-white);
+      border: 1.5px solid var(--ink);
+      border-radius: 16px; /* Even round corners */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary-navy);
+      transition:
+        background-color 0.25s ease,
+        border-color 0.25s ease,
+        color 0.25s ease,
+        transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+      ion-icon {
+        font-size: 24px;
+        transition: transform 0.2s ease;
+      }
+    }
+
+    .cat-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      transition: color 0.25s ease;
+    }
+
+    &:active .squircle {
+      transform: scale(0.9);
+    }
+
+    &.active {
+      .squircle {
+        background-color: var(--primary-navy);
+        background-image:
+          radial-gradient(
+            circle at 100% 100%,
+            transparent 0%,
+            transparent 25%,
+            var(--primary-navy) 60%
+          ),
+          radial-gradient(rgba(255, 255, 255, 0.18) 1px, transparent 1.3px);
+        background-size:
+          auto,
+          6px 6px;
+        border-color: var(--primary-navy);
+        color: #ffffff;
+        box-shadow: 2px 2px 0 rgba(211, 47, 47, 0.45);
+      }
+      .cat-label {
+        color: var(--primary-navy);
+        font-weight: 700;
+      }
+    }
+  }
+}
+
+/* --- 4. VIEW TOGGLE & FILTERS --- */
+.view-toggle-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 0;
+  opacity: 0;
+  animation: revealUp 0.55s 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+
+  .segmented-control {
+    display: flex;
+    background: #e2e8f0;
+    border: 1.5px solid var(--ink);
+    border-radius: 999px;
+    padding: 4px;
+    height: 52px;
+
+    .seg-btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: transparent;
+      border: none;
+      border-radius: 999px;
+      font-family: var(--font-family);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition:
+        background-color 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+        color 0.3s ease,
+        transform 0.15s ease;
+
+      ion-icon {
+        font-size: 18px;
+      }
+
+      &:active {
+        transform: scale(0.96);
+      }
+
+      &.active {
+        background: var(--primary-navy);
+        color: #ffffff;
+        box-shadow: none;
+      }
+    }
+  }
+
+  .filter-row {
+    display: flex;
+    gap: 8px;
+    .filter-pill {
+      font-size: 13px;
+      font-weight: 600;
+      padding: 8px 16px;
+      border-radius: 999px;
+      background: var(--bg-white);
+      color: var(--text-main);
+      border: 1.5px solid var(--ink);
+      cursor: pointer;
+      transition:
+        background-color 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+
+      &:active {
+        transform: scale(0.94);
+      }
+
+      &.active {
+        background: var(--primary-navy);
+        color: #ffffff;
+        border-color: var(--primary-navy);
+        box-shadow: none;
+      }
+    }
+  }
+}
+
+/* --- 5A. LIST VIEW --- */
+.list-viewport {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  /* clears the sticky control bar so the first card is never tucked under it */
+  margin-top: 8px;
+
+  .trip-card {
+    position: relative;
+    background-color: var(--bg-white);
+    background-image:
+      radial-gradient(
+        circle at 100% 100%,
+        transparent 0%,
+        transparent 30%,
+        var(--bg-white) 72%
+      ),
+      radial-gradient(rgba(21, 29, 72, 0.09) 1px, transparent 1.3px);
+    background-size:
+      auto,
+      8px 8px;
+    background-repeat: no-repeat, repeat;
+    border-radius: 24px; /* Uniform card rounding */
+    border: 1.5px solid var(--primary-navy);
+    box-shadow: 0 10px 30px rgba(6, 10, 40, 0.08);
+    padding: 16px;
+    opacity: 0;
+    animation: revealCard 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    transition:
+      transform 0.15s cubic-bezier(0.16, 1, 0.3, 1),
+      border-color 0.2s ease,
+      box-shadow 0.2s ease;
+
+    /* Ticket-stub notches, matching the route-selector pill above */
+    &::before,
+    &::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      width: 16px;
+      height: 16px;
+      background: var(--bg-page);
+      border-radius: 50%;
+      transform: translateY(-50%);
+      z-index: 1;
+    }
+    &::before {
+      left: -8px;
+    }
+    &::after {
+      right: -8px;
+    }
+
+    &:active {
+      transform: scale(0.985);
+      border-color: var(--primary-navy);
+    }
+
+    .fastest-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--accent-red);
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px 4px 8px;
+      border-radius: 999px;
+      margin-bottom: 12px;
+      transform: rotate(-3deg);
+      ion-icon {
+        font-size: 12px;
+      }
+    }
+
+    &:nth-child(1) {
+      animation-delay: 0.3s;
+    }
+    &:nth-child(2) {
+      animation-delay: 0.37s;
+    }
+    &:nth-child(3) {
+      animation-delay: 0.44s;
+    }
+    &:nth-child(4) {
+      animation-delay: 0.51s;
+    }
+    &:nth-child(n + 5) {
+      animation-delay: 0.58s;
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 14px;
+
+      .operator-info {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        flex: 1;
+        min-width: 0;
+        .op-logo {
+          width: 44px;
+          height: 44px;
+          border-radius: 12px;
+          background: #eef2ff;
+          color: var(--primary-navy);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+          ion-icon {
+            font-size: 22px;
+          }
+        }
+        .op-text {
+          flex: 1;
+          min-width: 0;
+          h4 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary-navy);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+          p {
+            margin: 4px 0 0;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-muted);
+          }
+          .live-line {
+            font-weight: 800;
+            color: var(--primary-navy);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+          .live-sub {
+            margin-top: 2px;
+            font-size: 11px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+      }
+      .fare {
+        display: inline-block;
+        font-size: 16px;
+        font-weight: 800;
+        color: var(--primary-navy);
+        background: var(--pop-yellow);
+        white-space: nowrap;
+        padding: 3px 9px;
+        border-radius: 6px;
+        transform: rotate(-2deg);
+      }
+      .card-top-right {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 8px;
+        flex-shrink: 0;
+        .fav-btn {
+          width: 34px;
+          height: 34px;
+          border-radius: 50%;
+          border: none;
+          background: #eef2ff;
+          color: var(--primary-navy);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition:
+            transform 0.15s ease,
+            background 0.15s ease,
+            color 0.15s ease;
+          ion-icon {
+            font-size: 18px;
+          }
+          &:active {
+            transform: scale(0.88);
+          }
+          &.saved {
+            background: var(--accent-red);
+            color: #ffffff;
+          }
+        }
+      }
+    }
+
+    .card-middle {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 14px;
+      padding-left: 8px;
+
+      .route-line-vertical {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        .dot {
+          width: 12px;
+          height: 12px;
+          border-radius: 50%;
+        }
+        .origin {
+          border: 3px solid var(--primary-navy);
+          background: #fff;
+        }
+        .dest {
+          background: var(--accent-red);
+        }
+        .line {
+          width: 2px;
+          height: 32px;
+          background: #e2e8f0;
+          margin: 4px 0;
+        }
+      }
+      .route-text {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        p {
+          margin: 0;
+          font-size: 15px;
+          color: var(--primary-navy);
+        }
+        .dest-text {
+          margin-top: auto;
+        }
+      }
+    }
+
+    .seg-line {
+      margin: 0 0 12px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--primary-navy);
+      background: #eef2ff;
+      border-radius: 10px;
+      padding: 8px 10px;
+      line-height: 1.5;
+    }
+
+    .card-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 12px;
+      border-top: 1px dashed var(--border-color);
+
+      .seats {
+        font-size: 13px;
+        font-weight: 700;
+        color: #059669;
+        background: #d1fae5;
+        padding: 8px 16px;
+        border-radius: 8px;
+      }
+      .book-btn {
+        background: var(--bg-white);
+        color: var(--primary-navy);
+        border: 1.5px solid var(--primary-navy);
+        border-radius: 12px;
+        padding: 11px 26px;
+        font-family: var(--font-family);
+        font-weight: 700;
+        font-size: 13px;
+        cursor: pointer;
+        box-shadow: 2px 2px 0 var(--ink);
+        transition:
+          transform 0.15s cubic-bezier(0.16, 1, 0.3, 1),
+          background-color 0.2s ease;
+
+        &:active {
+          transform: scale(0.93);
+          background-color: var(--bg-page);
+          box-shadow: 1px 1px 0 var(--ink);
+        }
+      }
+    }
+  }
+}
+
+/* --- 5B. MAP VIEW (real Leaflet map) --- */
+.map-viewport {
+  margin-top: 8px;
+  /* marker taps must register instantly — no double-tap zoom delay on the map shell */
+  touch-action: manipulation;
+  opacity: 0;
+  animation: contentFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.map-shell {
+  position: relative;
+  height: calc(100vh - 460px);
+  min-height: 350px;
+  border-radius: 24px;
+  border: 1.5px solid var(--primary-navy);
+  box-shadow: 0 10px 30px rgba(6, 10, 40, 0.08);
+  overflow: hidden;
+}
+
+.map-host {
+  position: relative;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  background: #e2e8f0;
+}
+
+.map-error {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  z-index: 900;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: #d32f2f;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  box-shadow: 0 8px 24px rgba(211, 47, 47, 0.35);
+}
+
+.map-legend {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(4px);
+  border: 1.5px solid var(--primary-navy);
+  border-radius: 999px;
+  padding: 6px 12px;
+  box-shadow: 2px 2px 0 var(--ink);
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--text-main);
+
+  .legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 3px;
+
+    &.navy {
+      background: var(--primary-navy);
+    }
+    &.red {
+      background: var(--accent-red);
+      margin-left: 10px;
+    }
+  }
+}
+
+.map-zoom {
+  position: absolute;
+  right: 16px;
+  bottom: 76px;
+  z-index: 800;
+  display: flex;
+  flex-direction: column;
+  border: 1.5px solid var(--primary-navy);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--bg-white);
+  box-shadow: 2px 2px 0 var(--ink);
+
+  button {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    color: var(--text-main);
+    cursor: pointer;
+    ion-icon {
+      font-size: 20px;
+    }
+    &:first-child {
+      border-bottom: 1.5px solid var(--border-color);
+    }
+    &:active {
+      background: #eef2ff;
+    }
+    &:focus-visible {
+      outline: 2px solid var(--primary-navy);
+      outline-offset: -2px;
+    }
+  }
+}
+
+/* Safety: Leaflet's built-in top-left zoom must never render —
+   the custom bottom-right +/- group is the only zoom UI. */
+.map-shell .leaflet-control-zoom {
+  display: none;
+}
+
+.fab-locate {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  z-index: 800;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: var(--bg-white);
+  border: 1.5px solid var(--primary-navy);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-main);
+  cursor: pointer;
+  box-shadow: 2px 2px 0 var(--ink);
+  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+  ion-icon {
+    font-size: 22px;
+  }
+
+  &:active {
+    transform: scale(0.88);
+    box-shadow: 1px 1px 0 var(--ink);
+  }
+  &.loading ion-icon {
+    animation: locateSpin 0.9s linear infinite;
+  }
+}
+
+@keyframes locateSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.locate-toast {
+  position: absolute;
+  bottom: 72px;
+  right: 16px;
+  z-index: 800;
+  background: var(--primary-navy);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 8px 12px;
+  border-radius: 10px;
+  max-width: 180px;
+  text-align: right;
+}
+
+/* --- 5B-i. MAP MARKER INFO CARD (removed — marker taps open the hail bubble directly) --- */
+
+/* --- 6. FLOATING BOTTOM NAVIGATION --- */
+.floating-nav-container {
+  position: fixed;
+  bottom: 24px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  animation: navSlideUp 0.6s 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.glass-nav {
+  display: flex;
+  align-items: center;
+  background: var(--bg-white);
+  border: 1.5px solid var(--primary-navy);
+  padding: 8px 24px;
+  border-radius: 999px;
+  gap: 20px;
+  box-shadow: 2px 2px 0 var(--ink);
+
+  .nav-item {
+    background: transparent;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #9ca3af;
+    cursor: pointer;
+    transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    &:active {
+      transform: scale(0.85);
+    }
+
+    .icon-bg {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition:
+        background-color 0.3s ease,
+        color 0.3s ease,
+        transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      ion-icon {
+        font-size: 24px;
+      }
+    }
+
+    &.active {
+      .icon-bg {
+        background: var(--primary-navy);
+        color: #ffffff;
+        transform: translateY(-2px);
+      }
+    }
+
+    &.center-fab {
+      .fab-inner {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: var(--accent-red);
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: -32px; /* Protrudes outside the pill */
+        border: 4px solid var(--bg-page);
+        transition:
+          transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+          box-shadow 0.2s ease;
+        ion-icon {
+          font-size: 24px;
+        }
+      }
+
+      &:active .fab-inner {
+        transform: scale(0.88);
+      }
+    }
+  }
+}
+
+/* --- 6. HAIL (flag down a bus / PUV) --- */
+.card-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Live-bus cards offer hailing only — reserving a moving bus is not a
+   thing, so the single CTA stretches full width. */
+.card-actions.hail-only .hail-btn {
+  flex: 1;
+  justify-content: center;
+}
+
+.card-bottom {
+  gap: 8px;
+
+  .seats {
+    white-space: nowrap;
+  }
+}
+
+/* Hail is Byahero's primary action — bold red CTA, rendered first in the
+   card, more visually dominant than booking. */
+.hail-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: var(--accent-red);
+  background-image: radial-gradient(
+    rgba(255, 255, 255, 0.14) 1px,
+    transparent 1.3px
+  );
+  background-size: 6px 6px;
+  color: #ffffff;
+  border: 1.5px solid var(--accent-red);
+  border-radius: 12px;
+  padding: 11px 18px;
+  font-family: var(--font-family);
+  font-weight: 800;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 var(--ink);
+  transition:
+    transform 0.15s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 0.2s ease,
+    opacity 0.2s ease;
+
+  ion-icon {
+    font-size: 17px;
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.93);
+    filter: brightness(0.9);
+    box-shadow: 1px 1px 0 var(--ink);
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+}
+
+.hail-sheet {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: calc(108px + env(safe-area-inset-bottom));
+  z-index: 900;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--bg-white);
+  border: 1.5px solid var(--primary-navy);
+  border-radius: 20px;
+  box-shadow: 2px 2px 0 var(--ink);
+  opacity: 0;
+  animation: revealCard 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+
+  .hail-sheet-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: #fef2f2;
+    color: var(--accent-red);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    ion-icon {
+      font-size: 18px;
+    }
+  }
+
+  .hail-sheet-text {
+    flex: 1;
+    min-width: 0;
+
+    h4 {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--primary-navy);
+    }
+
+    p {
+      margin: 2px 0 0;
+      font-size: 11px;
+      font-weight: 500;
+      line-height: 1.4;
+      color: var(--text-muted);
+    }
+
+    .hail-pickup-line {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 6px;
+      font-weight: 700;
+      color: var(--primary-navy);
+      ion-icon {
+        font-size: 13px;
+        flex-shrink: 0;
+      }
+      span {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+
+    .hail-zone {
+      font-weight: 700;
+      color: var(--accent-red);
+    }
+
+    .hail-sheet-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 6px;
+      .hail-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: transparent;
+        border: none;
+        padding: 6px 0;
+        min-height: 32px;
+        font-family: var(--font-family);
+        font-size: 12px;
+        font-weight: 800;
+        color: var(--primary-navy);
+        text-decoration: underline;
+        text-underline-offset: 3px;
+        cursor: pointer;
+        ion-icon {
+          font-size: 14px;
+        }
+
+        &.primary {
+          background-color: var(--primary-navy);
+          color: #ffffff;
+          text-decoration: none;
+          border: 1.5px solid var(--primary-navy);
+          border-radius: 999px;
+          padding: 8px 14px;
+          min-height: 36px;
+          box-shadow: 2px 2px 0 var(--ink);
+          &:active {
+            transform: scale(0.95);
+          }
+        }
+      }
+    }
+
+    /* Temporary diagnostic build tag — proves which bundle is running. */
+    .hail-build-tag {
+      margin: 8px 0 0;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-muted);
+      opacity: 0.7;
+    }
+  }
+
+  .hail-cancel {
+    background: var(--bg-page);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 8px 12px;
+    font-family: var(--font-family);
+    font-weight: 700;
+    font-size: 12px;
+    cursor: pointer;
+    flex-shrink: 0;
+
+    &:active {
+      transform: scale(0.94);
+    }
+  }
+}
+
+/* --- DESKTOP: MAX-WIDTH CONTAINER + UNIFIED TOOLBAR (1140px) --- */
+.home-toolbar {
+  display: contents;
+}
+
+/* Constrain page gutters on large screens; mobile stays full-bleed */
+@media (min-width: 992px) {
+  .hero-banner {
+    margin: 0;
+    padding: calc(env(safe-area-inset-top, 20px) + 16px) 24px 0;
+    min-height: 160px;
+    max-height: 210px;
+    overflow: hidden;
+
+    .hb-content {
+      max-width: 1140px;
+      margin: 0 auto;
+    }
+
+    /* Close the gap: pull bus + ZOOM burst toward the text block */
+    .hb-bus {
+      right: calc(50% - 540px + 24px);
+      bottom: 52px;
+      width: 150px;
+    }
+    .hb-boom {
+      right: calc(50% - 540px + 180px);
+      bottom: 110px;
+    }
+    .hb-hero {
+      right: calc(50% - 540px + 90px);
+      top: 40px;
+    }
+    .hb-streaks {
+      bottom: 56px;
+    }
+  }
+
+  .home-wrap {
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 16px 24px 120px;
+  }
+
+  /* SEARCH & ROUTE BAR: unified grid 2fr 1fr 1fr */
+  .route-selectors {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 12px;
+    align-items: stretch;
+    margin-top: 16px;
+
+    .pill-card {
+      height: auto;
+      min-height: 60px;
+    }
+
+    .conditions-strip {
+      border-radius: 999px;
+      min-height: 60px;
+    }
+
+    .home-reminder {
+      grid-column: 1 / -1;
+    }
+  }
+
+  /* UNIFIED TOOLBAR: modes left, view+sort right in one row */
+  .home-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin: 16px 0 14px;
+  }
+
+  .categories-grid {
+    margin-bottom: 0;
+    gap: 12px;
+    justify-content: flex-start;
+    flex-shrink: 0;
+  }
+
+  .sticky-controls {
+    position: static;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .view-toggle-wrapper {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+
+    .segmented-control {
+      height: 44px;
+      min-width: 280px;
+      flex-shrink: 0;
+    }
+
+    .filter-row {
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+  }
+
+  .list-viewport {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 16px;
+  }
+
+  .map-viewport .map-shell {
+    height: calc(100vh - 320px);
+    min-height: 480px;
+  }
+}
+
+/* Tablet: 2-col route bar, toolbar wraps */
+@media (min-width: 768px) and (max-width: 991px) {
+  .home-wrap {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  .hero-banner .hb-content {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  .route-selectors {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 10px;
+  }
+  .home-toolbar {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .sticky-controls {
+    margin: 0;
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+/* --- ACCESSIBILITY --- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

@@ -1,0 +1,60 @@
+/* =====================================================================
+   BYAHERO shared component classes (bh- namespace).
+   Opt-in only: pages keep their existing class names; new markup can
+   reuse these instead of copying page CSS. No page was rewritten to
+   force-adopt them, so current visuals are unchanged.
+   ===================================================================== */
+
+.bh-sticky-controls {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: var(--bg-page, var(--bh-bg));
+  margin: 0 -16px 12px;
+  padding: 8px 16px 12px;
+}
+
+.bh-sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: var(--bg-page, var(--bh-bg));
+  margin: 0 -16px 12px;
+  padding: 8px 16px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px 12px;
+  flex-wrap: wrap;
+}
+
+.bh-segmented {
+  display: flex;
+  background: #eef1f6;
+  border-radius: 999px;
+  padding: 4px;
+  margin-bottom: 0;
+}
+
+.bh-card {
+  background: var(--bg-white, var(--bh-white));
+  border: 1.5px solid var(--ink, var(--bh-ink));
+  border-radius: 18px;
+  box-shadow: 2px 2px 0 var(--ink, var(--bh-ink));
+}
+
+.bh-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 48px 24px;
+}
+
+.bh-list-end-note {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted, var(--bh-muted));
+  margin: 28px 0 0;
+  opacity: 0.6;
+}

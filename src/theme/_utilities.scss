@@ -1,0 +1,20 @@
+/* =====================================================================
+   BYAHERO utilities — tiny, non-visual-behavior helpers only.
+   No page was converted to these; they exist so future markup stops
+   copying ad-hoc rules. Visual utilities (colors, radii) intentionally
+   live as --bh-* tokens instead of classes to avoid Ionic conflicts.
+   ===================================================================== */
+
+.bh-min-zero {
+  min-width: 0;
+}
+
+.bh-ellipsis {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.bh-nowrap {
+  white-space: nowrap;
+}

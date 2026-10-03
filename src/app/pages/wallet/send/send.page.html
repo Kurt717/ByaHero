@@ -1,0 +1,94 @@
+<ion-content fullscreen class="w-content">
+  <div class="w-shell">
+
+    <header class="w-app">
+      <button type="button" class="w-back" (click)="goBack()" aria-label="Go back">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </button>
+      <h1 class="w-title">Send Money</h1>
+      <span class="w-spacer"></span>
+    </header>
+
+    <p class="bal-note">Available balance: ₱ {{ balanceLabel }}</p>
+
+    <!-- RECIPIENT -->
+    <section class="step-label">TO</section>
+
+    <div class="search-box">
+      <ion-icon name="search-outline" class="s-icon"></ion-icon>
+      <input
+        class="s-input"
+        type="text"
+        placeholder="Name or phone number"
+        [(ngModel)]="query"
+      />
+      @if (query) {
+        <button type="button" class="s-clear" (click)="query = ''" aria-label="Clear search">
+          <ion-icon name="close-circle-outline"></ion-icon>
+        </button>
+      }
+    </div>
+
+    <div class="rc-list" role="listbox" aria-label="Choose a recipient">
+      @for (c of searched; track c.name) {
+        <button
+          type="button"
+          role="option"
+          class="rc-item"
+          [class.on]="recipient?.name === c.name"
+          (click)="select(c)"
+        >
+          <span class="rc-avatar">{{ imageFor(c) }}</span>
+          <span class="rc-body">
+            <span class="rc-name">{{ c.name }}</span>
+            <span class="rc-sub">{{ c.sub }}</span>
+          </span>
+          @if (recipient?.name === c.name) {
+            <span class="rc-check">✓</span>
+          }
+        </button>
+      }
+    </div>
+
+    <!-- AMOUNT -->
+    <section class="step-label">AMOUNT</section>
+
+    <div class="amount-field">
+      <span class="af-peso">₱</span>
+      <input
+        class="af-input"
+        type="number"
+        inputmode="decimal"
+        min="1"
+        step="0.01"
+        placeholder="0.00"
+        [(ngModel)]="amount"
+        (ngModelChange)="onAmountChange($event)"
+        aria-label="Amount to send"
+      />
+    </div>
+
+    <!-- NOTE -->
+    <section class="step-label">NOTE <span class="opt">(OPTIONAL)</span></section>
+
+    <textarea
+      class="note-input"
+      rows="2"
+      maxlength="200"
+      placeholder="What's this for? e.g. Fare share to Vigan"
+      [(ngModel)]="note"
+    ></textarea>
+
+    <!-- REVIEW -->
+    <button
+      type="button"
+      class="w-cta"
+      [disabled]="!canReview"
+      (click)="reviewTransfer()"
+    >
+      Review Transfer
+      <ion-icon name="chevron-forward-outline"></ion-icon>
+    </button>
+
+  </div>
+</ion-content>

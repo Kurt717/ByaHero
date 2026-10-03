@@ -1,0 +1,87 @@
+<!-- trip-reminder-card: boarding-notice callout. Stage card when a reminder
+     is due, quiet countdown when it isn't, muted row when switched off. -->
+@if (view; as v) {
+  @if (v.kind === 'due') {
+  <section
+    class="reminder-card due"
+    [class.compact]="compact"
+    [attr.aria-label]="'Trip reminder: ' + (copy()?.title ?? '') + ', ' + v.due.booking.from + ' to ' + v.due.booking.to"
+  >
+    <span class="kicker" aria-hidden="true">
+      <ion-icon name="alarm-outline"></ion-icon>
+      TRIP REMINDER
+    </span>
+    <div class="route-line" aria-hidden="true">
+      <span class="rnode origin"></span>
+      <span class="rdash"></span>
+      <ion-icon name="ticket-outline" class="rbus"></ion-icon>
+      <span class="rdash"></span>
+      <span class="rnode dest"></span>
+    </div>
+    <h3>{{ copy()?.title }}</h3>
+    <p class="trip">{{ v.due.booking.from }} → {{ v.due.booking.to }}</p>
+    <p class="meta">
+      <span><ion-icon name="calendar-outline" aria-hidden="true"></ion-icon>{{ v.due.booking.date }}</span>
+      <span><ion-icon name="time-outline" aria-hidden="true"></ion-icon>{{ v.due.booking.time }} · {{ countdown() }}</span>
+    </p>
+    <p class="body">{{ copy()?.body }}</p>
+    <div class="actions">
+      <button type="button" class="primary-btn" (click)="primaryAction()">
+        {{ copy()?.ctaLabel }}
+        <ion-icon name="chevron-forward-outline" aria-hidden="true"></ion-icon>
+      </button>
+      <button type="button" class="ghost-btn" (click)="openTicket()">
+        View Trip
+      </button>
+      <button
+        type="button"
+        class="icon-btn"
+        (click)="dismiss($event)"
+        [attr.aria-label]="'Dismiss reminder for ' + v.due.booking.bookingRef"
+      >
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+  </section>
+  } @else if (v.kind === 'next') {
+  <div class="reminder-card next" [class.compact]="compact">
+    <button
+      type="button"
+      class="next-main"
+      (click)="openTicket(v.booking.bookingRef)"
+      [attr.aria-label]="'Next trip ' + v.booking.from + ' to ' + v.booking.to + ', ' + countdown() + '. Open ticket.'"
+    >
+      <span class="next-icon" aria-hidden="true">
+        <ion-icon name="checkmark-circle-outline"></ion-icon>
+      </span>
+      <span class="next-text">
+        <strong>{{ v.booking.from }} → {{ v.booking.to }}</strong>
+        <small>{{ v.booking.date }} · {{ v.booking.time }} · {{ countdown() }}</small>
+      </span>
+      <ion-icon name="chevron-forward-outline" class="next-chev" aria-hidden="true"></ion-icon>
+    </button>
+    <button
+      type="button"
+      class="bell-toggle"
+      (click)="toggle($event)"
+      aria-label="Mute trip reminders for this trip"
+      aria-pressed="true"
+    >
+      <ion-icon name="alarm-outline" aria-hidden="true"></ion-icon>
+    </button>
+  </div>
+  } @else {
+  <div class="reminder-card muted" [class.compact]="compact">
+    <span class="next-icon" aria-hidden="true">
+      <ion-icon name="notifications-off-outline"></ion-icon>
+    </span>
+    <span class="next-text">
+      <strong>Reminders off for this trip</strong>
+      <small>Booking data is untouched</small>
+    </span>
+    <button type="button" class="ghost-btn" (click)="toggle($event)">
+      Remind Me
+    </button>
+  </div>
+  }
+}

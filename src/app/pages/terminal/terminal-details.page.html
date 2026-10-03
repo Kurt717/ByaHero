@@ -1,0 +1,298 @@
+<!-- terminal-details.page.html — Digital terminal: hero → departures → routes → info -->
+<ion-content fullscreen class="terminal-content">
+  @if (terminal) {
+    <div class="terminal-wrap">
+      <!-- HERO / IDENTITY -->
+      <header class="terminal-hero" aria-label="Terminal identity">
+        <div class="hero-fx" aria-hidden="true">
+          <div class="hero-sunburst"></div>
+          <div class="hero-halftone"></div>
+        </div>
+        <div class="hero-top">
+          <button class="back-btn" (click)="goBack()" aria-label="Go back to search">
+            <ion-icon name="arrow-back-outline"></ion-icon>
+          </button>
+          @if (routes.length) {
+            <span class="live-sticker">
+              <span class="live-dot" aria-hidden="true"></span>
+              LIVE BOARD
+            </span>
+          } @else {
+            <span class="live-sticker neutral">NO BOARD YET</span>
+          }
+        </div>
+        <p class="hero-eyebrow">TERMINAL</p>
+        <h1 class="hero-name">{{ terminal.name }}</h1>
+        <p class="hero-loc">{{ terminal.city }}</p>
+        <p class="hero-hours">
+          <ion-icon name="time-outline" aria-hidden="true"></ion-icon>
+          <span>{{ terminal.hours }} · {{ terminal.distance }} away</span>
+        </p>
+        <div class="hero-actions">
+          <button type="button" class="directions-btn" (click)="viewOnMap()" aria-label="Get directions to terminal on map">
+            <ion-icon name="navigate-outline" aria-hidden="true"></ion-icon>
+            GET DIRECTIONS
+          </button>
+          @if (routes.length) {
+            <button type="button" class="schedule-btn" (click)="openFullSchedule()" aria-label="Browse full schedule">
+              FULL SCHEDULE
+              <ion-icon name="arrow-forward-outline" aria-hidden="true"></ion-icon>
+            </button>
+          }
+        </div>
+      </header>
+
+      <!-- QUICK TERMINAL INFORMATION -->
+      <section class="quick-strip" aria-label="Quick terminal information">
+        <div class="quick-item">
+          <span class="quick-num">{{ routes.length }}</span>
+          <span class="quick-label">Route{{ routes.length === 1 ? '' : 's' }}</span>
+        </div>
+        <span class="quick-div" aria-hidden="true"></span>
+        <div class="quick-item">
+          <span class="quick-num">{{ operators.length }}</span>
+          <span class="quick-label">Operator{{ operators.length === 1 ? '' : 's' }}</span>
+        </div>
+        <span class="quick-div" aria-hidden="true"></span>
+        <div class="quick-item">
+          <span class="quick-num">{{ departuresCount }}</span>
+          <span class="quick-label">Daily trips</span>
+        </div>
+        <span class="quick-div" aria-hidden="true"></span>
+        <div class="quick-item">
+          <span class="quick-num">{{ terminal.facilities.length }}</span>
+          <span class="quick-label">Facilities</span>
+        </div>
+      </section>
+
+      <!-- DATE SELECTOR (drives upcoming departures + inline schedules) -->
+      @if (routes.length) {
+        <section class="section date-section" aria-label="Select travel date">
+          <div class="section-head">
+            <h2><ion-icon name="calendar-outline" aria-hidden="true"></ion-icon> TRAVEL DATE</h2>
+            <span class="section-hint">{{ selectedDate }}</span>
+          </div>
+          <div class="day-scroll" role="group" aria-label="Travel dates">
+            @for (d of days; track d.iso) {
+              <button
+                type="button"
+                class="day-pill"
+                [class.active]="selectedDate === d.iso"
+                (click)="setDay(d.iso)"
+                [attr.aria-pressed]="selectedDate === d.iso"
+                [attr.aria-label]="'Departures for ' + d.iso"
+              >
+                <span class="dow">{{ d.dow }}</span>
+                <span class="day">{{ d.day }}</span>
+              </button>
+            }
+          </div>
+        </section>
+
+        <!-- UPCOMING DEPARTURES -->
+        <section class="section" aria-label="Upcoming departures">
+          <div class="section-head">
+            <h2><span class="board-dot" aria-hidden="true"></span> UPCOMING DEPARTURES</h2>
+            <button type="button" class="head-link" (click)="openFullSchedule()" aria-label="View all departures">
+              View all
+              <ion-icon name="chevron-forward-outline" aria-hidden="true"></ion-icon>
+            </button>
+          </div>
+          @if (canCompare) {
+            <button type="button" class="compare-cta" (click)="openCompare()" aria-label="Compare fares for these departures">
+              <ion-icon name="swap-horizontal-outline" aria-hidden="true"></ion-icon>
+              COMPARE FARES
+              <ion-icon name="chevron-forward-outline" aria-hidden="true"></ion-icon>
+            </button>
+          }
+          @if (upcomingDepartures.length) {
+            <div class="ticket-list">
+              @for (dep of upcomingDepartures; track dep.id) {
+                <article class="ticket">
+                  <div class="ticket-main">
+                    <p class="ticket-time">{{ dep.time }}</p>
+                    <p class="ticket-route">
+                      {{ dep.from }}
+                      <span class="ticket-arrow" aria-hidden="true">→</span>
+                      <strong>{{ dep.to }}</strong>
+                    </p>
+                    <p class="ticket-meta">
+                      <span class="op-badge">{{ dep.operator }}</span>
+                      <span class="fare">{{ dep.fare }}</span>
+                      @if (dep.status === 'delayed') {
+                        <span class="status-pill delayed">Delayed</span>
+                      } @else {
+                        <span class="status-pill available">Available</span>
+                      }
+                    </p>
+                    <p class="ticket-sub">{{ dep.seats }} · {{ dep.duration }} · Daily</p>
+                  </div>
+                  <span class="ticket-perf" aria-hidden="true"></span>
+                  <div class="ticket-cta">
+                    <button
+                      type="button"
+                      class="view-trip-btn"
+                      [disabled]="isDeparted(dep)"
+                      (click)="reserve(dep)"
+                      [attr.aria-label]="isDeparted(dep) ? 'Already departed' : 'View trip ' + dep.time + ' to ' + dep.to"
+                    >
+                      {{ isDeparted(dep) ? 'GONE' : 'VIEW TRIP' }}
+                    </button>
+                  </div>
+                </article>
+              }
+            </div>
+          } @else {
+            <div class="empty-state compact" role="status">
+              <div class="empty-ticket-outline">
+                <ion-icon name="ticket-outline" aria-hidden="true"></ion-icon>
+              </div>
+              <h3>No more trips today</h3>
+              <p>Today's board for {{ terminal.name }} is done. Pick another date above or browse the full schedule.</p>
+              <button type="button" class="empty-cta" (click)="openFullSchedule()">
+                Full schedule
+                <ion-icon name="chevron-forward-outline" aria-hidden="true"></ion-icon>
+              </button>
+            </div>
+          }
+        </section>
+      }
+
+      <!-- ROUTES FROM THIS TERMINAL -->
+      <section class="section" aria-label="Routes from this terminal">
+        <div class="section-head">
+          <h2><ion-icon name="compass-outline" aria-hidden="true"></ion-icon> ROUTES FROM HERE</h2>
+          @if (routes.length) {
+            <span class="section-hint">Tap a route for departures</span>
+          }
+        </div>
+        @if (routes.length) {
+          <div class="route-list">
+            @for (route of routes; track route.id; let i = $index) {
+              <div class="route-card" [class.open]="expandedRouteId === route.id">
+                <button
+                  type="button"
+                  class="route-head"
+                  (click)="toggleRoute(route.id)"
+                  [attr.aria-expanded]="expandedRouteId === route.id"
+                  [attr.aria-label]="'View departures for ' + route.to"
+                >
+                  <span class="route-no" aria-hidden="true">{{ routeNo(i) }}</span>
+                  <span class="route-text">
+                    <span class="route-dest">
+                      {{ route.from }}
+                      <span class="route-arrow" aria-hidden="true">→</span>
+                      <strong>{{ route.to }}</strong>
+                    </span>
+                    <small>{{ route.duration }} · {{ route.fare }} · {{ route.operator }} · {{ stopCount(route.id) }} stops · Daily</small>
+                  </span>
+                  <ion-icon
+                    [name]="expandedRouteId === route.id ? 'chevron-down-outline' : 'chevron-forward-outline'"
+                    aria-hidden="true"
+                  ></ion-icon>
+                </button>
+
+                @if (expandedRouteId === route.id) {
+                  <div class="schedule-panel">
+                    <p class="schedule-label">Route stops · {{ stopCount(route.id) }} stops</p>
+                    <app-route-stop-timeline
+                      [stops]="stopsPreview(route.id)"
+                      mode="preview"
+                      variant="compact"
+                      [compactLimit]="4"
+                    ></app-route-stop-timeline>
+                    <p class="schedule-label">Departures · {{ selectedDate }}</p>
+                    <div class="dep-list">
+                      @for (dep of departuresFor(route.id); track dep.id) {
+                        <div class="dep-row" [class.departed]="isDeparted(dep)">
+                          <div class="dep-info">
+                            <span class="dep-time">{{ dep.time }}</span>
+                            <span class="dep-sub">
+                              {{ dep.operator }} · {{ dep.seats }}@if (dep.status === 'delayed') {
+                                · Delayed
+                              }
+                            </span>
+                          </div>
+                          <button
+                            type="button"
+                            class="reserve-btn"
+                            [disabled]="isDeparted(dep)"
+                            (click)="reserve(dep)"
+                            [attr.aria-label]="isDeparted(dep) ? 'Already departed' : 'Reserve ' + dep.time + ' trip to ' + dep.to"
+                          >
+                            {{ isDeparted(dep) ? 'Departed' : 'Reserve' }}
+                          </button>
+                        </div>
+                      }
+                    </div>
+                    <div class="panel-foot">
+                      <p class="board-note">
+                        The operator assigns the vehicle and driver — your e-ticket
+                        only needs the trip, seat, and time.
+                      </p>
+                      <button type="button" class="mini-link" (click)="openFullSchedule(route.id)" aria-label="Open full schedule for this route">
+                        Full board for this route
+                        <ion-icon name="chevron-forward-outline" aria-hidden="true"></ion-icon>
+                      </button>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="empty-state" role="status">
+            <div class="empty-ticket-outline">
+              <ion-icon name="ticket-outline" aria-hidden="true"></ion-icon>
+            </div>
+            <h3>No scheduled routes here yet</h3>
+            <p>We don't have a timetable listed for {{ terminal.name }}. Try searching a route instead.</p>
+            <button type="button" class="empty-cta" (click)="goBack()">
+              Go back
+              <ion-icon name="chevron-forward-outline" aria-hidden="true"></ion-icon>
+            </button>
+          </div>
+        }
+      </section>
+
+      <!-- OPERATORS -->
+      @if (operators.length) {
+        <section class="section" aria-label="Operators at this terminal">
+          <div class="section-head">
+            <h2>OPERATORS HERE</h2>
+          </div>
+          <div class="operator-row">
+            @for (operator of operators; track operator) {
+              <span class="operator-chip">
+                <ion-icon name="bus" aria-hidden="true"></ion-icon>
+                {{ operator }}
+              </span>
+            }
+          </div>
+        </section>
+      }
+
+      <!-- TERMINAL INFORMATION / FACILITIES -->
+      <section class="info-card" aria-label="About this terminal">
+        <p class="info-kicker">TERMINAL INFORMATION</p>
+        <p class="about">{{ terminal.about }}</p>
+        <div class="info-meta">
+          <span class="meta"><ion-icon name="locate-outline" aria-hidden="true"></ion-icon>{{ terminal.distance }} away</span>
+          <span class="meta"><ion-icon name="time-outline" aria-hidden="true"></ion-icon>{{ terminal.hours }}</span>
+          <span class="meta"><ion-icon name="bus" aria-hidden="true"></ion-icon>{{ routes.length }} route{{ routes.length === 1 ? '' : 's' }}</span>
+        </div>
+        @if (terminal.facilities.length) {
+          <div class="chip-row" aria-label="Facilities">
+            @for (facility of terminal.facilities; track facility) {
+              <span class="facility-chip">{{ facility }}</span>
+            }
+          </div>
+        }
+        <button type="button" class="map-link" (click)="viewOnMap()">
+          <ion-icon name="locate-outline" aria-hidden="true"></ion-icon>
+          View terminal on map
+        </button>
+      </section>
+    </div>
+  }
+</ion-content>

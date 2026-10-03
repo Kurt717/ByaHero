@@ -1,0 +1,71 @@
+<ion-content fullscreen class="sub-content">
+  <div class="page">
+    <div class="top-bar">
+      <button class="round-btn" (click)="goBack()" aria-label="Go back">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </button>
+      <div class="bar-text">
+        <h1>Help Center</h1>
+        <p>Nandito kami palagi</p>
+      </div>
+      <span class="beacon"><ion-icon name="help-buoy-outline"></ion-icon></span>
+    </div>
+
+    <!-- FAQ -->
+    <section class="block first">
+      <div class="section-head">
+        <h3>Quick answers</h3>
+        <span class="rule"></span>
+      </div>
+      <div class="faq-list">
+        @for (f of faqs; track f.q) {
+          <div class="faq" [class.open]="f.open">
+            <button class="faq-q" (click)="toggle(f)">
+              <span>{{ f.q }}</span>
+              <ion-icon name="chevron-down-outline"></ion-icon>
+            </button>
+            @if (f.open) {
+              <div class="faq-a">{{ f.a }}</div>
+            }
+          </div>
+        }
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section class="block">
+      <div class="section-head">
+        <h3>Reach us</h3>
+        <span class="rule"></span>
+      </div>
+      <button class="contact-row" (click)="reportIssue()">
+        <span class="ct-icon"><ion-icon name="flag-outline"></ion-icon></span>
+        <span class="ct-text">
+          <strong>Report a ride issue</strong>
+          <em>Something wrong on a trip? Tell us here</em>
+        </span>
+      </button>
+      <button class="contact-row" (click)="contactUs()">
+        <span class="ct-icon"><ion-icon name="call-outline"></ion-icon></span>
+        <span class="ct-text">
+          <strong>Hotline</strong>
+          <em>(02) 8888 2222 · 8AM-8PM</em>
+        </span>
+      </button>
+      <button class="contact-row" (click)="contactUs()">
+        <span class="ct-icon"><ion-icon name="chatbubble-ellipses-outline"></ion-icon></span>
+        <span class="ct-text">
+          <strong>Support chat</strong>
+          <em>Kausapin kami 24/7</em>
+        </span>
+      </button>
+      <button class="contact-row" (click)="contactUs()">
+        <span class="ct-icon"><ion-icon name="mail-outline"></ion-icon></span>
+        <span class="ct-text">
+          <strong>Email</strong>
+          <em>sakay@byahero.ph</em>
+        </span>
+      </button>
+    </section>
+  </div>
+</ion-content>

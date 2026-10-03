@@ -1,0 +1,333 @@
+<ion-content fullscreen class="flow-content">
+  @if (booking.trip; as trip) {
+    <div class="flow-wrap">
+      <!-- HEADER + PROGRESS -->
+      <div class="flow-header">
+        <button class="icon-btn" (click)="goBack()" aria-label="Go back">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+        </button>
+        <div class="flow-progress-track">
+          <div class="flow-progress-fill" [style.width]="booking.hailMode ? '25%' : '20%'"></div>
+        </div>
+        <span class="step-count">{{ booking.hailMode ? '1/4' : '1/5' }}</span>
+      </div>
+      <h1 class="flow-title">Trip Details</h1>
+      <p class="flow-sub">Confirm your route before choosing a seat</p>
+      <!-- TRIP SUMMARY CARD -->
+      <div class="trip-summary-card">
+        <div class="summary-top">
+          <div class="op-logo"><ion-icon name="bus-outline"></ion-icon></div>
+          <div class="op-text">
+            <h4>{{ trip.operator }}</h4>
+            <p>
+              {{ trip.eta }} •
+              <span [ngClass]="trip.status">{{ trip.status }}</span>
+            </p>
+          </div>
+          <span class="fare-tag">{{ trip.fare }}<small>/seat</small></span>
+        </div>
+        <div class="summary-route">
+          <div class="route-line-vertical">
+            <span class="dot origin"></span>
+            <span class="line"></span>
+            <span class="dot dest"></span>
+          </div>
+          <div class="route-text">
+            <p><strong>{{ trip.from }}</strong></p>
+            <p><strong>{{ trip.to }}</strong></p>
+          </div>
+        </div>
+        @if (trip.departureTime) {
+          <p class="departure-line">
+            Departs {{ trip.departureTime }} · {{ booking.travelDate }}
+          </p>
+        }
+      </div>
+      <!-- YOUR TRIP (read-only recap — pickup + destination were chosen on Home) -->
+      @if (segmentSummary; as seg) {
+        <div class="section">
+          <p class="section-title">Your Trip</p>
+          <div class="stops-card recap">
+            <p class="segment-line" aria-live="polite">
+              {{ booking.segmentLabel }} · {{ booking.serviceClassLabel }}
+            </p>
+            <p class="segment-sub">
+              {{ seg.km }} km · boards {{ seg.boardEta || '—' }} · arrives {{ seg.alightEta || '—' }} · {{ seg.fare }}/seat
+            </p>
+            <button type="button" class="change-home" (click)="changeOnHome()">
+              Change pickup or destination on Home
+            </button>
+          </div>
+        </div>
+      }
+      <!-- TRAVEL CONDITIONS (contextual sample — secondary to booking facts) -->
+      @if (tripConditions; as cond) {
+        <div class="section">
+          <p class="section-title">Travel Conditions</p>
+          <div class="pickup-card">
+            <div class="pickup-current">
+              <span class="pickup-icon"
+                ><ion-icon [name]="cond.icon"></ion-icon
+              ></span>
+              <div class="pickup-text">
+                <strong>{{ cond.headline }}</strong>
+                <p>Conditions for this route</p>
+              </div>
+            </div>
+            <button
+              type="button"
+              class="pickup-toggle"
+              (click)="openConditions()"
+              aria-label="View full travel conditions"
+            >
+              View conditions
+              <ion-icon name="chevron-forward-outline"></ion-icon>
+            </button>
+          </div>
+        </div>
+      }
+      <!-- SEAT PREFERENCE RECAP (reservations only; hailing skips preference) -->
+      @if (!booking.hailMode && booking.hasSeatPreference) {
+        <div class="section">
+          <p class="section-title">Seat Preference</p>
+          <div class="preference-recap">
+            <span class="preference-label">{{ booking.preferenceLabel() }}</span>
+            <button type="button" class="preference-change" (click)="changePreference()">
+              Change
+            </button>
+          </div>
+        </div>
+      }
+      <!-- PICKUP POINT -->
+      <div class="section">
+        <p class="section-title">Pickup Point</p>
+        <div class="pickup-card">
+          @if (pickup) {
+            <div class="pickup-current">
+              <span class="pickup-icon"
+                ><ion-icon name="location-outline"></ion-icon
+              ></span>
+              <div class="pickup-text">
+                <strong>{{ pickup.label }}</strong>
+                @if (pickupDistance; as dist) {
+                  <p>{{ dist }} from your current location</p>
+                } @else {
+                  <p>Board here instead of {{ trip.from }}</p>
+                }
+                @if (pickupZoneMessage; as zoneMsg) {
+                  <p class="zone">{{ zoneMsg }}</p>
+                }
+              </div>
+            </div>
+          } @else {
+            <p class="pickup-empty">
+              No pickup point yet — you'll board at {{ trip.from }} unless you
+              choose one.
+            </p>
+          }
+          <button
+            type="button"
+            class="pickup-toggle"
+            (click)="togglePickupPicker()"
+            [attr.aria-expanded]="showPickupPicker"
+          >
+            {{ showPickupPicker ? 'Hide pickup options' : 'Choose pickup point' }}
+            <ion-icon name="chevron-forward-outline"></ion-icon>
+          </button>
+          @if (showPickupPicker) {
+            <app-pickup-selector
+              [originLabel]="trip.from"
+              [selected]="pickup"
+              (selectedChange)="onPickupSelected($event)"
+            ></app-pickup-selector>
+          }
+        </div>
+      </div>
+      <!-- DATE SELECT (reservations only — hailing has no date step at all) -->
+      @if (!booking.hailMode) {
+        <div class="section">
+          <p class="section-title">Travel Date</p>
+          <div class="day-scroll">
+            @for (d of days; track d) {
+              <button
+                class="day-pill"
+                [class.active]="booking.travelDate === d.iso"
+                (click)="booking.travelDate = d.iso"
+                >
+                <span class="dow">{{ d.dow }}</span>
+                <span class="day">{{ d.day }}</span>
+              </button>
+            }
+          </div>
+        </div>
+      }
+      <!-- PASSENGERS + DISCOUNT FARE TYPE -->
+      <div class="section">
+        <div class="section-head">
+          <p class="section-title">Passengers</p>
+          <span class="section-hint"
+            >{{ booking.passengers.length }}/{{ booking.maxPassengers }}</span
+            >
+          </div>
+          <div class="passenger-list">
+            @for (p of booking.passengers; track p; let i = $index) {
+              <div
+                class="passenger-row"
+                >
+                <div class="passenger-top">
+                  <span class="passenger-index">Passenger {{ i + 1 }}</span>
+                  @if (booking.passengers.length > 1) {
+                    <button
+                      class="remove-btn"
+                      (click)="booking.removePassenger(p.id)"
+                      aria-label="Remove passenger"
+                      >
+                      <ion-icon name="close-outline"></ion-icon>
+                    </button>
+                  }
+                </div>
+                <div class="fare-type-row">
+                  @for (t of passengerTypes; track t) {
+                    <button
+                      class="type-chip"
+                      [class.active]="p.type === t.id"
+                      (click)="booking.setPassengerType(p.id, t.id)"
+                      >
+                      {{ t.short }}
+                      @if (t.discount > 0) {
+                        <span class="off-tag">-20%</span>
+                      }
+                    </button>
+                  }
+                </div>
+                @if (requiresId(p.type)) {
+                  <div class="id-card">
+                    <div class="id-card-head">
+                      <ion-icon name="id-card-outline"></ion-icon>
+                      <span>{{ idPlaceholder(p.type) }} verification</span>
+                      @if (booking.isPassengerVerified(p)) {
+                        <span class="verified-tag">Verified</span>
+                      } @else {
+                        <span class="pending-tag">Required</span>
+                      }
+                    </div>
+                    <label class="id-row">
+                      <span class="id-row-lbl">ID type *</span>
+                      <select
+                        [ngModel]="p.idType ?? ''"
+                        (ngModelChange)="booking.setPassengerIdDoc(p.id, { idType: $event || undefined })"
+                      >
+                        <option value="" disabled>Select ID type</option>
+                        @for (opt of booking.idOptionsFor(p.type); track opt) {
+                          <option [value]="opt">{{ opt }}</option>
+                        }
+                      </select>
+                    </label>
+                    <label class="id-row">
+                      <span class="id-row-lbl">ID number *</span>
+                      <input
+                        type="text"
+                        [(ngModel)]="p.idNumber"
+                        placeholder="Enter ID number"
+                        autocomplete="off"
+                      />
+                    </label>
+                    <div
+                      class="upload-box"
+                      [class.has-file]="!!p.idImage"
+                      (click)="triggerIdUpload(fileInput)"
+                      role="button"
+                      tabindex="0"
+                      (keyup.enter)="triggerIdUpload(fileInput)"
+                      aria-label="Upload front of ID"
+                    >
+                      @if (!p.idImage) {
+                        <ion-icon name="cloud-upload-outline"></ion-icon>
+                        <strong>Tap to upload front of ID</strong>
+                        <small>JPG, PNG, PDF · max 5MB · camera ok</small>
+                      } @else if (p.idImageKind === 'pdf') {
+                        <ion-icon name="document-text-outline"></ion-icon>
+                        <strong class="file-name">{{ p.idImage }}</strong>
+                        <small>PDF attached — tap to replace</small>
+                      } @else {
+                        <img [src]="p.idImage" alt="ID preview" />
+                        <small>Tap to replace</small>
+                      }
+                      <input
+                        #fileInput
+                        type="file"
+                        hidden
+                        accept=".jpg,.jpeg,.png,.pdf,image/*"
+                        (change)="onIdFile(p, $event)"
+                      />
+                    </div>
+                    @if (p.idImage) {
+                      <button
+                        type="button"
+                        class="remove-file-btn"
+                        (click)="booking.setPassengerIdDoc(p.id, { idImage: undefined, idImageKind: undefined })"
+                      >
+                        <ion-icon name="trash-outline"></ion-icon>
+                        Remove file
+                      </button>
+                    }
+                    <label class="id-check">
+                      <input
+                        type="checkbox"
+                        [ngModel]="p.idConfirmed ?? false"
+                        (ngModelChange)="booking.setPassengerIdDoc(p.id, { idConfirmed: $event })"
+                      />
+                      <span>I confirm this ID is valid and belongs to the passenger.</span>
+                    </label>
+                    <div class="id-price">
+                      <span>Base {{ booking.formatCurrency(booking.seatFare) }}</span>
+                      <span class="disc"
+                        >− {{ booking.formatCurrency(booking.seatFare - booking.fareForPassenger(p)) }} ({{
+                          idPlaceholder(p.type)
+                        }}
+                        20%)</span
+                      >
+                      <strong>{{ booking.formatCurrency(booking.fareForPassenger(p)) }}</strong>
+                    </div>
+                    <p class="compliance-note">
+                      Physical ID must be presented to the bus conductor upon boarding.
+                      Misrepresentation may result in fare adjustments or booking cancellation.
+                    </p>
+                  </div>
+                }
+                </div>
+              }
+            </div>
+            <button
+              class="add-passenger-btn"
+              (click)="booking.addPassenger()"
+              [disabled]="booking.passengers.length >= booking.maxPassengers"
+              >
+              <ion-icon name="add-outline"></ion-icon>
+              Add Passenger
+            </button>
+            @if (booking.discountedCount) {
+              <p class="discount-note">
+                <ion-icon name="information-circle-outline"></ion-icon>
+                Student / Senior / PWD fares get 20% off under RA&nbsp;9994 &amp;
+                RA&nbsp;10754 — present a valid ID to the conductor.
+              </p>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- STICKY FOOTER -->
+      @if (booking.trip) {
+        <div class="flow-footer">
+          <div class="footer-price">
+            <span class="label">Estimated total</span>
+            <span class="value">{{ booking.formatCurrency(booking.subtotal) }}</span>
+          </div>
+          <button class="footer-cta" (click)="continue()">
+            Choose Seats
+            <ion-icon name="chevron-forward-outline"></ion-icon>
+          </button>
+        </div>
+      }
+    </ion-content>

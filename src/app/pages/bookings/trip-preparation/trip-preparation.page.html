@@ -1,0 +1,204 @@
+<!-- trip-preparation.page.html — Travel Checklist, BYAHERO design language -->
+<ion-content fullscreen class="prep-content">
+  <div class="prep-wrap">
+    @if (booking) {
+      <!-- STICKY HEADER — title left, readiness pill right -->
+      <div class="sticky-header">
+        <div class="page-header">
+          <button class="back-btn" (click)="goBack()" aria-label="Go back">
+            <ion-icon name="arrow-back-outline"></ion-icon>
+          </button>
+          <div class="beacon">
+            <svg class="beacon-burst" viewBox="0 0 80 80" aria-hidden="true">
+              <g stroke="#8FA3FF" stroke-width="2" opacity="0.4" stroke-linecap="round">
+                <line x1="40" y1="6" x2="40" y2="16" />
+                <line x1="40" y1="64" x2="40" y2="74" />
+                <line x1="6" y1="40" x2="16" y2="40" />
+                <line x1="64" y1="40" x2="74" y2="40" />
+                <line x1="14" y1="14" x2="21" y2="21" />
+                <line x1="59" y1="59" x2="66" y2="66" />
+                <line x1="14" y1="66" x2="21" y2="59" />
+                <line x1="59" y1="21" x2="66" y2="14" />
+              </g>
+            </svg>
+            <span class="beacon-ring"></span>
+            <ion-icon name="bus"></ion-icon>
+          </div>
+          <div class="header-text">
+            <h1>Get Ready</h1>
+            <p>{{ booking.from }} → {{ booking.to }}</p>
+          </div>
+        </div>
+        <span class="ready-pill" [class.full]="allReady">{{ doneCount }} / {{ totalCount }} ready</span>
+      </div>
+
+      <!-- READINESS PROGRESS -->
+      <section class="progress-card" aria-live="polite">
+        <div class="progress-top">
+          <div class="trip-line">
+            <span class="place">{{ booking.from }}</span>
+            <ion-icon name="chevron-forward-outline" class="trip-arrow"></ion-icon>
+            <span class="place">{{ booking.to }}</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta"><ion-icon name="calendar-outline"></ion-icon>{{ booking.date }}</span>
+            <span class="meta"><ion-icon name="time-outline"></ion-icon>{{ booking.time }}</span>
+          </div>
+          @if (booking.pickup) {
+            <div class="meta-row pickup-row">
+              <span class="meta pickup"><ion-icon name="location-outline"></ion-icon>{{ booking.pickup }}</span>
+            </div>
+          }
+        </div>
+        <div class="progress-track" role="progressbar" [attr.aria-valuenow]="progressPercent" aria-valuemin="0" aria-valuemax="100" [attr.aria-label]="doneCount + ' of ' + totalCount + ' ready'">
+          <span class="progress-fill" [style.width.%]="progressPercent"></span>
+        </div>
+        <p class="progress-cap">
+          @if (allReady) {
+            All set — show this screen when boarding.
+          } @else if (!isActive) {
+            This trip is {{ booking.status }} — checklist is read-only.
+          } @else {
+            {{ totalCount - doneCount }} more to go before boarding.
+          }
+        </p>
+      </section>
+
+      <!-- SMART TRIP REMINDER (this booking; silent when irrelevant) -->
+      @if (booking && prepReminderView) {
+        <div class="reminder-slot">
+          <app-trip-reminder-card
+            [bookingRef]="booking.bookingRef"
+            [compact]="true"
+          ></app-trip-reminder-card>
+        </div>
+      }
+
+      <!-- CHECKLIST -->
+      <section class="check-section" aria-label="Travel checklist">
+        <h2 class="dash-title">Travel checklist</h2>
+        <div class="check-list">
+          @for (item of items; track item.key) {
+            @if (item.kind === 'auto') {
+              <div class="check-card" [class.done]="item.done">
+                <span class="check-icon"><ion-icon [name]="item.icon"></ion-icon></span>
+                <div class="check-text">
+                  <h3>{{ item.label }}</h3>
+                  <p>{{ item.hint }}</p>
+                </div>
+                @if (item.done) {
+                  <span class="check-state on" aria-label="{{ item.label }} complete">
+                    <ion-icon name="checkmark-outline"></ion-icon>
+                  </span>
+                } @else if (item.link) {
+                  <button type="button" class="check-link" (click)="openLink(item, $event)">
+                    {{ item.linkLabel }}
+                    <ion-icon name="chevron-forward-outline"></ion-icon>
+                  </button>
+                } @else {
+                  <span class="check-state" aria-label="{{ item.label }} pending"></span>
+                }
+              </div>
+            } @else {
+              <button
+                type="button"
+                class="check-card manual"
+                [class.done]="item.done"
+                [disabled]="!isActive"
+                role="checkbox"
+                [attr.aria-checked]="item.done"
+                [attr.aria-label]="item.label + '. ' + item.hint"
+                (click)="item.key === 'luggage' ? openLuggage() : toggleManual(item)"
+              >
+                <span class="check-icon"><ion-icon [name]="item.icon"></ion-icon></span>
+                <span class="check-text">
+                  <span class="check-label">{{ item.label }}
+                    @if (item.key === 'luggage' && booking) {
+                      <span class="luggage-count">· {{ luggageSummary() }}</span>
+                    }
+                  </span>
+                  <span class="check-hint">{{ item.hint }}</span>
+                </span>
+                @if (item.key === 'luggage') {
+                  <span class="check-link manage-link" aria-hidden="true">
+                    Manage
+                    <ion-icon name="chevron-forward-outline"></ion-icon>
+                  </span>
+                } @else {
+                  <span class="check-state" [class.on]="item.done" aria-hidden="true">
+                    @if (item.done) {
+                      <ion-icon name="checkmark-outline"></ion-icon>
+                    }
+                  </span>
+                }
+              </button>
+            }
+          }
+        </div>
+        <p class="manual-note">Physical items can't be auto-verified — tap each one as you pack it.</p>
+      </section>
+
+      <!-- ROUTE STOPS PREVIEW (canonical stops for this booking's route) -->
+      @if (booking && routePreview.length) {
+        <section class="stops-card" aria-label="Route stops">
+          <h2 class="dash-title">Route stops · {{ routePreview.length }} stops</h2>
+          <app-route-stop-timeline
+            [stops]="routePreview"
+            mode="preview"
+            variant="compact"
+            [compactLimit]="4"
+            [headline]="booking.from + ' → ' + booking.to"
+          ></app-route-stop-timeline>
+        </section>
+      }
+
+      <!-- TRIP SUMMARY -->
+      <section class="trip-card" aria-label="Trip summary">
+        <div class="trip-top">
+          <div class="operator">
+            <span class="operator-icon"><ion-icon name="bus"></ion-icon></span>
+            <span class="operator-name">{{ booking.operator }}</span>
+          </div>
+          <span class="ref">{{ booking.bookingRef }}</span>
+        </div>
+        <div class="trip-mid">
+          <span class="seat-chip">{{ booking.seat }}</span>
+          <span class="fare">{{ booking.fare }}</span>
+        </div>
+        <button type="button" class="view-btn" (click)="viewTicket()">
+          <ion-icon name="ticket-outline"></ion-icon>
+          View e-ticket
+        </button>
+      </section>
+
+      <!-- TRAVEL TIP -->
+      <div class="note-card">
+        <div class="note-icon">
+          <ion-icon name="information-circle-outline"></ion-icon>
+        </div>
+        <div class="note-text">
+          <h4>Travel tip</h4>
+          <p>Keep your ticket and valid ID ready before boarding. Arrive 20 minutes early.</p>
+        </div>
+      </div>
+
+      <div class="cta-row">
+        <button type="button" class="ready-cta" (click)="markReady()">
+          {{ allReady ? "I'm ready" : 'Save checklist' }}
+        </button>
+      </div>
+    } @else {
+      <div class="empty-state">
+        <div class="empty-ticket-outline">
+          <ion-icon name="ticket-outline"></ion-icon>
+        </div>
+        <h3>Trip not found</h3>
+        <p>We couldn't find that booking on this device. Pick an upcoming trip instead.</p>
+        <button class="empty-cta" (click)="goBack()">
+          Go back
+          <ion-icon name="chevron-forward-outline"></ion-icon>
+        </button>
+      </div>
+    }
+  </div>
+</ion-content>
