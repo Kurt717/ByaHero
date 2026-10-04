@@ -60,6 +60,7 @@ import { ProfileService, DEFAULT_AVATAR } from '../profile/profile.service';
 import {
   BookingService,
   TripSummary,
+  parseFareText,
 } from '../booking/booking.service';
 
 import { PickupService } from '../../services/pickup.service';
@@ -909,7 +910,16 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
       status: route.status,
     };
 
-    this.bookingService.startBooking(trip);
+    // Book the exact stretch the yellow sticker priced: the typed pair rides
+    // along as board/alight stops (same mapping as Search) and its fare is
+    // locked as the session quote — checkout charges this number, not a
+    // recomputation.
+    const pairOpts = this.riderPairForHail(route);
+    const quote = parseFareText(this.fareLabelFor(route));
+    this.bookingService.startBooking(trip, {
+      ...pairOpts,
+      ...(quote > 0 ? { quotedSeatFare: quote } : {}),
+    });
 
     this.bookingService.hailMode = true;
 
@@ -919,21 +929,21 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
     this.bookingService.pickup =
       this.pickupService.getActive().pickup;
 
-    // Hail boards at the nearest downstream stop: availability is checked
-    // from that stop onward, and stops the bus passed stay unbookable.
+    // Hail boards at the nearest downstream stop — but ONLY on a real GPS
+    // fix. Simulated/fallback coordinates must never move boarding away from
+    // the quoted stretch (that silently repriced the ride past the sticker).
     // No pickup/destination typed and no real GPS fix: the hail is for the
     // FULL ride at the FULL price, so the full-route boarding from
     // attachNetwork stays untouched instead of anchoring to fallback
     // coordinates.
     if (
-      this.hasPair ||
       this.pickupService.getActive().pickup?.source === 'gps'
     ) {
       this.anchorHailToCorridor();
     }
 
     // The typed destination rides along as the alighting stop (validated:
-    // same corridor, travel direction, downstream of boarding) so the fare
+    // same corridor, trip direction, downstream of boarding) so the fare
     // is pickup→destination, never the whole route.
     this.applyHailDestination(route);
 
@@ -959,6 +969,35 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
     this.hailCoords = null;
 
     this.syncHailMarker();
+  }
+
+  /**
+   * Typed origin→destination as stop ids on this route's corridor
+   * (undefined = full-route booking). Same mapping as Search so the hail
+   * session rides exactly the stretch the card priced.
+   */
+  private riderPairForHail(
+    route: NearbyRoute,
+  ): { boardStopId: string; alightStopId: string } | undefined {
+    if (!this.hasPair) return undefined;
+    try {
+      const pair = this.network.resolveTrip('', this.origin, this.destination);
+      const r = this.network.resolveTrip(route.operator, route.from, route.to);
+      if (!pair || !r) return undefined;
+      return (
+        riderPairForRoute(
+          pair.corridor.id,
+          pair.boardSeq,
+          pair.alightSeq,
+          pair.corridor.stops,
+          r.corridor.id,
+          r.boardSeq,
+          r.alightSeq,
+        ) ?? undefined
+      );
+    } catch {
+      return undefined;
+    }
   }
 
   /**

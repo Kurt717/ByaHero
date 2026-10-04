@@ -53,6 +53,13 @@ export interface StartBookingOptions {
   boardStopId?: string;
   alightStopId?: string;
   travelDate?: string;
+  /** The exact per-seat fare shown on the card/board the commuter tapped
+   *  (the yellow sticker price). Checkout honors it verbatim for the quoted
+   *  segment, so the home price and the paid price can never drift apart.
+   *  Ignored when the pair is rejected (full-route fallback) or the stops
+   *  change afterwards — the fare then recomputes for the new segment and
+   *  both Trip Details and Payment show that number. */
+  quotedSeatFare?: number;
 }
 
 export interface AppliedVoucher {
@@ -103,6 +110,13 @@ export const ID_TYPE_OPTIONS: Record<Exclude<PassengerType, 'regular'>, string[]
   pwd: ['PWD ID'],
 };
 
+/** '₱ 1,200' → 1200. Parses the fare sticker text the commuter saw so the
+ *  booking can lock exactly that number. */
+export function parseFareText(fare: string): number {
+  const n = Number((fare ?? '').replace(/[^0-9.]/g, ''));
+  return Number.isFinite(n) ? n : 0;
+}
+
 /** Max ID upload size: 5MB. */
 export const MAX_ID_UPLOAD_BYTES = 5 * 1024 * 1024;
 
@@ -146,6 +160,12 @@ export class BookingService {
   alightSeq: number | null = null;
   /** Bus position anchor (sequence) for hail: stops at/before it are passed. */
   busSeq: number | null = null;
+  /** Locked per-seat fare from the tapped card (see StartBookingOptions).
+   *  Honored only while the session rides the quoted stops; any stop change
+   *  (re-anchor, new pair) drops the lock and recomputes for the segment. */
+  quotedSeatFare: number | null = null;
+  quotedBoardStopId: string | null = null;
+  quotedAlightStopId: string | null = null;
 
   private counter = 1;
 
@@ -162,9 +182,19 @@ export class BookingService {
     );
   }
 
-  /** Segment fare for one seat — fareFor(board → alight). Legacy trips
-   *  without a corridor fall back to the catalog string (deprecated). */
+  /** Segment fare for one seat — the locked card quote when the session
+   *  rides the quoted stops, otherwise fareFor(board → alight). Legacy trips
+   *  without a corridor fall back to the catalog string (deprecated), or to
+   *  the locked quote when the card supplied one. */
   get seatFare(): number {
+    if (
+      this.quotedSeatFare != null &&
+      (!this.hasNetworkSegment ||
+        (this.boardStopId === this.quotedBoardStopId &&
+          this.alightStopId === this.quotedAlightStopId))
+    ) {
+      return this.quotedSeatFare;
+    }
     if (this.hasNetworkSegment) {
       return this.network.fareFor({
         corridorId: this.corridorId!,
@@ -579,8 +609,31 @@ export class BookingService {
     this.hailMode = false;
     this.rebookedFrom = null;
     this.seatPreference = { ...NO_SEAT_PREFERENCE };
+    this.quotedSeatFare = null;
+    this.quotedBoardStopId = null;
+    this.quotedAlightStopId = null;
     this.clearNetworkSegment();
     this.attachNetwork(opts);
+    // Lock the tapped card's price — but only when the session actually
+    // rides the quoted stretch. A rejected pair falls back to the full
+    // route, and the lock is skipped so Trip Details/Payment price the
+    // route the commuter really boards.
+    if (
+      opts?.quotedSeatFare != null &&
+      Number.isFinite(opts.quotedSeatFare) &&
+      opts.quotedSeatFare > 0
+    ) {
+      const pairRequested = !!(opts.boardStopId && opts.alightStopId);
+      const pairKept =
+        !pairRequested ||
+        (this.boardStopId === opts.boardStopId &&
+          this.alightStopId === opts.alightStopId);
+      if (pairKept) {
+        this.quotedSeatFare = Math.round(opts.quotedSeatFare);
+        this.quotedBoardStopId = this.boardStopId;
+        this.quotedAlightStopId = this.alightStopId;
+      }
+    }
     if (opts?.travelDate) {
       this.travelDate = opts.travelDate;
     } else {
@@ -615,6 +668,9 @@ export class BookingService {
     this.hailMode = false;
     this.rebookedFrom = null;
     this.seatPreference = { ...NO_SEAT_PREFERENCE };
+    this.quotedSeatFare = null;
+    this.quotedBoardStopId = null;
+    this.quotedAlightStopId = null;
     this.clearNetworkSegment();
   }
 }

@@ -26,7 +26,7 @@ import {
 } from '../../services/route-catalog.service';
 import { RouteStopsService, type TimedRouteStop } from '../../services/route-stops.service';
 import { RouteStopTimelineComponent } from '../../components/route-stop-timeline/route-stop-timeline.component';
-import { BookingService } from '../booking/booking.service';
+import { BookingService, parseFareText } from '../booking/booking.service';
 import { PickupService } from '../../services/pickup.service';
 
 addIcons({
@@ -293,6 +293,10 @@ export class TerminalDetailsPage implements OnInit {
    *  A forwarded rider pair keeps the chosen stretch and per-seat fare. */
   reserve(dep: TerminalDeparture) {
     if (this.isDeparted(dep)) return;
+    const pair = this.riderPairOpts();
+    // Full-route bookings lock the board fare text; pair bookings price the
+    // stretch (never more than the board fare) and Trip Details shows it.
+    const quote = pair ? null : parseFareText(dep.fare);
     this.bookingService.startBooking({
       operator: dep.operator,
       from: dep.from,
@@ -302,7 +306,10 @@ export class TerminalDetailsPage implements OnInit {
       seatsLeft: dep.seats,
       status: dep.status,
       departureTime: dep.time,
-    }, this.riderPairOpts());
+    }, {
+      ...pair,
+      ...(quote != null && quote > 0 ? { quotedSeatFare: quote } : {}),
+    });
     this.bookingService.travelDate = this.selectedDate;
     this.bookingService.pickup = this.pickupService.getActive().pickup;
     this.router.navigateByUrl('/booking/trip');

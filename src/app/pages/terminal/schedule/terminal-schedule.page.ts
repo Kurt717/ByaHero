@@ -22,7 +22,7 @@ import {
 } from '../../../services/route-catalog.service';
 import { RouteStopsService, type TimedRouteStop } from '../../../services/route-stops.service';
 import { RouteStopTimelineComponent } from '../../../components/route-stop-timeline/route-stop-timeline.component';
-import { BookingService } from '../../booking/booking.service';
+import { BookingService, parseFareText } from '../../booking/booking.service';
 import { PickupService } from '../../../services/pickup.service';
 import {
   NetworkService,
@@ -211,6 +211,32 @@ export class TerminalSchedulePage implements OnInit {
     return {};
   }
 
+  /** Locked fare for this departure: the forwarded pair's stretch fare on
+   *  this departure's operator + class (the number its fare table shows for
+   *  that stretch), or the board fare text for a full-route booking. Null
+   *  when unresolvable — the session then prices its final segment. */
+  private quotedFareFor(dep: TerminalDeparture): number | null {
+    if (this.riderBoard && this.riderAlight) {
+      try {
+        const resolved = this.network.resolveTrip(dep.operator, dep.from, dep.to);
+        if (!resolved) return null;
+        const vehicle = vehicleById(resolved.trip.vehicleId);
+        const fare = this.network.fareFor({
+          corridorId: resolved.corridor.id,
+          operatorId: resolved.operatorId ?? resolved.trip.operatorId,
+          serviceClassId: vehicle?.serviceClassId ?? 'aircon',
+          boardStopId: this.riderBoard,
+          alightStopId: this.riderAlight,
+        });
+        return fare > 0 ? fare : null;
+      } catch {
+        return null;
+      }
+    }
+    const n = parseFareText(dep.fare);
+    return n > 0 ? n : null;
+  }
+
   get isTodaySelected(): boolean {
     return this.days[0]?.iso === this.selectedDate;
   }
@@ -339,6 +365,10 @@ export class TerminalSchedulePage implements OnInit {
    *  A forwarded rider pair keeps the chosen stretch and per-seat fare. */
   reserve(dep: TerminalDeparture) {
     if (this.isDeparted(dep)) return;
+    const pair = this.riderBoard && this.riderAlight
+      ? { boardStopId: this.riderBoard, alightStopId: this.riderAlight }
+      : undefined;
+    const quote = this.quotedFareFor(dep);
     this.bookingService.startBooking({
       operator: dep.operator,
       from: dep.from,
@@ -348,9 +378,10 @@ export class TerminalSchedulePage implements OnInit {
       seatsLeft: dep.seats,
       status: dep.status,
       departureTime: dep.time,
-    }, this.riderBoard && this.riderAlight
-      ? { boardStopId: this.riderBoard, alightStopId: this.riderAlight }
-      : undefined);
+    }, {
+      ...pair,
+      ...(quote != null ? { quotedSeatFare: quote } : {}),
+    });
     this.bookingService.travelDate = this.selectedDate;
     this.bookingService.pickup = this.pickupService.getActive().pickup;
     this.router.navigateByUrl('/booking/trip');

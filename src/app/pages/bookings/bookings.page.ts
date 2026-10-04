@@ -31,7 +31,7 @@ import {
   displayStatusForBooking,
 } from './ticket.service';
 import { TripReviewService, TripReview } from './trip-review.service';
-import { BookingService, TripSummary } from '../booking/booking.service';
+import { BookingService, TripSummary, parseFareText } from '../booking/booking.service';
 import { TripPreparationService } from './trip-preparation.service';
 import { ProfileService } from '../profile/profile.service';
 import { HailService, HailRequest } from '../../services/hail.service';
@@ -244,7 +244,11 @@ export class BookingsPage {
       seatsLeft: '20 seats left',
       status: 'on-time',
     };
-    this.bookingService.startBooking(trip);
+    // Lock the fare sticker this ticket shows so checkout matches it.
+    const quote = parseFareText(booking.fare);
+    this.bookingService.startBooking(trip, {
+      ...(quote > 0 ? { quotedSeatFare: quote } : {}),
+    });
     this.router.navigateByUrl('/booking/trip');
   }
 

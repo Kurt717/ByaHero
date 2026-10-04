@@ -27,7 +27,7 @@ import {
   copyOutline,
   checkmarkOutline,
 } from 'ionicons/icons';
-import { BookingService } from '../../booking/booking.service';
+import { BookingService, parseFareText } from '../../booking/booking.service';
 import { AlertsService, AlertItem, AlertCta, AlertType } from '../alerts.service';
 
 addIcons({
@@ -155,7 +155,10 @@ export class AlertDetailPage implements OnInit {
         break;
       case 'book':
         if (cta.trip) {
-          this.booking.startBooking(cta.trip);
+          const quote = parseFareText(cta.trip.fare);
+          this.booking.startBooking(cta.trip, {
+            ...(quote > 0 ? { quotedSeatFare: quote } : {}),
+          });
           this.router.navigateByUrl('/booking/trip');
         }
         break;

@@ -278,6 +278,43 @@ export class ComparePage implements OnInit {
     this.router.navigateByUrl('/search');
   }
 
+  /** Stretch fare for the pair this selection will ride on this departure
+   *  (this operator + class) — the number checkout must honor. Undefined when
+   *  there is no pair or this departure cannot serve it (full-route pricing
+   *  then applies and Trip Details shows that segment). */
+  private segmentFareForPair(
+    dep: TerminalDeparture,
+    pair: { boardStopId: string; alightStopId: string } | undefined,
+  ): number | undefined {
+    if (!pair) return undefined;
+    try {
+      const depResolved = this.network.resolveTrip(dep.operator, dep.from, dep.to);
+      if (!depResolved) return undefined;
+      const corridor = depResolved.corridor;
+      const board = corridor.stops.find((s) => s.id === pair.boardStopId);
+      const alight = corridor.stops.find((s) => s.id === pair.alightStopId);
+      if (!board || !alight || board.id === alight.id) return undefined;
+      const dir = alight.sequence > board.sequence ? 'forward' : 'reverse';
+      if (dir !== depResolved.trip.direction) return undefined;
+      const depLo = Math.min(depResolved.boardSeq, depResolved.alightSeq);
+      const depHi = Math.max(depResolved.boardSeq, depResolved.alightSeq);
+      const lo = Math.min(board.sequence, alight.sequence);
+      const hi = Math.max(board.sequence, alight.sequence);
+      if (lo < depLo || hi > depHi) return undefined;
+      const vehicle = vehicleById(depResolved.trip.vehicleId);
+      const fare = this.network.fareFor({
+        corridorId: corridor.id,
+        operatorId: depResolved.operatorId ?? depResolved.trip.operatorId,
+        serviceClassId: vehicle?.serviceClassId ?? 'aircon',
+        boardStopId: board.id,
+        alightStopId: alight.id,
+      });
+      return fare > 0 ? fare : undefined;
+    } catch {
+      return undefined;
+    }
+  }
+
   /** Select the exact scheduled trip into the normal booking session.
    *  A forwarded rider pair (or the live session pair) keeps the chosen
    *  stretch and per-seat fare; otherwise the full route applies. */
@@ -290,6 +327,10 @@ export class ComparePage implements OnInit {
       : session.boardStopId && session.alightStopId
         ? { boardStopId: session.boardStopId, alightStopId: session.alightStopId }
         : undefined;
+    // Lock the number checkout must honor: this pair's stretch fare on this
+    // departure, or the full base fare when booking the whole route.
+    const stretch = this.segmentFareForPair(dep, pair);
+    const quote = stretch ?? (!pair && option.fareValue > 0 ? option.fareValue : null);
     this.bookingService.startBooking({
       operator: dep.operator,
       from: dep.from,
@@ -299,7 +340,10 @@ export class ComparePage implements OnInit {
       seatsLeft: dep.seats,
       status: dep.status,
       departureTime: dep.time,
-    }, pair);
+    }, {
+      ...pair,
+      ...(quote != null ? { quotedSeatFare: quote } : {}),
+    });
     this.bookingService.travelDate = this.travelDate;
     this.bookingService.pickup = this.pickupService.getActive().pickup;
     this.router.navigateByUrl('/booking/trip');

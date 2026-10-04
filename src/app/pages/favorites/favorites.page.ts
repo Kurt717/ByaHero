@@ -13,7 +13,7 @@ import {
   peopleOutline,
   compassOutline,
 } from 'ionicons/icons';
-import { BookingService, TripSummary } from '../booking/booking.service';
+import { BookingService, TripSummary, parseFareText } from '../booking/booking.service';
 import {
   FavoriteRoute,
   RouteCatalogService,
@@ -111,7 +111,11 @@ export class FavoritesPage {
       seatsLeft: route.seats,
       status: route.status,
     };
-    this.bookingService.startBooking(trip);
+    // Lock the fare sticker this card shows so checkout matches it.
+    const quote = parseFareText(route.fare);
+    this.bookingService.startBooking(trip, {
+      ...(quote > 0 ? { quotedSeatFare: quote } : {}),
+    });
     this.router.navigateByUrl('/booking/trip');
   }
 

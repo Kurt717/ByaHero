@@ -30,6 +30,10 @@ import {
 import { PickupService } from '../../../services/pickup.service';
 import { SeatService } from '../../../services/seat.service';
 import { VoucherService } from '../../../services/voucher.service';
+import {
+  NetworkService,
+  vehicleById,
+} from '../../../services/network.service';
 
 addIcons({
   'arrow-back-outline': arrowBackOutline,
@@ -83,6 +87,7 @@ export class RebookPage implements OnInit {
   private pickupService = inject(PickupService);
   private seatService = inject(SeatService);
   private voucherService = inject(VoucherService);
+  private network = inject(NetworkService);
 
   original: Booking | null = null;
   terminal: TerminalInfo | null = null;
@@ -338,10 +343,53 @@ export class RebookPage implements OnInit {
 
   // --- Selection → existing booking flow ---
 
+  /** Stretch fare for the original pair on a new departure (this operator +
+   *  class). Undefined when the pair doesn't fit — the full route then
+   *  applies and Trip Details shows that segment. */
+  private stretchFareForPair(
+    dep: TerminalDeparture,
+    pair: { boardStopId: string; alightStopId: string } | undefined,
+  ): number | undefined {
+    if (!pair) return undefined;
+    try {
+      const resolved = this.network.resolveTrip(dep.operator, dep.from, dep.to);
+      if (!resolved) return undefined;
+      const corridor = resolved.corridor;
+      const board = corridor.stops.find((s) => s.id === pair.boardStopId);
+      const alight = corridor.stops.find((s) => s.id === pair.alightStopId);
+      if (!board || !alight || board.id === alight.id) return undefined;
+      const dir = alight.sequence > board.sequence ? 'forward' : 'reverse';
+      if (dir !== resolved.trip.direction) return undefined;
+      const depLo = Math.min(resolved.boardSeq, resolved.alightSeq);
+      const depHi = Math.max(resolved.boardSeq, resolved.alightSeq);
+      const lo = Math.min(board.sequence, alight.sequence);
+      const hi = Math.max(board.sequence, alight.sequence);
+      if (lo < depLo || hi > depHi) return undefined;
+      const vehicle = vehicleById(resolved.trip.vehicleId);
+      const fare = this.network.fareFor({
+        corridorId: corridor.id,
+        operatorId: resolved.operatorId ?? resolved.trip.operatorId,
+        serviceClassId: vehicle?.serviceClassId ?? 'aircon',
+        boardStopId: board.id,
+        alightStopId: alight.id,
+      });
+      return fare > 0 ? fare : undefined;
+    } catch {
+      return undefined;
+    }
+  }
+
   select(option: RebookOption) {
     if (!this.original || option.soldOut || option.shortBy > 0) return;
     const dep = option.dep;
     const o = this.original;
+    const pair = o?.boardStopId && o?.alightStopId
+      ? { boardStopId: o.boardStopId, alightStopId: o.alightStopId }
+      : undefined;
+    // Lock checkout to a shown number: the original stretch repriced on this
+    // departure, or the card's base fare for a full-route move.
+    const stretch = this.stretchFareForPair(dep, pair);
+    const quote = stretch ?? (!pair && option.fareValue > 0 ? option.fareValue : null);
     this.bookingService.startBooking({
       operator: dep.operator,
       from: dep.from,
@@ -351,9 +399,10 @@ export class RebookPage implements OnInit {
       seatsLeft: dep.seats,
       status: dep.status,
       departureTime: dep.time,
-    }, o?.boardStopId && o?.alightStopId
-      ? { boardStopId: o.boardStopId, alightStopId: o.alightStopId }
-      : undefined);
+    }, {
+      ...pair,
+      ...(quote != null ? { quotedSeatFare: quote } : {}),
+    });
     this.bookingService.travelDate = this.selectedDate;
     this.bookingService.passengers = this.carriedPassengers();
     this.bookingService.pickup = this.pickupService.getActive().pickup;

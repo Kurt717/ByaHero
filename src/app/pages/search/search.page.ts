@@ -26,7 +26,7 @@ import {
   businessOutline,
   swapVerticalOutline,
 } from 'ionicons/icons';
-import { BookingService, TripSummary } from '../booking/booking.service';
+import { BookingService, TripSummary, parseFareText } from '../booking/booking.service';
 import {
   RouteCatalogService,
   TerminalInfo,
@@ -650,7 +650,13 @@ selectDestination(dest: Destination) {
       seatsLeft: route.seats,
       status: route.status,
     };
-    this.bookingService.startBooking(trip, this.riderPairOptions(route));
+    // Lock the sticker price the commuter tapped (stretch fare under a pair,
+    // otherwise the full-route fare) so checkout matches this card.
+    const quote = parseFareText(this.fareLabelFor(route));
+    this.bookingService.startBooking(trip, {
+      ...this.riderPairOptions(route),
+      ...(quote > 0 ? { quotedSeatFare: quote } : {}),
+    });
     this.bookingService.pickup = this.pickupService.getActive().pickup;
     this.router.navigateByUrl('/booking/trip');
   }
