@@ -211,30 +211,61 @@ export class TerminalSchedulePage implements OnInit {
     return {};
   }
 
-  /** Locked fare for this departure: the forwarded pair's stretch fare on
-   *  this departure's operator + class (the number its fare table shows for
-   *  that stretch), or the board fare text for a full-route booking. Null
-   *  when unresolvable — the session then prices its final segment. */
-  private quotedFareFor(dep: TerminalDeparture): number | null {
-    if (this.riderBoard && this.riderAlight) {
-      try {
-        const resolved = this.network.resolveTrip(dep.operator, dep.from, dep.to);
-        if (!resolved) return null;
-        const vehicle = vehicleById(resolved.trip.vehicleId);
-        const fare = this.network.fareFor({
-          corridorId: resolved.corridor.id,
-          operatorId: resolved.operatorId ?? resolved.trip.operatorId,
-          serviceClassId: vehicle?.serviceClassId ?? 'aircon',
-          boardStopId: this.riderBoard,
-          alightStopId: this.riderAlight,
-        });
-        return fare > 0 ? fare : null;
-      } catch {
-        return null;
-      }
+  /** The forwarded rider pair repriced on this departure (LTFRB base +
+   *  per-km rule for this operator + class over the pair's km — never a
+   *  ratio of the full fare). Null without a pair or when this departure
+   *  cannot serve the stretch. */
+  pairStretchFor(dep: TerminalDeparture): {
+    fare: number;
+    seatsLeft: number;
+    boardName: string;
+    alightName: string;
+    km: number;
+  } | null {
+    if (!this.riderBoard || !this.riderAlight) return null;
+    try {
+      const resolved = this.network.resolveTrip(dep.operator, dep.from, dep.to);
+      if (!resolved) return null;
+      const corridor = resolved.corridor;
+      const board = corridor.stops.find((s) => s.id === this.riderBoard);
+      const alight = corridor.stops.find((s) => s.id === this.riderAlight);
+      if (!board || !alight || board.id === alight.id) return null;
+      const dir = alight.sequence > board.sequence ? 'forward' : 'reverse';
+      if (dir !== resolved.trip.direction) return null;
+      const depLo = Math.min(resolved.boardSeq, resolved.alightSeq);
+      const depHi = Math.max(resolved.boardSeq, resolved.alightSeq);
+      const lo = Math.min(board.sequence, alight.sequence);
+      const hi = Math.max(board.sequence, alight.sequence);
+      if (lo < depLo || hi > depHi) return null;
+      const vehicle = vehicleById(resolved.trip.vehicleId);
+      const fare = this.network.fareFor({
+        corridorId: corridor.id,
+        operatorId: resolved.operatorId ?? resolved.trip.operatorId,
+        serviceClassId: vehicle?.serviceClassId ?? 'aircon',
+        boardStopId: board.id,
+        alightStopId: alight.id,
+      });
+      if (!(fare > 0)) return null;
+      const seatIds = vehicle ? seatIdsForLayout(vehicle.layout) : [];
+      const seatsLeft = seatIds.length
+        ? this.seatService.availabilityForSegment(
+            departureKeyForTrip(resolved.trip.tripId, this.selectedDate),
+            seatIds,
+            lo,
+            hi,
+            corridor.stops.length - 1,
+          ).available
+        : 0;
+      return {
+        fare,
+        seatsLeft,
+        boardName: board.name,
+        alightName: alight.name,
+        km: Math.abs(alight.km - board.km),
+      };
+    } catch {
+      return null;
     }
-    const n = parseFareText(dep.fare);
-    return n > 0 ? n : null;
   }
 
   get isTodaySelected(): boolean {
@@ -362,13 +393,18 @@ export class TerminalSchedulePage implements OnInit {
 
   /** Reserve a scheduled departure: operator/route/date/EXACT slot time
    *  enter the normal booking session (Trip Details → Seats → Payment).
-   *  A forwarded rider pair keeps the chosen stretch and per-seat fare. */
+   *  The booking rides the rider's stretch at its repriced fare when this
+   *  departure serves it — otherwise the full route at the board fare, never
+   *  a silent fallback to different stops at a different price. */
   reserve(dep: TerminalDeparture) {
     if (this.isDeparted(dep)) return;
-    const pair = this.riderBoard && this.riderAlight
-      ? { boardStopId: this.riderBoard, alightStopId: this.riderAlight }
-      : undefined;
-    const quote = this.quotedFareFor(dep);
+    const stretch = this.pairStretchFor(dep);
+    const pair =
+      stretch && this.riderBoard && this.riderAlight
+        ? { boardStopId: this.riderBoard, alightStopId: this.riderAlight }
+        : undefined;
+    const boardFare = parseFareText(dep.fare);
+    const quote = stretch?.fare ?? (boardFare > 0 ? boardFare : null);
     this.bookingService.startBooking({
       operator: dep.operator,
       from: dep.from,

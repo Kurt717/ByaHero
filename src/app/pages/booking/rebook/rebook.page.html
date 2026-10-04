@@ -159,7 +159,7 @@
             <article
               class="alt-card"
               [class.blocked]="o.soldOut || o.shortBy > 0"
-              [attr.aria-label]="o.dep.time + ' ' + o.dep.operator + ', ' + formatFare(o.fareValue)"
+              [attr.aria-label]="o.dep.time + ' ' + o.dep.operator + ', ' + formatFare(displayFare(o))"
             >
               <div class="alt-main">
                 <div class="alt-times">
@@ -172,6 +172,9 @@
                   {{ o.dep.operator }}
                 </p>
                 <p class="alt-meta">{{ o.dep.duration }} · {{ o.seatsAvailable }} seat{{ o.seatsAvailable === 1 ? '' : 's' }} left</p>
+                @if (stretchLine(o); as line) {
+                  <p class="alt-stretch" aria-live="polite">{{ line }}</p>
+                }
                 @if (o.tags.length) {
                   <div class="tag-row">
                     @for (t of o.tags; track t) {
@@ -192,7 +195,7 @@
                 }
               </div>
               <div class="alt-stub" aria-hidden="true">
-                <span class="fare">{{ formatFare(o.fareValue) }}</span>
+                <span class="fare">{{ formatFare(displayFare(o)) }}</span>
                 @if (!o.soldOut && o.shortBy === 0) {
                   <span class="stamp">NEW RIDE</span>
                 }

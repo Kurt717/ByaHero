@@ -118,7 +118,11 @@
                     </p>
                     <p class="ticket-meta">
                       <span class="op-badge">{{ dep.operator }}</span>
-                      <span class="fare">{{ dep.fare }}</span>
+                      @if (pairStretchFor(dep); as st) {
+                        <span class="fare">₱{{ st.fare }}</span>
+                      } @else {
+                        <span class="fare">{{ dep.fare }}</span>
+                      }
                       @if (dep.status === 'delayed') {
                         <span class="status-pill delayed">Delayed</span>
                       } @else {
@@ -126,6 +130,11 @@
                       }
                     </p>
                     <p class="ticket-sub">{{ dep.seats }} · {{ dep.duration }} · Daily</p>
+                    @if (pairStretchFor(dep); as st) {
+                      <p class="ticket-pair" aria-live="polite">
+                        Your stretch · {{ st.boardName }} → {{ st.alightName }} · {{ st.km }} km
+                      </p>
+                    }
                   </div>
                   <span class="ticket-perf" aria-hidden="true"></span>
                   <div class="ticket-cta">

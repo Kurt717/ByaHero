@@ -137,7 +137,11 @@
                   </p>
                   <p class="board-meta">
                     <span class="op-badge">{{ dep.operator }}</span>
-                    <span class="fare">{{ dep.fare }}</span>
+                    @if (pairStretchFor(dep); as st) {
+                      <span class="fare">₱{{ st.fare }}</span>
+                    } @else {
+                      <span class="fare">{{ dep.fare }}</span>
+                    }
                     @if (isDeparted(dep)) {
                       <span class="status-pill gone">Departed</span>
                     } @else if (dep.status === 'delayed') {
@@ -147,6 +151,11 @@
                     }
                   </p>
                   <p class="board-sub">{{ dep.seats }} · {{ dep.duration }} · {{ stopCount(dep) }} stops</p>
+                  @if (pairStretchFor(dep); as st) {
+                    <p class="board-pair" aria-live="polite">
+                      Your stretch · {{ st.boardName }} → {{ st.alightName }} · {{ st.km }} km · {{ st.seatsLeft }} seat{{ st.seatsLeft === 1 ? '' : 's' }} left
+                    </p>
+                  }
                   @if (downstreamFares(dep); as fares) {
                     @if (fares.length) {
                       <details class="fare-table">

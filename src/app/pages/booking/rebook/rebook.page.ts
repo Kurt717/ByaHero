@@ -349,7 +349,7 @@ export class RebookPage implements OnInit {
   private stretchFareForPair(
     dep: TerminalDeparture,
     pair: { boardStopId: string; alightStopId: string } | undefined,
-  ): number | undefined {
+  ): { fare: number; boardName: string; alightName: string; km: number } | undefined {
     if (!pair) return undefined;
     try {
       const resolved = this.network.resolveTrip(dep.operator, dep.from, dep.to);
@@ -373,7 +373,13 @@ export class RebookPage implements OnInit {
         boardStopId: board.id,
         alightStopId: alight.id,
       });
-      return fare > 0 ? fare : undefined;
+      if (!(fare > 0)) return undefined;
+      return {
+        fare,
+        boardName: board.name,
+        alightName: alight.name,
+        km: Math.abs(alight.km - board.km),
+      };
     } catch {
       return undefined;
     }
@@ -387,9 +393,12 @@ export class RebookPage implements OnInit {
       ? { boardStopId: o.boardStopId, alightStopId: o.alightStopId }
       : undefined;
     // Lock checkout to a shown number: the original stretch repriced on this
-    // departure, or the card's base fare for a full-route move.
+    // departure, or the card's base fare for an explicit full-route move
+    // (never a silent fallback to different stops at a different price).
     const stretch = this.stretchFareForPair(dep, pair);
-    const quote = stretch ?? (!pair && option.fareValue > 0 ? option.fareValue : null);
+    const keptPair = pair && stretch != null ? pair : undefined;
+    const stretchFare = stretch?.fare;
+    const quote = stretchFare ?? (option.fareValue > 0 ? option.fareValue : null);
     this.bookingService.startBooking({
       operator: dep.operator,
       from: dep.from,
@@ -400,7 +409,7 @@ export class RebookPage implements OnInit {
       status: dep.status,
       departureTime: dep.time,
     }, {
-      ...pair,
+      ...keptPair,
       ...(quote != null ? { quotedSeatFare: quote } : {}),
     });
     this.bookingService.travelDate = this.selectedDate;
@@ -408,6 +417,28 @@ export class RebookPage implements OnInit {
     this.bookingService.pickup = this.pickupService.getActive().pickup;
     this.bookingService.rebookedFrom = this.original.bookingRef;
     this.router.navigateByUrl('/booking/trip');
+  }
+
+  /** Fare stub number: the original stretch repriced on this departure when
+   *  it serves it, otherwise the card's base fare. Matches the locked quote. */
+  displayFare(option: RebookOption): number {
+    const o = this.original;
+    const pair =
+      o?.boardStopId && o?.alightStopId
+        ? { boardStopId: o.boardStopId, alightStopId: o.alightStopId }
+        : undefined;
+    return this.stretchFareForPair(option.dep, pair)?.fare ?? option.fareValue;
+  }
+
+  /** Stretch context line for the fare stub (null = full-route base fare). */
+  stretchLine(option: RebookOption): string | null {
+    const o = this.original;
+    const pair =
+      o?.boardStopId && o?.alightStopId
+        ? { boardStopId: o.boardStopId, alightStopId: o.alightStopId }
+        : undefined;
+    const st = this.stretchFareForPair(option.dep, pair);
+    return st ? `Your stretch · ${st.boardName} → ${st.alightName} · ${st.km} km` : null;
   }
 
   /** Original passenger configuration, revalidated: unknown labels fall
