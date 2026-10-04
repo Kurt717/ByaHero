@@ -29,7 +29,7 @@ import {
   seatIdsForLayout,
   vehicleById,
 } from '../../../services/network.service';
-import { SeatService } from '../../../services/seat.service';
+import { SeatService, departureKeyForTrip } from '../../../services/seat.service';
 
 addIcons({
   'arrow-back-outline': arrowBackOutline,
@@ -86,6 +86,9 @@ export class TerminalSchedulePage implements OnInit {
   destFilter = 'all';
   /** Route id that focused this board (deep entry from Search/Terminal). */
   focusedRouteId: string | null = null;
+  /** Rider pair forwarded from Search (board/alight stop ids). */
+  riderBoard: string | null = null;
+  riderAlight: string | null = null;
 
   constructor() {
     addIcons({
@@ -123,6 +126,9 @@ export class TerminalSchedulePage implements OnInit {
       : null;
     this.focusedRouteId = focused ? focused.id : null;
     this.destFilter = focused ? focused.to : 'all';
+    // Rider pair forwarded from Search via Terminal Details.
+    this.riderBoard = this.route.snapshot.queryParamMap.get('board');
+    this.riderAlight = this.route.snapshot.queryParamMap.get('alight');
   }
 
   /** Today + next 6 days, same string format as the booking flow. */
@@ -192,8 +198,17 @@ export class TerminalSchedulePage implements OnInit {
         terminal: this.terminal.id,
         date: this.selectedDate,
         dest: this.destFilter,
+        ...this.riderPairParams(),
       },
     });
+  }
+
+  /** Rider pair as query params (empty when none was forwarded). */
+  private riderPairParams(): Record<string, string> {
+    if (this.riderBoard && this.riderAlight) {
+      return { board: this.riderBoard, alight: this.riderAlight };
+    }
+    return {};
   }
 
   get isTodaySelected(): boolean {
@@ -255,7 +270,7 @@ export class TerminalSchedulePage implements OnInit {
         });
         const seatsLeft = seatIds.length
           ? this.seatService.availabilityForSegment(
-              `${resolved.trip.tripId}|${this.selectedDate}`,
+              departureKeyForTrip(resolved.trip.tripId, this.selectedDate),
               seatIds,
               Math.min(board.sequence, s.sequence),
               Math.max(board.sequence, s.sequence),
@@ -320,7 +335,8 @@ export class TerminalSchedulePage implements OnInit {
   }
 
   /** Reserve a scheduled departure: operator/route/date/EXACT slot time
-   *  enter the normal booking session (Trip Details → Seats → Payment). */
+   *  enter the normal booking session (Trip Details → Seats → Payment).
+   *  A forwarded rider pair keeps the chosen stretch and per-seat fare. */
   reserve(dep: TerminalDeparture) {
     if (this.isDeparted(dep)) return;
     this.bookingService.startBooking({
@@ -332,7 +348,9 @@ export class TerminalSchedulePage implements OnInit {
       seatsLeft: dep.seats,
       status: dep.status,
       departureTime: dep.time,
-    });
+    }, this.riderBoard && this.riderAlight
+      ? { boardStopId: this.riderBoard, alightStopId: this.riderAlight }
+      : undefined);
     this.bookingService.travelDate = this.selectedDate;
     this.bookingService.pickup = this.pickupService.getActive().pickup;
     this.router.navigateByUrl('/booking/trip');

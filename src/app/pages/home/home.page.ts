@@ -86,9 +86,10 @@ import {
   tripById,
   vehicleById,
   seatIdsForLayout,
+  riderPairForRoute,
   TRIPS,
 } from '../../services/network.service';
-import { SeatService } from '../../services/seat.service';
+import { SeatService, departureKeyForTrip } from '../../services/seat.service';
 
 import { TripReminderCardComponent } from '../../components/trip-reminder-card/trip-reminder-card.component';
 
@@ -203,15 +204,23 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild('mapEl') mapEl?: ElementRef<HTMLDivElement>;
 
-  private readonly DEFAULT_ORIGIN = 'Baguio City, Benguet';
+  /** Empty pickup/destination = no filter yet: the list + map show every
+   *  running bus. Typing both filters to the rider's stretch with the
+   *  segment price (see displayRoutes / segmentInfoFor). */
+  readonly ORIGIN_PLACEHOLDER = 'Where from?';
 
-  private readonly DEFAULT_DEST = 'Tuguegarao City, Cagayan';
+  readonly DEST_PLACEHOLDER = 'Where to?';
 
   selectedView: 'list' | 'map' = 'list';
 
-  origin = this.DEFAULT_ORIGIN;
+  origin = '';
 
-  destination = this.DEFAULT_DEST;
+  destination = '';
+
+  /** Both ends typed: the app can filter to the rider's own stretch. */
+  get hasPair(): boolean {
+    return this.origin.trim() !== '' && this.destination.trim() !== '';
+  }
 
   /** Grab-style place picker sheet: null = closed. */
   pickerFor: 'origin' | 'destination' | null = null;
@@ -237,6 +246,11 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
     const current = this.origin;
     this.origin = this.destination;
     this.destination = current;
+  }
+
+  clearPair() {
+    this.origin = '';
+    this.destination = '';
   }
 
   /** Terminal display names match routes by their city. */
@@ -299,12 +313,8 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
    * appear. Defaults (or one side) fall back to the text filter.
    */
   get displayRoutes(): NearbyRoute[] {
-    const fromQ =
-      this.origin.trim() === this.DEFAULT_ORIGIN ? '' : this.origin.trim();
-    const toQ =
-      this.destination.trim() === this.DEFAULT_DEST
-        ? ''
-        : this.destination.trim();
+    const fromQ = this.origin.trim();
+    const toQ = this.destination.trim();
     if (fromQ && toQ) {
       return this.catalog.sortRoutes(
         this.segmentFilteredRoutes(fromQ, toQ),
@@ -351,7 +361,7 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
       const trip = r.trip;
       const ids = this.defaultSegmentSeats(trip.tripId);
       const left = this.seatService.availabilityForSegment(
-        `${trip.tripId}|${today}`,
+        departureKeyForTrip(trip.tripId, today),
         ids,
         riderLo,
         riderHi,
@@ -388,10 +398,7 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
     boardName: string;
     alightName: string;
   } | null {
-    if (
-      this.origin.trim() === this.DEFAULT_ORIGIN ||
-      this.destination.trim() === this.DEFAULT_DEST
-    ) {
+    if (!this.hasPair) {
       return null;
     }
     const pair = this.network.resolveTrip('', this.origin, this.destination);
@@ -414,7 +421,7 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
       alightStopId: alight.id,
     });
     const seatsLeft = this.seatService.availabilityForSegment(
-      `${r.trip.tripId}|${today}`,
+      departureKeyForTrip(r.trip.tripId, today),
       this.defaultSegmentSeats(r.trip.tripId),
       riderLo,
       riderHi,
@@ -431,15 +438,89 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
+   * Live seats-left for a route card, for today's departure (the hail
+   * context Home displays). Corridor routes read the segment inventory —
+   * the same store the seat map and payment screens write. Off-corridor
+   * routes use the legacy adapter with the same operator|from|to|date key
+   * the booking flow files holds under, so those cards move too. Reads
+   * the seat store on every call so a purchase is reflected as soon as
+   * change detection re-runs (including the ionViewWillEnter refresh).
+   */
+  liveSeatsLeftFor(route: NearbyRoute): number | null {
+    try {
+      const today = new Date().toDateString();
+      const r = this.network.resolveTrip(route.operator, route.from, route.to);
+      if (!r) {
+        return this.seatService.availabilityFor(
+          route.seats,
+          [route.operator, route.from, route.to, today].join('|'),
+        ).available;
+      }
+      const ids = this.defaultSegmentSeats(r.trip.tripId);
+      if (!ids.length) return null;
+      return this.seatService.availabilityForSegment(
+        departureKeyForTrip(r.trip.tripId, today),
+        ids,
+        Math.min(r.boardSeq, r.alightSeq),
+        Math.max(r.boardSeq, r.alightSeq),
+        r.corridor.stops.length - 1,
+      ).available;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Card label: live inventory for today's departure, falling back to the
+   * static catalog text only when inventory cannot be computed at all.
+   */
+  seatsLabelFor(route: NearbyRoute): string {
+    const live = this.liveSeatsLeftFor(route);
+    if (live == null) return route.seats;
+    return `${live} seat${live === 1 ? '' : 's'} left`;
+  }
+
+  /**
+   * Card fare sticker: the SAME number checkout will charge per seat.
+   * Pair mode shows the rider's stretch fare (identical inputs to the
+   * booking's seatFare when the same trip + stretch is booked); otherwise
+   * the full-route network fare. Falls back to the catalog text only when
+   * the route is off-corridor (checkout then parses that same string).
+   */
+  fareLabelFor(route: NearbyRoute): string {
+    try {
+      if (this.hasPair) {
+        const seg = this.segmentInfoFor(route);
+        if (seg) return `₱ ${seg.fare.toLocaleString('en-PH')}`;
+      } else {
+        const r = this.network.resolveTrip(route.operator, route.from, route.to);
+        if (r) {
+          const vehicle = vehicleById(r.trip.vehicleId);
+          const lo = Math.min(r.boardSeq, r.alightSeq);
+          const hi = Math.max(r.boardSeq, r.alightSeq);
+          const fare = this.network.fareFor({
+            corridorId: r.corridor.id,
+            operatorId: r.operatorId ?? r.trip.operatorId,
+            serviceClassId: vehicle?.serviceClassId ?? 'aircon',
+            boardStopId: r.corridor.stops[lo].id,
+            alightStopId: r.corridor.stops[hi].id,
+          });
+          if (fare > 0) return `₱ ${fare.toLocaleString('en-PH')}`;
+        }
+      }
+    } catch {
+      /* fall through to catalog text */
+    }
+    return route.fare;
+  }
+
+  /**
    * Cheapest segment fare for the chosen origin → destination pair across
    * corridor trips in the direction of travel (prototype demo fares).
-   * Null when the pair is not on a corridor or is still the default.
+   * Null when no pair is typed or the pair is not on a corridor.
    */
   get pairFarePreview(): string | null {
-    if (
-      this.origin.trim() === this.DEFAULT_ORIGIN &&
-      this.destination.trim() === this.DEFAULT_DEST
-    ) {
+    if (!this.hasPair) {
       return null;
     }
     const resolved = this.network.resolveTrip('', this.origin, this.destination);
@@ -630,6 +711,11 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
     this.userName = profile.name;
 
     this.userAvatar = profile.avatar;
+
+    // The tab instance stays alive while the commuter books: re-render on
+    // return so the live seat counts above pick up purchases/holds made on
+    // the seat map and payment screens.
+    this.cdr.detectChanges();
   }
 
   ngOnDestroy() {
@@ -835,7 +921,21 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
 
     // Hail boards at the nearest downstream stop: availability is checked
     // from that stop onward, and stops the bus passed stay unbookable.
-    this.anchorHailToCorridor();
+    // No pickup/destination typed and no real GPS fix: the hail is for the
+    // FULL ride at the FULL price, so the full-route boarding from
+    // attachNetwork stays untouched instead of anchoring to fallback
+    // coordinates.
+    if (
+      this.hasPair ||
+      this.pickupService.getActive().pickup?.source === 'gps'
+    ) {
+      this.anchorHailToCorridor();
+    }
+
+    // The typed destination rides along as the alighting stop (validated:
+    // same corridor, travel direction, downstream of boarding) so the fare
+    // is pickup→destination, never the whole route.
+    this.applyHailDestination(route);
 
     console.info(
       '[ByaHero] Hail confirmed, entering ticketing',
@@ -861,6 +961,53 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
     this.syncHailMarker();
   }
 
+  /**
+   * Carry the typed destination into the hail session as the alighting stop.
+   * Fully validated (same corridor, trip direction, downstream of the
+   * anchored boarding, inside the route span) — anything else keeps the
+   * full-route alighting as before.
+   */
+  private applyHailDestination(route: NearbyRoute) {
+    const booking = this.bookingService;
+    if (!booking.corridorId || !booking.tripId || !booking.boardStopId) return;
+    if (!this.hasPair) {
+      return;
+    }
+    try {
+      const pair = this.network.resolveTrip('', this.origin, this.destination);
+      const r = this.network.resolveTrip(route.operator, route.from, route.to);
+      const corridor = corridorById(booking.corridorId);
+      if (!pair || !r || !corridor) return;
+      const stopIds = riderPairForRoute(
+        pair.corridor.id,
+        pair.boardSeq,
+        pair.alightSeq,
+        pair.corridor.stops,
+        r.corridor.id,
+        r.boardSeq,
+        r.alightSeq,
+      );
+      if (!stopIds) return;
+      if (pair.corridor.id !== booking.corridorId) return;
+      const boardNow = corridor.stops.find((s) => s.id === booking.boardStopId);
+      const alightWant = corridor.stops.find((s) => s.id === stopIds.alightStopId);
+      if (!boardNow || !alightWant) return;
+      const trip = tripById(booking.tripId);
+      if (!trip) return;
+      const downstream =
+        trip.direction === 'forward'
+          ? alightWant.sequence > boardNow.sequence
+          : alightWant.sequence < boardNow.sequence;
+      if (!downstream) return;
+      const routeLo = Math.min(r.boardSeq, r.alightSeq);
+      const routeHi = Math.max(r.boardSeq, r.alightSeq);
+      if (alightWant.sequence < routeLo || alightWant.sequence > routeHi) return;
+      const err = booking.setBoardAlight(boardNow.id, alightWant.id);
+      if (err) return;
+    } catch {
+      return;
+    }
+  }
   /**
    * Map the hail pickup onto the corridor: nearest downstream stop at or
    * after the bus's current position becomes the boarding stop, so the
@@ -1850,6 +1997,12 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
         route.id,
       );
 
+    const liveSeats = this.liveSeatsLeftFor(route);
+    const seatsLabel =
+      liveSeats == null
+        ? route.seats
+        : `${liveSeats} seat${liveSeats === 1 ? '' : 's'} left`;
+
     return `
       <div class="bh-bus-pop">
 
@@ -1891,13 +2044,13 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
           ·
 
           <span>
-            ${route.fare}
+            ${this.fareLabelFor(route)}
           </span>
 
           ·
 
           <span>
-            ${route.seats}
+            ${seatsLabel}
           </span>
 
         </div>

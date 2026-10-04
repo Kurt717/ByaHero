@@ -293,7 +293,7 @@ ion-content.search-content {
   display: flex;
   align-items: stretch;
   gap: 8px;
-  margin-top: 12px;
+  margin-bottom: 20px;
 
   .pair-btn {
     flex: 1;
@@ -948,6 +948,20 @@ ion-content.search-content {
     color: var(--text-muted);
     line-height: 1.5;
   }
+
+  .empty-clear {
+    margin-top: 12px;
+    min-height: 44px;
+    padding: 8px 18px;
+    border-radius: 999px;
+    border: 1.5px solid var(--primary-navy);
+    background: transparent;
+    color: var(--primary-navy);
+    font-family: var(--font-family);
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+  }
 }
 
 .side-empty {
@@ -965,6 +979,7 @@ ion-content.search-content {
   gap: 8px;
   flex-wrap: wrap;
   margin-bottom: 20px;
+  
 
   .scope-chip {
     min-height: 40px;

@@ -187,34 +187,40 @@ ion-content.flow-content {
     gap: 10px;
   }
 
-  .seat-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-
-    .row-num {
-      width: 16px;
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--text-muted);
-      text-align: center;
-      flex-shrink: 0;
-    }
-
-    .seat-pair {
+    .seat-row {
       display: flex;
+      align-items: center;
+      justify-content: center;
       gap: 8px;
-      flex: 1;
-    }
-    .aisle-gap {
-      width: 18px;
-      flex-shrink: 0;
-    }
+      min-width: 0;
 
-    .seat {
-      flex: 1;
-      aspect-ratio: 1 / 1;
-      max-width: 52px;
+      .row-num {
+        width: 16px;
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--text-muted);
+        text-align: center;
+        flex-shrink: 0;
+      }
+
+      .seat-pair {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        flex: 1 1 0;
+        min-width: 0;
+      }
+      .aisle-gap {
+        width: 18px;
+        flex-shrink: 0;
+      }
+
+      .seat {
+        flex: 1 1 0;
+        min-width: 0;
+        aspect-ratio: 1 / 1;
+        max-width: 52px;
+        touch-action: manipulation;
       border-radius: 10px;
       border: 1.5px solid var(--ink);
       background: var(--bg-page);
@@ -258,6 +264,22 @@ ion-content.flow-content {
         cursor: not-allowed;
       }
 
+      /* Physically unsellable (restroom bay…): same treatment as booked,
+         with a strikethrough so it reads as "not a seat". */
+      &.blocked {
+        background: repeating-linear-gradient(
+          45deg,
+          #e2e8f0,
+          #e2e8f0 4px,
+          #cbd5e1 4px,
+          #cbd5e1 5px
+        );
+        border-color: #cbd5e1;
+        color: #94a3b8;
+        cursor: not-allowed;
+        text-decoration: line-through;
+      }
+
       /* Available + matches the session preference: yellow ring + dot, so
          the match never depends on color alone. */
       &.available.preferred {
@@ -278,6 +300,44 @@ ion-content.flow-content {
         }
       }
     }
+  }
+}
+
+/* --- SOLD OUT BANNER: never a silent grey map --- */
+.soldout-banner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+  background: var(--bg-white);
+  border: 1.5px dashed var(--accent-red);
+  border-radius: 14px;
+  padding: 16px 14px;
+  margin-bottom: 16px;
+  strong {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--accent-red);
+  }
+  span {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+  .soldout-back {
+    margin-top: 8px;
+    min-height: 44px;
+    padding: 8px 20px;
+    border-radius: 999px;
+    border: 1.5px solid var(--primary-navy);
+    background: transparent;
+    color: var(--primary-navy);
+    font-family: var(--font-family);
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
   }
 }
 
@@ -367,6 +427,16 @@ ion-content.flow-content {
         background: #e2e8f0;
         border-color: #e2e8f0;
       }
+      &.blocked {
+        background: repeating-linear-gradient(
+          45deg,
+          #e2e8f0,
+          #e2e8f0 3px,
+          #cbd5e1 3px,
+          #cbd5e1 4px
+        );
+        border-color: #cbd5e1;
+      }
       &.preferred {
         background: #fffbe6;
         border-color: var(--primary-navy);
@@ -382,6 +452,31 @@ ion-content.flow-content {
   font-weight: 600;
   color: var(--accent-red);
   margin: 0;
+}
+
+/* Narrow phones (360px and below): 5-seat rows must shrink instead of
+   clipping the rightmost seats out of the bus frame. */
+@media (max-width: 380px) {
+  .bus-frame {
+    padding: 16px 10px 20px;
+
+    .seat-row {
+      gap: 6px;
+    }
+
+    .seat-pair {
+      gap: 6px;
+    }
+
+    .aisle-gap {
+      width: 12px;
+    }
+
+    .seat {
+      border-radius: 8px;
+      font-size: 10px;
+    }
+  }
 }
 
 /* --- STICKY FOOTER --- */

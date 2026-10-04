@@ -1,3 +1,7 @@
+@use "./theme/tokens";
+@use "./theme/animations";
+@use "./theme/components";
+@use "./theme/utilities";
 /*
  * App Global CSS
  * ----------------------------------------------------------------------------
@@ -46,11 +50,8 @@
    - theme/_components.scss: opt-in bh- classes
    - theme/_utilities.scss: non-visual helpers
    Pages keep their selectors; duplicates removed where byte-identical.
+   (Loaded via @use at the top of this file.)
    ===================================================================== */
-@import "./theme/tokens";
-@import "./theme/animations";
-@import "./theme/components";
-@import "./theme/utilities";
 
 /* =====================================================================
    byaHERO — responsive layer (tablet + desktop)

@@ -294,5 +294,19 @@
         </button>
       </section>
     </div>
+  } @else {
+    <div class="terminal-wrap">
+      <div class="empty-state" role="status">
+        <div class="empty-ticket-outline">
+          <ion-icon name="ticket-outline" aria-hidden="true"></ion-icon>
+        </div>
+        <h3>No scheduled routes here yet</h3>
+        <p>We couldn't find this terminal. Try searching a route instead.</p>
+        <button type="button" class="empty-cta" (click)="goBack()">
+          Go back
+          <ion-icon name="chevron-forward-outline" aria-hidden="true"></ion-icon>
+        </button>
+      </div>
+    </div>
   }
 </ion-content>

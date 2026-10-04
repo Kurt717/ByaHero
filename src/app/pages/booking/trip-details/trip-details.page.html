@@ -24,7 +24,7 @@
               <span [ngClass]="trip.status">{{ trip.status }}</span>
             </p>
           </div>
-          <span class="fare-tag">{{ trip.fare }}<small>/seat</small></span>
+          <span class="fare-tag">{{ booking.hasNetworkSegment ? booking.formatCurrency(booking.seatFare) : trip.fare }}<small>/seat</small></span>
         </div>
         <div class="summary-route">
           <div class="route-line-vertical">
@@ -37,9 +37,9 @@
             <p><strong>{{ trip.to }}</strong></p>
           </div>
         </div>
-        @if (trip.departureTime) {
+        @if (booking.scheduledDepartureTime) {
           <p class="departure-line">
-            Departs {{ trip.departureTime }} · {{ booking.travelDate }}
+            Departs {{ booking.scheduledDepartureTime }} · {{ booking.travelDate }}@if (booking.boardsAtPickup) { · {{ booking.boardsAtPickup }} }
           </p>
         }
       </div>
@@ -54,9 +54,6 @@
             <p class="segment-sub">
               {{ seg.km }} km · boards {{ seg.boardEta || '—' }} · arrives {{ seg.alightEta || '—' }} · {{ seg.fare }}/seat
             </p>
-            <button type="button" class="change-home" (click)="changeOnHome()">
-              Change pickup or destination on Home
-            </button>
           </div>
         </div>
       }

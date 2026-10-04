@@ -39,6 +39,7 @@
               "src/theme/variables.scss"
             ],
             "scripts": [],
+            "allowedCommonJsDependencies": ["leaflet", "qrcode"],
             "browser": "src/main.ts"
           },
           "configurations": {
@@ -51,7 +52,7 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "24kb",
+                  "maximumWarning": "40kb",
                   "maximumError": "48kb"
                 }
               ],

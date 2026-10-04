@@ -79,6 +79,10 @@ export class TerminalDetailsPage implements OnInit {
 
   days: DayOption[] = [];
   selectedDate = '';
+  /** Rider pair forwarded from Search (board/alight stop ids). Consumed by
+   *  Reserve so the booking keeps the chosen stretch and per-seat fare. */
+  riderBoard: string | null = null;
+  riderAlight: string | null = null;
 
   constructor() {
     addIcons({
@@ -119,6 +123,9 @@ export class TerminalDetailsPage implements OnInit {
     if (routeId && this.routes.some((r) => r.id === routeId)) {
       this.expandedRouteId = routeId;
     }
+    // Rider pair from Search (validated again at booking time).
+    this.riderBoard = this.route.snapshot.queryParamMap.get('board');
+    this.riderAlight = this.route.snapshot.queryParamMap.get('alight');
   }
 
   /** Today + next 5 days, same string format as the booking flow. */
@@ -181,6 +188,7 @@ export class TerminalDetailsPage implements OnInit {
         terminal: this.terminal.id,
         date: this.selectedDate,
         dest: 'all',
+        ...this.riderPairParams(),
       },
     });
   }
@@ -267,12 +275,22 @@ export class TerminalDetailsPage implements OnInit {
       queryParams: {
         date: this.selectedDate,
         ...(routeId ? { route: routeId } : {}),
+        ...this.riderPairParams(),
       },
     });
   }
 
+  /** Rider pair as query params (empty when none was forwarded). */
+  private riderPairParams(): Record<string, string> {
+    if (this.riderBoard && this.riderAlight) {
+      return { board: this.riderBoard, alight: this.riderAlight };
+    }
+    return {};
+  }
+
   /** Reserve a scheduled departure: operator/route/date/EXACT slot time
-   *  enter the normal booking session (Trip Details → Seats → Payment). */
+   *  enter the normal booking session (Trip Details → Seats → Payment).
+   *  A forwarded rider pair keeps the chosen stretch and per-seat fare. */
   reserve(dep: TerminalDeparture) {
     if (this.isDeparted(dep)) return;
     this.bookingService.startBooking({
@@ -284,10 +302,18 @@ export class TerminalDetailsPage implements OnInit {
       seatsLeft: dep.seats,
       status: dep.status,
       departureTime: dep.time,
-    });
+    }, this.riderPairOpts());
     this.bookingService.travelDate = this.selectedDate;
     this.bookingService.pickup = this.pickupService.getActive().pickup;
     this.router.navigateByUrl('/booking/trip');
+  }
+
+  /** Rider pair as booking options (undefined = full-route fallback). */
+  private riderPairOpts(): { boardStopId: string; alightStopId: string } | undefined {
+    if (this.riderBoard && this.riderAlight) {
+      return { boardStopId: this.riderBoard, alightStopId: this.riderAlight };
+    }
+    return undefined;
   }
 
   /** The old terminal-tap behavior, kept as an explicit action. */

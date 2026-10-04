@@ -20,15 +20,6 @@
       @if (booking.hasNetworkSegment) {
         <p class="flow-sub segment-sub">{{ booking.segmentLabel }} · {{ booking.serviceClassLabel }}</p>
       }
-      @if (availability) {
-        <div class="avail-chip" [class.low]="availability.available <= 5">
-          <ion-icon name="people-outline"></ion-icon>
-          <span>
-            {{ availability.available }} of {{ availability.total }} seats left —
-            you can book up to {{ booking.maxPassengers }}
-          </span>
-        </div>
-      }
       <!-- PREFERENCE BANNER (reservations only) -->
       @if (!booking.hailMode && booking.hasSeatPreference) {
         <div class="pref-banner" role="status">
@@ -38,6 +29,14 @@
           } @else {
             <span class="pref-text none">No available seats match — pick any open seat, or <button type="button" class="pref-change" (click)="goBack()">change preference</button></span>
           }
+        </div>
+      }
+      <!-- SOLD OUT — never a silent grey map -->
+      @if (soldOut) {
+        <div class="soldout-banner" role="status">
+          <strong>No available seats on this trip</strong>
+          <span>Every seat is already booked. Go back and pick another departure.</span>
+          <button type="button" class="soldout-back" (click)="goBack()">Choose another trip</button>
         </div>
       }
       <!-- BUS FRAME -->
@@ -50,46 +49,34 @@
           @for (row of seatRows; track row.num) {
             <div class="seat-row">
               <span class="row-num">{{ row.num }}</span>
-              <div class="seat-pair">
-                @for (seat of row.left; track seat.id) {
-                  <button
-                    class="seat"
-                    [ngClass]="seat.status"
-                    [class.preferred]="isPreferred(seat)"
-                    [disabled]="seat.status === 'booked'"
-                    (click)="toggleSeat(seat)"
-                    [attr.aria-label]="'Seat ' + seat.id + ', ' + seat.status + (isPreferred(seat) ? ', matches your preference' : '')"
-                    >
-                    {{ seat.id }}
-                  </button>
-                }
-              </div>
-              @if (row.right.length) {
-                <div class="aisle-gap"></div>
+              @for (group of row.groups; track $index; let last = $last) {
                 <div class="seat-pair">
-                  @for (seat of row.right; track seat.id) {
+                  @for (seat of group; track seat.id) {
                     <button
+                      type="button"
                       class="seat"
-                      [ngClass]="seat.status"
+                      [class.available]="seat.status === 'available'"
+                      [class.selected]="isSelected(seat)"
+                      [class.booked]="seat.status === 'booked'"
+                      [class.blocked]="seat.status === 'blocked'"
                       [class.preferred]="isPreferred(seat)"
-                      [disabled]="seat.status === 'booked'"
+                      [disabled]="seat.status === 'booked' || seat.status === 'blocked'"
                       (click)="toggleSeat(seat)"
-                      [attr.aria-label]="'Seat ' + seat.id + ', ' + seat.status + (isPreferred(seat) ? ', matches your preference' : '')"
+                      [attr.aria-label]="'Seat ' + seat.id + ', ' + (isSelected(seat) ? 'selected' : seat.status) + (isPreferred(seat) ? ', matches your preference' : '')"
+                      [attr.aria-pressed]="isSelected(seat)"
                       >
                       {{ seat.id }}
                     </button>
                   }
                 </div>
+                @if (!last) {
+                  <div class="aisle-gap"></div>
+                }
               }
             </div>
           }
         </div>
       </div>
-      @if (freeLaterNotes.length) {
-        <p class="hint-text" role="note">
-          {{ freeLaterNotes.join(' · ') }} — seats free up after their riders get off.
-        </p>
-      }
       <!-- LEGEND -->
       <div class="legend-row">
         <div class="legend-item">
@@ -99,19 +86,13 @@
           <span class="swatch selected"></span> Selected
         </div>
         <div class="legend-item"><span class="swatch booked"></span> Booked</div>
+        @if (hasBlockedSeats) {
+          <div class="legend-item"><span class="swatch blocked"></span> Not for sale</div>
+        }
         @if (!booking.hailMode && booking.hasSeatPreference && matchingSet.size) {
           <div class="legend-item"><span class="swatch preferred"></span> Matches preference</div>
         }
       </div>
-      @if (booking.selectedSeats.length < booking.passengerCount) {
-        <p
-          class="hint-text"
-          >
-          Tap {{ booking.passengerCount - booking.selectedSeats.length }} more
-          seat{{ (booking.passengerCount - booking.selectedSeats.length) > 1 ? 's' :
-          '' }} to continue
-        </p>
-      }
     </div>
   }
 

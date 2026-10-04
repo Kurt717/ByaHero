@@ -17,11 +17,11 @@
         {{ booking.passengerCount > 1 ? 'seats' : 'seat' }} next.
       </p>
 
-      <!-- TRIP STRIP -->
+      <!-- TRIP STRIP (rider's own stretch + per-seat segment fare) -->
       <div class="trip-strip">
-        <span class="strip-time">{{ trip.departureTime ?? trip.eta }}</span>
-        <span class="strip-route">{{ trip.from }} → {{ trip.to }}</span>
-        <span class="strip-meta">{{ booking.travelDate }} · {{ trip.operator }} · {{ trip.fare }}/seat</span>
+        <span class="strip-time">{{ booking.scheduledDepartureTime ?? trip.departureTime ?? trip.eta }}</span>
+        <span class="strip-route">{{ booking.hasNetworkSegment ? booking.segmentLabel : (trip.from + ' → ' + trip.to) }}</span>
+        <span class="strip-meta">{{ booking.travelDate }} · {{ trip.operator }} · {{ booking.formatCurrency(booking.seatFare) }}/seat</span>
       </div>
 
       @if (soldOut) {

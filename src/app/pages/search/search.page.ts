@@ -1,4 +1,3 @@
-import { DecimalPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
@@ -35,11 +34,14 @@ import {
 import { PickupService } from '../../services/pickup.service';
 import {
   NetworkService,
+  TRIPS,
   seatIdsForLayout,
+  serviceById,
   tripById,
   vehicleById,
+  riderPairForRoute,
 } from '../../services/network.service';
-import { SeatService } from '../../services/seat.service';
+import { SeatService, departureKeyForTrip } from '../../services/seat.service';
 import {
   PlacePickerComponent,
   PlacePick,
@@ -70,6 +72,27 @@ addIcons({
 
 type Category = 'bus' | 'uv' | 'shared' | 'all';
 type SortOption = 'Fastest' | 'Cheapest' | 'Rated';
+
+/** 'Tuguegarao City Terminal' → 'Tuguegarao City' for compact ride cards. */
+function shortStopName(name: string): string {
+  return name.replace(/ Terminal$/, '');
+}
+
+/** Minutes → the same duration strings the static cards use ('9h 30m'). */
+function formatRideDuration(mins: number): string {
+  const h = Math.floor(mins / 60);
+  const m = Math.round(mins % 60);
+  return h > 0 ? `${h}h ${m}m` : `${m}m`;
+}
+
+/** Deterministic per-trip rating 4.3–4.8 (no randomness in derivations). */
+function ratingForTrip(tripId: string): number {
+  let h = 0;
+  for (let i = 0; i < tripId.length; i++) {
+    h = (h * 31 + tripId.charCodeAt(i)) >>> 0;
+  }
+  return (43 + (h % 6)) / 10;
+}
 
 interface CategoryOption {
   id: Category;
@@ -102,7 +125,7 @@ type SearchScope = 'all' | 'terminals' | 'routes' | 'places';
 @Component({
   selector: 'app-search',
   standalone: true,
-  imports: [FormsModule, IonContent, IonIcon, DecimalPipe, PlacePickerComponent],
+  imports: [FormsModule, IonContent, IonIcon, PlacePickerComponent],
   templateUrl: './search.page.html',
   styleUrls: ['./search.page.scss'],
 })
@@ -288,12 +311,108 @@ constructor() {
       : this.mostVisited.slice(0, 4);
   }
 
+  /**
+   * Bookable rides synthesized for the typed pickup → destination pair:
+   * every network trip whose span covers the rider's stretch becomes a
+   * card, priced for the stretch with live seats. This guarantees results
+   * for EVERY corridor pair combination — not just the hardcoded popular
+   * routes. Empty when no pair is set or no trip serves the pair.
+   */
+  get pairRides(): RouteCard[] {
+    if (!this.hasPair) return [];
+    const pair = this.network.resolveTrip('', this.origin, this.destination);
+    if (!pair) return [];
+    const corridor = pair.corridor;
+    const riderForward = pair.boardSeq < pair.alightSeq;
+    const riderLo = Math.min(pair.boardSeq, pair.alightSeq);
+    const riderHi = Math.max(pair.boardSeq, pair.alightSeq);
+    const board = corridor.stops[pair.boardSeq];
+    const alight = corridor.stops[pair.alightSeq];
+    if (!board || !alight) return [];
+    const lastSeq = corridor.stops.length - 1;
+    const today = new Date().toDateString();
+    const out: RouteCard[] = [];
+    for (const trip of TRIPS) {
+      if (trip.corridorId !== corridor.id) continue;
+      if ((trip.direction === 'forward') !== riderForward) continue;
+      const span = this.tripSpanOn(trip.serviceId, corridor.id);
+      if (!span || riderLo < span.lo || riderHi > span.hi) continue;
+      const vehicle = vehicleById(trip.vehicleId);
+      const seatIds = vehicle ? seatIdsForLayout(vehicle.layout) : [];
+      if (!seatIds.length) continue;
+      const seatsLeft = this.seatService.availabilityForSegment(
+        departureKeyForTrip(trip.tripId, today),
+        seatIds,
+        riderLo,
+        riderHi,
+        lastSeq,
+      ).available;
+      if (seatsLeft < 1) continue;
+      const cls = vehicle?.serviceClassId ?? 'aircon';
+      const fare = this.network.fareFor({
+        corridorId: corridor.id,
+        operatorId: trip.operatorId,
+        serviceClassId: cls,
+        boardStopId: board.id,
+        alightStopId: alight.id,
+      });
+      const mins = Math.round(
+        (this.network.segmentKm(corridor.id, riderLo, riderHi) /
+          (corridor.avgKmh ?? 45)) *
+          60,
+      );
+      out.push({
+        id: `pair-${trip.tripId}`,
+        operator: this.network.operatorName(trip.operatorId),
+        from: shortStopName(board.name),
+        to: shortStopName(alight.name),
+        fare: `₱ ${fare}`,
+        duration: formatRideDuration(mins),
+        eta: `Departs ${trip.departureTime}`,
+        seats: `${seatsLeft} seat${seatsLeft === 1 ? '' : 's'} left`,
+        status: 'on-time',
+        mode: cls === 'uv-express' ? 'uv' : cls === 'shared' ? 'shared' : 'bus',
+        rating: ratingForTrip(trip.tripId),
+      });
+    }
+    return out;
+  }
+
+  /** A trip's served span on a corridor (full span unless the service lists
+   *  an explicit short-hop subset). Null when unresolvable. */
+  private tripSpanOn(
+    serviceId: string | undefined,
+    corridorId: string,
+  ): { lo: number; hi: number } | null {
+    const corridor = this.network.corridor(corridorId);
+    if (!corridor) return null;
+    const lastSeq = corridor.stops.length - 1;
+    if (!serviceId) return { lo: 0, hi: lastSeq };
+    const service = serviceById(serviceId);
+    if (!service || service.stopsServed === 'all') return { lo: 0, hi: lastSeq };
+    const seqs = service.stopsServed
+      .map((id) => corridor.stops.find((s) => s.id === id)?.sequence)
+      .filter((n): n is number => n != null);
+    if (!seqs.length) return null;
+    return { lo: Math.min(...seqs), hi: Math.max(...seqs) };
+  }
+
+  /** True when a pair is set but no bus line serves it — the empty state
+   *  explains instead of showing a bare list. */
+  get pairUnservable(): boolean {
+    return this.hasPair && this.pairRides.length === 0;
+  }
+
   get filteredPopularRoutes(): RouteCard[] {
     const q = this.query.trim().toLowerCase();
+    // Pair mode lists the synthesized pair rides (already stretch-priced
+    // with live seats); otherwise the static popular routes.
+    const pool =
+      this.hasPair && this.pairRides.length ? this.pairRides : this.popularRoutes;
     const byCategory =
       this.activeCategory === 'all'
-        ? this.popularRoutes
-        : this.popularRoutes.filter((route) => route.mode === this.activeCategory);
+        ? pool
+        : pool.filter((route) => route.mode === this.activeCategory);
 
     const byQuery = q
       ? byCategory.filter((route) =>
@@ -311,7 +430,19 @@ constructor() {
         )
       : byCategory;
 
-    return [...byQuery].sort((a, b) => {
+    // One side typed (no pair yet): narrow to routes touching that place.
+    const solo = !this.hasPair
+      ? (this.origin.trim() || this.destination.trim()).toLowerCase()
+      : '';
+    const bySide = solo
+      ? byQuery.filter((route) =>
+          `${route.operator} ${route.from} ${route.to}`
+            .toLowerCase()
+            .includes(solo),
+        )
+      : byQuery;
+
+    return [...bySide].sort((a, b) => {
       if (this.sortBy === 'Cheapest') return this.priceValue(a) - this.priceValue(b);
       if (this.sortBy === 'Rated') return b.rating - a.rating;
       return this.durationMinutes(a) - this.durationMinutes(b);
@@ -370,13 +501,47 @@ constructor() {
     if (!seatIds.length) return true;
     return (
       this.seatService.availabilityForSegment(
-        `${r.trip.tripId}|${today}`,
+        departureKeyForTrip(r.trip.tripId, today),
         seatIds,
         riderLo,
         riderHi,
         r.corridor.stops.length - 1,
       ).available >= 1
     );
+  }
+
+  /**
+   * Card fare sticker: the SAME number checkout will charge per seat.
+   * Pair cards from the network already carry the stretch fare; static
+   * cards show the stretch fare under a pair, else the full-route network
+   * fare, else the catalog text (which checkout parses for legacy trips).
+   */
+  fareLabelFor(route: RouteCard): string {
+    try {
+      if (route.id.startsWith('pair-')) return route.fare;
+      if (this.hasPair) {
+        const seg = this.segmentInfoFor(route);
+        if (seg) return `₱ ${seg.fare.toLocaleString('en-PH')}`;
+      } else {
+        const r = this.network.resolveTrip(route.operator, route.from, route.to);
+        if (r) {
+          const vehicle = vehicleById(r.trip.vehicleId);
+          const lo = Math.min(r.boardSeq, r.alightSeq);
+          const hi = Math.max(r.boardSeq, r.alightSeq);
+          const fare = this.network.fareFor({
+            corridorId: r.corridor.id,
+            operatorId: r.operatorId ?? r.trip.operatorId,
+            serviceClassId: vehicle?.serviceClassId ?? 'aircon',
+            boardStopId: r.corridor.stops[lo].id,
+            alightStopId: r.corridor.stops[hi].id,
+          });
+          if (fare > 0) return `₱ ${fare.toLocaleString('en-PH')}`;
+        }
+      }
+    } catch {
+      /* fall through to catalog text */
+    }
+    return route.fare;
   }
 
   /** Stretch fare + seats-left for a card under the active pair. */
@@ -401,7 +566,7 @@ constructor() {
     const seatIds = vehicle ? seatIdsForLayout(vehicle.layout) : [];
     const seatsLeft = seatIds.length
       ? this.seatService.availabilityForSegment(
-          `${r.trip.tripId}|${today}`,
+          departureKeyForTrip(r.trip.tripId, today),
           seatIds,
           riderLo,
           riderHi,
@@ -485,18 +650,46 @@ selectDestination(dest: Destination) {
       seatsLeft: route.seats,
       status: route.status,
     };
-    this.bookingService.startBooking(trip);
+    this.bookingService.startBooking(trip, this.riderPairOptions(route));
     this.bookingService.pickup = this.pickupService.getActive().pickup;
     this.router.navigateByUrl('/booking/trip');
   }
 
+  /** Rider's chosen origin→destination as stop ids on the route's corridor
+   *  (undefined = defaults / full-route legacy path). */
+  private riderPairOptions(route: RouteCard): { boardStopId: string; alightStopId: string } | undefined {
+    if (!this.hasPair) return undefined;
+    try {
+      const pair = this.network.resolveTrip('', this.origin, this.destination);
+      const r = this.network.resolveTrip(route.operator, route.from, route.to);
+      if (!pair || !r) return undefined;
+      return riderPairForRoute(
+        pair.corridor.id,
+        pair.boardSeq,
+        pair.alightSeq,
+        pair.corridor.stops,
+        r.corridor.id,
+        r.boardSeq,
+        r.alightSeq,
+      );
+    } catch {
+      return undefined;
+    }
+  }
+
   /** Route → its origin terminal's schedule (date → departures → Reserve).
-   *  Falls back to direct booking when no terminal serves that origin. */
+   *  Falls back to direct booking when no terminal serves that origin.
+   *  The rider pair rides along as board/alight stop ids so Reserve keeps
+   *  the chosen stretch (and its per-seat fare) instead of the full route. */
   openRouteSchedule(route: RouteCard) {
     const terminal = this.catalog.terminalForCity(route.from);
     if (terminal) {
+      const pair = this.riderPairOptions(route);
       this.router.navigate(['/terminal', terminal.id], {
-        queryParams: { route: route.id },
+        queryParams: {
+          route: route.id,
+          ...(pair ? { board: pair.boardStopId, alight: pair.alightStopId } : {}),
+        },
       });
       return;
     }

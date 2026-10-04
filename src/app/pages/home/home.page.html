@@ -184,7 +184,7 @@
           [title]="origin"
         >
           <div class="route-dot origin-dot"></div>
-          <span class="place-text">{{ origin }}</span>
+          <span class="place-text" [class.placeholder]="!origin.trim()">{{ origin.trim() || ORIGIN_PLACEHOLDER }}</span>
         </button>
         <button
           type="button"
@@ -203,7 +203,7 @@
           [title]="destination"
         >
           <div class="route-dot dest-dot"></div>
-          <span class="place-text">{{ destination }}</span>
+          <span class="place-text" [class.placeholder]="!destination.trim()">{{ destination.trim() || DEST_PLACEHOLDER }}</span>
         </button>
       </div>
 
@@ -254,9 +254,9 @@
     </div>
 
     <!-- SEGMENT FARE PREVIEW for the chosen pair (prototype demo fare) -->
-    @if (pairFarePreview) {
+    <!-- @if (pairFarePreview) {
       <p class="pair-preview" aria-live="polite">{{ pairFarePreview }}</p>
-    }
+    } -->
 
     <!-- 3+4. UNIFIED TOOLBAR: categories left, view+sort right on desktop -->
     <div class="home-toolbar">
@@ -339,7 +339,7 @@
                 </div>
               </div>
               <div class="card-top-right">
-                <span class="fare">{{ route.fare }}</span>
+                <span class="fare">{{ fareLabelFor(route) }}</span>
                 <button
                   class="fav-btn"
                   [class.saved]="isFavorite(route.id)"
@@ -370,7 +370,7 @@
               </p>
             }
             <div class="card-bottom">
-              <span class="seats">{{ route.seats }}</span>
+              <span class="seats">{{ seatsLabelFor(route) }}</span>
               <div class="card-actions hail-only">
                 <button
                   class="hail-btn"
@@ -383,6 +383,18 @@
                 </button>
               </div>
             </div>
+          </div>
+        } @empty {
+          <div class="no-rides" role="status">
+            <ion-icon name="bus-outline" aria-hidden="true"></ion-icon>
+            @if (hasPair) {
+              <h3>No available rides for {{ origin }} → {{ destination }}</h3>
+              <p>No bus on this line has a free seat on your stretch right now. Try another pair, another day, or clear the filter to browse all buses.</p>
+              <button type="button" class="no-rides-clear" (click)="clearPair()">Clear route filter</button>
+            } @else {
+              <h3>No available rides right now</h3>
+              <p>Try a different search, category, or transport type.</p>
+            }
           </div>
         }
       </div>
@@ -398,6 +410,20 @@
       >
       <div class="map-shell">
         <div #mapEl class="map-host"></div>
+
+        @if (!displayRoutes.length) {
+          <div class="map-empty" role="status">
+            <ion-icon name="bus-outline" aria-hidden="true"></ion-icon>
+            @if (hasPair) {
+              <h3>No available rides for {{ origin }} → {{ destination }}</h3>
+              <p>No bus on this line has a free seat on your stretch right now. Try another pair or clear the filter.</p>
+              <button type="button" class="no-rides-clear" (click)="clearPair()">Clear route filter</button>
+            } @else {
+              <h3>No available rides right now</h3>
+              <p>Try a different search, category, or transport type.</p>
+            }
+          </div>
+        }
 
         @if (mapError) {
           <div class="map-error">{{ mapError }}</div>

@@ -196,5 +196,19 @@
         }
       </section>
     </div>
+  } @else {
+    <div class="schedule-wrap">
+      <div class="empty-state" role="status">
+        <div class="empty-ticket-outline">
+          <ion-icon name="ticket-outline" aria-hidden="true"></ion-icon>
+        </div>
+        <h3>No departures here</h3>
+        <p>We couldn't find this terminal's board. Try another terminal or search a route.</p>
+        <button type="button" class="empty-cta" (click)="goBack()">
+          Back to terminal
+          <ion-icon name="chevron-forward-outline" aria-hidden="true"></ion-icon>
+        </button>
+      </div>
+    </div>
   }
 </ion-content>

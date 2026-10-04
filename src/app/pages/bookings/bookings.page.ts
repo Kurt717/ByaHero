@@ -27,6 +27,8 @@ import {
   TicketService,
   Booking,
   BookingStatus,
+  isExpiredBooking,
+  displayStatusForBooking,
 } from './ticket.service';
 import { TripReviewService, TripReview } from './trip-review.service';
 import { BookingService, TripSummary } from '../booking/booking.service';
@@ -101,14 +103,24 @@ export class BookingsPage {
   }
 
   get upcomingBookings(): Booking[] {
+    const now = new Date();
     return this.bookings.filter(
-      (b) => b.status === 'confirmed' || b.status === 'boarding',
+      (b) => b.status === 'confirmed' && !isExpiredBooking(b, now),
     );
   }
 
+  /** Boarding trips live only in Active, never in Upcoming. */
+  get boardingBookings(): Booking[] {
+    return this.bookings.filter((b) => b.status === 'boarding');
+  }
+
   get pastBookings(): Booking[] {
+    const now = new Date();
     return this.bookings.filter(
-      (b) => b.status === 'completed' || b.status === 'cancelled',
+      (b) =>
+        b.status === 'completed' ||
+        b.status === 'cancelled' ||
+        (b.status === 'confirmed' && isExpiredBooking(b, now)),
     );
   }
 
@@ -142,17 +154,18 @@ export class BookingsPage {
     return this.hailService.active;
   }
 
-  /** In-progress reservation (confirmed/boarding), if any. */
+  /** In-progress reservation (boarding only — confirmed lives in Upcoming). */
   get activeTripBooking(): Booking | null {
-    return this.ticketService.activeBooking;
+    return this.bookings.find((b) => b.status === 'boarding') ?? null;
   }
 
-  hailStatusLabel(_hail: HailRequest): string {
-    return 'Confirming hail';
-  }
-
-  setTab(tab: TabKey) {
-    this.activeTab = tab;
+  /** Rider's own stretch (boarding → alighting) for every card. */
+  stretchFor(booking: Booking): string {
+    try {
+      return this.ticketService.segmentPair(booking);
+    } catch {
+      return `${booking.from} → ${booking.to}`;
+    }
   }
 
   statusLabel(status: BookingStatus): string {
@@ -162,6 +175,22 @@ export class BookingsPage {
       completed: 'Completed',
       cancelled: 'Cancelled',
     }[status];
+  }
+
+  /** Card chip: expired confirmed renders as Missed. */
+  displayStatus(booking: Booking): string {
+    const s = displayStatusForBooking(booking, new Date());
+    if (s === 'Missed') return 'Missed';
+    if (s === 'confirmed') return 'Confirmed';
+    return this.statusLabel(booking.status);
+  }
+
+  hailStatusLabel(_hail: HailRequest): string {
+    return 'Confirming hail';
+  }
+
+  setTab(tab: TabKey) {
+    this.activeTab = tab;
   }
 
   viewTicket(booking: Booking) {

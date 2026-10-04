@@ -26,7 +26,7 @@ import {
 } from '../booking.service';
 import { TicketService } from '../../bookings/ticket.service';
 import { ProfileService } from '../../profile/profile.service';
-import { SeatService } from '../../../services/seat.service';
+import { SeatService, departureKeyForTrip } from '../../../services/seat.service';
 import { VoucherService } from '../../../services/voucher.service';
 import { PickupService } from '../../../services/pickup.service';
 
@@ -110,14 +110,7 @@ export class PaymentPage implements OnInit {
   ];
 
   constructor() {
-    addIcons({
-      arrowBackOutline,
-      informationCircleOutline,
-      idCardOutline,
-      shieldCheckmarkOutline,
-      lockClosedOutline,
-      checkmarkCircle,
-    });
+    addIcons({arrowBackOutline,pricetagOutline,chevronForwardOutline,idCardOutline,checkmarkCircle,informationCircleOutline,shieldCheckmarkOutline,lockClosedOutline,});
   }
 
   ngOnInit() {
@@ -183,6 +176,17 @@ export class PaymentPage implements OnInit {
   }
 
   get paymentHint(): string {
+    if (this.alreadyPaid) {
+      return 'This booking already has a ticket — going back will not charge again.';
+    }
+    const stopErrors = this.safeStopErrors();
+    if (stopErrors.length) {
+      return stopErrors[0];
+    }
+    const clash = this.firstTakenSeat();
+    if (clash) {
+      return `Seat ${clash} was just sold. Go back and pick another seat.`;
+    }
     if (this.booking.paymentMethod === 'card' && !this.cardIsValid) {
       return 'Enter a valid card number (Luhn-checked), MM/YY expiry, and CVV to continue.';
     }
@@ -206,6 +210,12 @@ export class PaymentPage implements OnInit {
 
   get canPay(): boolean {
     if (this.processing) return false;
+    // Idempotent: a booking that already produced a ticket cannot pay again.
+    if (this.booking.bookingRef && this.ticketService.findByRef(this.booking.bookingRef)) {
+      return false;
+    }
+    if (this.safeStopErrors().length) return false;
+    if (this.firstTakenSeat()) return false;
     if (this.booking.discountedCount && (!this.booking.allIdsVerified || !this.idConfirm)) {
       return false;
     }
@@ -213,6 +223,21 @@ export class PaymentPage implements OnInit {
       return this.agreed && this.walletBalance >= this.booking.total;
     }
     return this.agreed && this.cardIsValid;
+  }
+
+  /** Already checked out (Back to Payment after success): show ticket. */
+  get alreadyPaid(): boolean {
+    return !!(
+      this.booking.bookingRef && this.ticketService.findByRef(this.booking.bookingRef)
+    );
+  }
+
+  private safeStopErrors(): string[] {
+    try {
+      return this.booking.validateStops();
+    } catch {
+      return [];
+    }
   }
 
   gotoDetails() {
@@ -230,51 +255,139 @@ export class PaymentPage implements OnInit {
   }
 
   async pay() {
-    if (!this.canPay) return;
-    this.processing = true;
-
-    if (this.booking.paymentMethod === 'wallet') {
-      if (!this.profileService.deductWallet(this.booking.total)) {
-        this.processing = false;
-        await this.showToast('Insufficient wallet balance. Top up first.');
-        return;
-      }
-    }
-
-    // Mock payment gateway round-trip so the UI behaves like a real checkout.
-    await new Promise((resolve) => setTimeout(resolve, 1200));
-
-    if (!this.booking.bookingRef) this.booking.generateBookingRef();
-    if (this.booking.hasNetworkSegment) {
-      this.seatService.bookSegment(
-        `${this.booking.tripId}|${this.booking.travelDate}`,
-        this.booking.selectedSeats,
-        Math.min(this.booking.boardSeq!, this.booking.alightSeq!),
-        Math.max(this.booking.boardSeq!, this.booking.alightSeq!),
-        this.booking.bookingRef,
-      );
-    } else {
-      this.seatService.bookSeats(
-        this.seatService.keyFor(this.booking),
-        this.booking.selectedSeats,
-      );
-    }
-    const ticket = this.ticketService.createFromCheckout(this.booking);
-    if (!ticket) {      this.processing = false;
-      const toast = await this.toastController.create({
-        message: 'Unable to create your ticket. Please review the trip details.',
-        duration: 2200,
-        color: 'danger',
-        position: 'bottom',
-      });
-      await toast.present();
+    // Idempotent: going Back to Payment after success must not charge again.
+    if (this.booking.bookingRef && this.ticketService.findByRef(this.booking.bookingRef)) {
+      this.router.navigateByUrl(`/e-ticket/${this.booking.bookingRef}`);
       return;
     }
-    // Freeze the session's pickup (point + last-known location + alert
-    // lifecycle) onto the new booking, then clear the staging area.
-    this.pickupService.snapshotToBooking(ticket.bookingRef, this.booking.pickup);
-    this.pickupService.resetActive();
-    this.router.navigateByUrl('/booking/confirmation');
+    if (!this.canPay || this.processing) return;
+    this.processing = true;
+
+    try {
+      // 1) Re-validate stops + departure before touching money or seats.
+      const stopErrors = this.booking.validateStops();
+      if (stopErrors.length) {
+        await this.showToast(stopErrors[0]);
+        return;
+      }
+      const dep = this.booking.departureDate();
+      if (dep && dep.getTime() <= Date.now()) {
+        await this.showToast('That departure already left. Pick another date.');
+        return;
+      }
+      // 2) Re-check every selected seat is still free on the rider's segment.
+      const clash = this.firstTakenSeat();
+      if (clash) {
+        await this.showToast(`Seat ${clash} was just sold. Pick another seat.`);
+        return;
+      }
+
+      // 3) Unique booking reference (collision-safe).
+      if (!this.booking.bookingRef) {
+        const existing = new Set(this.ticketService.bookings.map((b) => b.bookingRef));
+        this.booking.generateBookingRef(existing);
+      } else if (this.ticketService.findByRef(this.booking.bookingRef)) {
+        this.router.navigateByUrl(`/e-ticket/${this.booking.bookingRef}`);
+        return;
+      }
+
+      // 4) All-or-nothing: reserve seats, create ticket, then charge.
+      const depKey = this.booking.hasNetworkSegment
+        ? departureKeyForTrip(this.booking.tripId!, this.booking.travelDate)
+        : null;
+      const lo = this.booking.hasNetworkSegment
+        ? Math.min(this.booking.boardSeq!, this.booking.alightSeq!)
+        : null;
+      const hi = this.booking.hasNetworkSegment
+        ? Math.max(this.booking.boardSeq!, this.booking.alightSeq!)
+        : null;
+      if (depKey != null && lo != null && hi != null) {
+        this.seatService.bookSegment(
+          depKey,
+          this.booking.selectedSeats,
+          lo,
+          hi,
+          this.booking.bookingRef,
+        );
+      } else {
+        this.seatService.bookSeats(
+          this.seatService.keyFor(this.booking),
+          this.booking.selectedSeats,
+        );
+      }
+
+      let ticket: { bookingRef: string } | null = null;
+      try {
+        ticket = this.ticketService.createFromCheckout(this.booking);
+      } catch (e) {
+        ticket = null;
+      }
+      if (!ticket) {
+        // Roll back the seat hold; no money moved yet for wallet (charge is
+        // last), non-wallet mock gateway has no side effects.
+        this.rollbackSeats(depKey);
+        await this.showToast('Unable to create your ticket. No charge was made — please try again.');
+        return;
+      }
+
+      // 5) Charge last. Wallet deduction failure rolls back seats + ticket.
+      if (this.booking.paymentMethod === 'wallet') {
+        if (!this.profileService.deductWallet(this.booking.total)) {
+          this.rollbackSeats(depKey);
+          try {
+            this.ticketService.remove(this.booking.bookingRef);
+          } catch {
+            // Ticket list stays consistent; seat rollback already done.
+          }
+          await this.showToast('Insufficient wallet balance. Top up first.');
+          return;
+        }
+      } else {
+        // Mock gateway round-trip for e-wallets/cards (no side effects).
+        await new Promise((resolve) => setTimeout(resolve, 1200));
+      }
+
+      // Freeze the session's pickup onto the new booking, then clear staging.
+      // The session stays readable for Confirmation, but pay() is now locked
+      // by the ticket-exists guard above (no double charge on Back).
+      this.pickupService.snapshotToBooking(ticket.bookingRef, this.booking.pickup);
+      this.pickupService.resetActive();
+      this.router.navigateByUrl('/booking/confirmation');
+    } finally {
+      this.processing = false;
+    }
+  }
+
+  /** First selected seat that is no longer free on the rider's segment. */
+  private firstTakenSeat(): string | null {
+    if (!this.booking.selectedSeats.length) return null;
+    if (!this.booking.hasNetworkSegment) {
+      const avail = this.seatService.availabilityForBooking(this.booking);
+      for (const s of this.booking.selectedSeats) {
+        if (avail.bookedSet.has(s)) return s;
+      }
+      return null;
+    }
+    const avail = this.seatService.availabilityForBooking(this.booking);
+    for (const s of this.booking.selectedSeats) {
+      if (avail.bookedSet.has(s)) return s;
+    }
+    return null;
+  }
+
+  private rollbackSeats(depKey: string | null) {
+    try {
+      if (depKey) {
+        this.seatService.freeSeatsByRef(depKey, this.booking.bookingRef);
+      } else {
+        this.seatService.freeSeats(
+          this.seatService.keyFor(this.booking),
+          this.booking.selectedSeats,
+        );
+      }
+    } catch {
+      return;
+    }
   }
 
   private async showToast(message: string) {

@@ -1,32 +1,25 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
-import { IonContent, IonIcon } from '@ionic/angular';
+import { IonContent, IonIcon, ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
 import {
   arrowBackOutline,
   chevronForwardOutline,
   navigateOutline,
-  peopleOutline,
 } from 'ionicons/icons';
 import { BookingService } from '../booking.service';
 import {
   SeatService,
-  SeatAvailability,
 } from '../../../services/seat.service';
-import {
-  corridorById,
-  stopById,
-} from '../../../services/network.service';
 
 addIcons({
   'arrow-back-outline': arrowBackOutline,
   'chevron-forward-outline': chevronForwardOutline,
   'navigate-outline': navigateOutline,
-  'people-outline': peopleOutline,
 });
 
-type SeatStatus = 'available' | 'selected' | 'booked';
+type SeatStatus = 'available' | 'selected' | 'booked' | 'blocked';
 interface Seat {
   id: string;
   row: number;
@@ -35,8 +28,28 @@ interface Seat {
 
 interface SeatRow {
   num: number;
-  left: Seat[];
-  right: Seat[];
+  /** Seat groups split by aisle gaps (one group per side of each '|'). */
+  groups: Seat[][];
+}
+
+/** Split seat-letter columns on every aisle gap ('|'), so 2+2 renders two
+ *  groups, vans a single group, and the 1+1+1 sleeper three. Pure and
+ *  unit-tested: every seat letter must land in exactly one group, so no
+ *  seat can go missing on the right side of the map. */
+export function splitColumnGroups(columns: string[]): string[][] {
+  const groups: string[][] = [];
+  let current: string[] = [];
+  for (const c of columns) {
+    if (c === '|') {
+      if (current.length) groups.push(current);
+      current = [];
+    } else {
+      current.push(c);
+    }
+  }
+  if (current.length) groups.push(current);
+  if (!groups.length) groups.push(columns.filter((c) => c !== '|'));
+  return groups;
 }
 
 @Component({
@@ -51,17 +64,20 @@ export class SeatSelectionPage implements OnInit {
   private router = inject(Router);
   private location = inject(Location);
   private seatService = inject(SeatService);
+  private toastController = inject(ToastController);
+  private cdr = inject(ChangeDetectorRef);
 
   seats: Seat[] = [];
   seatRows: SeatRow[] = [];
-  availability: SeatAvailability | null = null;
   /** Available seats matching the session preference (empty when none set). */
   matchingSet: Set<string> = new Set();
-  /** Informational notes for seats that free up later on this trip. */
-  freeLaterNotes: string[] = [];
+  /** Ids picked this session — the single source of truth for the
+   *  highlight. The template reads this (not the mutable seat.status),
+   *  so a tap can never update the data without updating the color. */
+  selectedSet: Set<string> = new Set();
 
   constructor() {
-    addIcons({ arrowBackOutline, navigateOutline, chevronForwardOutline, peopleOutline });
+    addIcons({ arrowBackOutline, navigateOutline, chevronForwardOutline });
   }
 
   ngOnInit() {
@@ -72,47 +88,50 @@ export class SeatSelectionPage implements OnInit {
     this.buildSeatMap();
   }
 
+  /** Re-read inventory every time the map is shown: a seat sold in another
+   *  session (or on another device) while this page was in the stack shows
+   *  as booked instead of staying tappable. Payment re-checks anyway. */
+  ionViewWillEnter() {
+    if (this.booking.trip) this.buildSeatMap();
+  }
+
   buildSeatMap() {
     const availability = this.seatService.availabilityForBooking(this.booking);
-    this.availability = availability;
     const bookedSet = availability.bookedSet;
     const alreadySelected = new Set(this.booking.selectedSeats);
 
-    // Render from the vehicle layout (deluxe 2+1, ordinary 2+3, vans…).
+    // Render from the vehicle layout (deluxe 2+1, ordinary 2+3, vans,
+    // 1+1+1 sleeper with two aisles…). Column groups split on every '|'.
     const layout = this.seatService.layoutForBooking(this.booking);
     const columns = layout
       ? layout.columns
       : ['A', 'B', '|', 'C', 'D'];
     const rows = layout ? layout.rows : 10;
-    const splitAt = columns.indexOf('|');
-    const leftCols = (splitAt < 0 ? columns : columns.slice(0, splitAt)).filter(
-      (c) => c !== '|',
-    );
-    const rightCols = (splitAt < 0 ? [] : columns.slice(splitAt + 1)).filter(
-      (c) => c !== '|',
-    );
+    const blocked = new Set(layout?.blockedSeats ?? []);
+    const groups = splitColumnGroups(columns);
+    const allCols = groups.flat();
 
     const list: Seat[] = [];
     for (let r = 1; r <= rows; r++) {
-      for (const c of [...leftCols, ...rightCols]) {
+      for (const c of allCols) {
         const id = `${r}${c}`;
         let status: SeatStatus = bookedSet.has(id) ? 'booked' : 'available';
+        if (blocked.has(id)) status = 'blocked';
         if (status === 'available' && alreadySelected.has(id))
           status = 'selected';
         list.push({ id, row: r, status });
       }
     }
     this.seats = list;
+    // Highlight source of truth, kept in lockstep with the booking.
+    this.selectedSet = new Set(this.booking.selectedSeats);
     this.seatRows = [];
     for (let r = 1; r <= rows; r++) {
       const inRow = list.filter((s) => s.row === r);
       this.seatRows.push({
         num: r,
-        left: inRow.filter((s) =>
-          leftCols.includes(s.id.slice(-1)),
-        ),
-        right: inRow.filter((s) =>
-          rightCols.includes(s.id.slice(-1)),
+        groups: groups.map((cols) =>
+          inRow.filter((s) => cols.includes(s.id.slice(-1))),
         ),
       });
     }
@@ -126,59 +145,84 @@ export class SeatSelectionPage implements OnInit {
           )
         : [],
     );
-    this.freeLaterNotes = this.buildFreeLaterNotes(bookedSet);
   }
 
-  /** 'Seat 12 is taken until Santiago' — seats blocked on the rider's
-   *  segment that free up later are informational only. */
-  private buildFreeLaterNotes(bookedSet: Set<string>): string[] {
-    const seg = this.seatService.segmentForBooking(this.booking);
-    if (!seg) return [];
-    const corridor = corridorById(seg.corridorId);
-    if (!corridor) return [];
-    const depKey = `${seg.tripId}|${this.booking.travelDate}`;
-    const board = Math.min(seg.boardSeq, seg.alightSeq);
-    const alight = Math.max(seg.boardSeq, seg.alightSeq);
-    const notes: string[] = [];
-    for (const seatId of bookedSet) {
-      if (notes.length >= 3) break;
-      const freeAt = this.seatService.freeAtSeq(
-        depKey,
-        seatId,
-        board,
-        alight,
-        seg.lastSeq,
-      );
-      if (freeAt == null) continue;
-      const stop = stopById(corridor, corridor.stops[freeAt]?.id ?? '');
-      if (stop) notes.push(`Seat ${seatId} is taken until ${stop.name}`);
-    }
-    return notes;
-  }
+  async toggleSeat(seat: Seat) {
+    if (seat.status === 'booked' || seat.status === 'blocked') return;
 
-  toggleSeat(seat: Seat) {
-    if (seat.status === 'booked') return;
-
-    if (seat.status === 'selected') {
-      seat.status = 'available';
+    if (this.selectedSet.has(seat.id)) {
+      this.selectedSet.delete(seat.id);
       this.booking.selectedSeats = this.booking.selectedSeats.filter(
         (id) => id !== seat.id,
       );
     } else {
-      if (this.booking.selectedSeats.length >= this.booking.passengerCount)
+      if (this.booking.selectedSeats.length >= this.booking.passengerCount) {
+        const toast = await this.toastController.create({
+          message: `Only ${this.booking.passengerCount} seat${this.booking.passengerCount === 1 ? '' : 's'} for ${this.booking.passengerCount} passenger${this.booking.passengerCount === 1 ? '' : 's'} — tap a selected seat to change it.`,
+          duration: 2000,
+          color: 'warning',
+          position: 'bottom',
+        });
+        await toast.present();
         return;
-      seat.status = 'selected';
-      this.booking.selectedSeats.push(seat.id);
+      }
+      this.selectedSet.add(seat.id);
+      this.booking.selectedSeats = [...this.booking.selectedSeats, seat.id];
     }
+    // Sync every rendered copy by id (seatRows groups share references
+    // with `seats`, but syncing by id survives even if a stale reference
+    // ever arrives): booked/blocked stay untouched, everything else
+    // follows the selection set.
+    for (const s of this.seats) {
+      if (s.status === 'booked' || s.status === 'blocked') continue;
+      s.status = this.selectedSet.has(s.id) ? 'selected' : 'available';
+    }
+    // Render the highlight synchronously, even if this tap arrived from a
+    // gesture/animation callback that skipped change detection.
+    this.cdr.markForCheck();
+    this.cdr.detectChanges();
   }
 
   get canContinue(): boolean {
     return this.booking.selectedSeats.length === this.booking.passengerCount;
   }
 
+  /** First validation error, if any (stops/departure). */
+  get validationError(): string | null {
+    try {
+      const errors = this.booking.validateStops();
+      return errors.length ? errors[0] : null;
+    } catch {
+      return null;
+    }
+  }
+
+  /** Highlight check — reads the selection set, never a stale copy. */
+  isSelected(seat: Seat): boolean {
+    return this.selectedSet.has(seat.id);
+  }
+
   /** Available + matches the session preference → highlighted, not reserved. */
   isPreferred(seat: Seat): boolean {
-    return seat.status === 'available' && this.matchingSet.has(seat.id);
+    return (
+      !this.selectedSet.has(seat.id) &&
+      seat.status === 'available' &&
+      this.matchingSet.has(seat.id)
+    );
+  }
+
+  /** True when the vehicle has unsellable seats (restroom bay…) so the
+   *  legend explains the hatched style. */
+  get hasBlockedSeats(): boolean {
+    return this.seats.some((s) => s.status === 'blocked');
+  }
+
+  /** True when not a single seat can be picked on this departure. */
+  get soldOut(): boolean {
+    return (
+      this.seats.length > 0 &&
+      !this.seats.some((s) => s.status === 'available' || s.status === 'selected')
+    );
   }
 
   goBack() {
@@ -197,7 +241,17 @@ export class SeatSelectionPage implements OnInit {
     this.router.navigateByUrl('/booking/seat-preference');
   }
 
-  continue() {
+  async continue() {
+    if (this.validationError) {
+      const toast = await this.toastController.create({
+        message: this.validationError,
+        duration: 2200,
+        color: 'danger',
+        position: 'bottom',
+      });
+      await toast.present();
+      return;
+    }
     if (!this.canContinue) return;
     this.router.navigateByUrl('/booking/payment');
   }

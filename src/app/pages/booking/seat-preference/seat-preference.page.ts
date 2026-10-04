@@ -40,16 +40,32 @@ export class SeatPreferencePage implements OnInit {
   private location = inject(Location);
   private seatService = inject(SeatService);
 
-  readonly positions: { id: SeatPositionPref; label: string; hint: string }[] = [
-    { id: 'window', label: 'Window', hint: 'Seats A · D' },
-    { id: 'aisle', label: 'Aisle', hint: 'Seats B · C' },
+  readonly allPositions: { id: SeatPositionPref; label: string; hint: string }[] = [
+    { id: 'window', label: 'Window', hint: 'Outer edge seats' },
+    { id: 'aisle', label: 'Aisle', hint: 'Beside the aisle gap' },
+    { id: 'middle', label: 'Middle', hint: 'Between window and aisle' },
     { id: 'any', label: 'No preference', hint: 'Any seat' },
   ];
 
+  /** Only offer positions the chosen vehicle actually has (vans have no
+   *  aisle; 2+2 has no middle). 'No preference' is always offered. */
+  get positions(): { id: SeatPositionPref; label: string; hint: string }[] {
+    try {
+      const layout = this.seatService.layoutForBooking(this.booking);
+      const offered = this.seatService.availablePositionsForLayout(layout);
+      const set = new Set<string>(offered);
+      return this.allPositions.filter(
+        (p) => p.id === 'any' || set.has(p.id),
+      );
+    } catch {
+      return this.allPositions;
+    }
+  }
+
   readonly zones: { id: SeatZonePref; label: string; hint: string }[] = [
-    { id: 'front', label: 'Front', hint: 'Rows 1–3' },
-    { id: 'middle', label: 'Middle', hint: 'Rows 4–7' },
-    { id: 'back', label: 'Back', hint: 'Rows 8–10' },
+    { id: 'front', label: 'Front', hint: 'Front third' },
+    { id: 'middle', label: 'Middle', hint: 'Middle third' },
+    { id: 'back', label: 'Back', hint: 'Back third' },
     { id: 'any', label: 'No preference', hint: 'Any row' },
   ];
 

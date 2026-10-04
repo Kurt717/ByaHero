@@ -109,9 +109,7 @@
         </button>
       }
     </div>
-    @if (hasPair) {
-      <p class="pair-note" aria-live="polite">Buses {{ origin }} → {{ destination }} only</p>
-    }
+   
 
     <!-- 2B. SCOPE FILTERS — terminals, routes, or places first -->
     <div class="scope-row" role="group" aria-label="Search scope">
@@ -245,8 +243,8 @@
                         <span class="rc-mode">{{ modeLabel(route.mode) }}</span>
                       </div>
                     </div>
-                    <div class="rc-head-right">
-                      <span class="rc-fare">{{ compactFare(route.fare) }}</span>
+                      <div class="rc-head-right">
+                        <span class="rc-fare">{{ compactFare(fareLabelFor(route)) }}</span>
                       <button
                         type="button"
                         class="rc-fav"
@@ -268,10 +266,12 @@
                     </span>
                     <span class="rc-to">{{ route.to }}</span>
                   </div>
-                  @if (segmentInfoFor(route); as seg) {
-                    <p class="rc-seg" aria-live="polite">
-                      Your stretch · ₱{{ seg.fare }} · {{ seg.seatsLeft }} seat{{ seg.seatsLeft === 1 ? '' : 's' }} left
-                    </p>
+                  @if (!route.id.startsWith('pair-')) {
+                    @if (segmentInfoFor(route); as seg) {
+                      <p class="rc-seg" aria-live="polite">
+                        Your stretch · ₱{{ seg.fare }} · {{ seg.seatsLeft }} seat{{ seg.seatsLeft === 1 ? '' : 's' }} left
+                      </p>
+                    }
                   }
 
                   <div class="rc-foot">
@@ -294,8 +294,14 @@
             </div>
           } @else {
             <div class="empty-state">
-              <h3>No routes found</h3>
-              <p>Try a different city, operator, or transport type.</p>
+              @if (pairUnservable) {
+                <h3>No direct buses for {{ origin }} → {{ destination }} yet</h3>
+                <p>These places aren't on one bus line. Try a nearby city on the same line, or clear the filter to browse everything.</p>
+                <button type="button" class="empty-clear" (click)="clearPair()">Clear route filter</button>
+              } @else {
+                <h3>No routes found</h3>
+                <p>Try a different city, operator, or transport type.</p>
+              }
             </div>
           }
         </section>

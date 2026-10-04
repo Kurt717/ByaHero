@@ -37,8 +37,7 @@
               <span class="rnode dest"></span>
             </div>
             <div class="route-names">
-              <span class="place">{{ trip.from }}</span>
-              <span class="place">{{ trip.to }}</span>
+              <span class="place">{{ booking.hasNetworkSegment ? booking.segmentLabel : (trip.from + ' → ' + trip.to) }}</span>
             </div>
           </div>
           @if (booking.hasNetworkSegment) {

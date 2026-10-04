@@ -20,7 +20,7 @@ import {
 } from '../../../services/route-catalog.service';
 import { BookingService } from '../../booking/booking.service';
 import { PickupService } from '../../../services/pickup.service';
-import { SeatService } from '../../../services/seat.service';
+import { SeatService, departureKeyForTrip } from '../../../services/seat.service';
 import {
   NetworkService,
   seatIdsForLayout,
@@ -81,6 +81,9 @@ export class ComparePage implements OnInit {
   travelDate = '';
   destFilter = 'all';
   sort: CompareSort = 'earliest';
+  /** Rider pair forwarded from Search/Terminal (board/alight stop ids). */
+  riderBoard: string | null = null;
+  riderAlight: string | null = null;
 
   readonly sortOptions: { id: CompareSort; label: string }[] = [
     { id: 'earliest', label: 'Earliest' },
@@ -114,6 +117,8 @@ export class ComparePage implements OnInit {
       this.route.snapshot.queryParamMap.get('date') ?? new Date().toDateString();
     this.destFilter =
       this.route.snapshot.queryParamMap.get('dest') ?? 'all';
+    this.riderBoard = this.route.snapshot.queryParamMap.get('board');
+    this.riderAlight = this.route.snapshot.queryParamMap.get('alight');
   }
 
   /** Canonical departures: same catalog derivation as Terminal + Schedule. */
@@ -209,7 +214,7 @@ export class ComparePage implements OnInit {
     const seatIds = vehicle ? seatIdsForLayout(vehicle.layout) : [];
     const segmentSeats = seatIds.length
       ? this.seatService.availabilityForSegment(
-          `${depResolved.trip.tripId}|${this.travelDate}`,
+          departureKeyForTrip(depResolved.trip.tripId, this.travelDate),
           seatIds,
           riderLo,
           riderHi,
@@ -227,8 +232,12 @@ export class ComparePage implements OnInit {
     this.sort = sort;
   }
 
-  /** A departure with no free seats left cannot be reserved. */
+  /** A departure with no free seats left cannot be reserved. Uses the
+   *  rider's own segment when the session carries one (same key + date as
+   *  the seat map), otherwise the legacy full-route adapter. */
   private isSoldOut(dep: TerminalDeparture): boolean {
+    const seg = this.segmentFor(dep);
+    if (seg.segmentSeats != null) return seg.segmentSeats <= 0;
     const key = [dep.operator, dep.from, dep.to, this.travelDate].join('|');
     return (
       this.seatService.availabilityFor(dep.seats, key).available <= 0
@@ -269,10 +278,18 @@ export class ComparePage implements OnInit {
     this.router.navigateByUrl('/search');
   }
 
-  /** Select the exact scheduled trip into the normal booking session. */
+  /** Select the exact scheduled trip into the normal booking session.
+   *  A forwarded rider pair (or the live session pair) keeps the chosen
+   *  stretch and per-seat fare; otherwise the full route applies. */
   select(option: CompareOption) {
     if (option.soldOut) return;
     const dep = option.dep;
+    const session = this.bookingService;
+    const pair = this.riderBoard && this.riderAlight
+      ? { boardStopId: this.riderBoard, alightStopId: this.riderAlight }
+      : session.boardStopId && session.alightStopId
+        ? { boardStopId: session.boardStopId, alightStopId: session.alightStopId }
+        : undefined;
     this.bookingService.startBooking({
       operator: dep.operator,
       from: dep.from,
@@ -282,7 +299,7 @@ export class ComparePage implements OnInit {
       seatsLeft: dep.seats,
       status: dep.status,
       departureTime: dep.time,
-    });
+    }, pair);
     this.bookingService.travelDate = this.travelDate;
     this.bookingService.pickup = this.pickupService.getActive().pickup;
     this.router.navigateByUrl('/booking/trip');

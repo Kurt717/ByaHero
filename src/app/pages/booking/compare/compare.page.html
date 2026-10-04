@@ -91,7 +91,7 @@
                     }
                   </div>
                 </div>
-                @if (option.segmentFare != null) {
+                @if (option.segmentFare !== undefined && option.segmentFare !== null) {
                   <p class="seg-line" aria-live="polite">
                     Your stretch · ₱{{ option.segmentFare }} · {{ option.segmentSeats }} seat{{ option.segmentSeats === 1 ? '' : 's' }} left
                   </p>
@@ -150,6 +150,20 @@
           }
         </div>
       }
+    </div>
+  } @else {
+    <div class="compare-wrap">
+      <div class="empty-state" role="status">
+        <div class="empty-ticket-outline">
+          <ion-icon name="ticket-outline" aria-hidden="true"></ion-icon>
+        </div>
+        <h3>No trips to compare</h3>
+        <p>No departures match this view. Try another travel date or destination.</p>
+        <button type="button" class="empty-cta" (click)="goBack()">
+          Back to schedule
+          <ion-icon name="chevron-forward-outline" aria-hidden="true"></ion-icon>
+        </button>
+      </div>
     </div>
   }
 </ion-content>

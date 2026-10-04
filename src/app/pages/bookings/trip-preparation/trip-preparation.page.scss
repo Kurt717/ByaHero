@@ -1,5 +1,5 @@
 /* trip-preparation.page.scss — Travel Checklist in BYAHERO design language. */
-@import "../../../../theme/mixins";
+@use "../../../../theme/mixins" as *;
 
 :host {
   --primary-navy: #151d48;

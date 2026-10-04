@@ -323,11 +323,15 @@ export class RebookPage implements OnInit {
 
   openCompare() {
     if (!this.terminal) return;
+    const o = this.original;
     this.router.navigate(['/booking/compare'], {
       queryParams: {
         terminal: this.terminal.id,
         date: this.selectedDate,
         dest: this.destFilter,
+        ...(o?.boardStopId && o?.alightStopId
+          ? { board: o.boardStopId, alight: o.alightStopId }
+          : {}),
       },
     });
   }
@@ -337,6 +341,7 @@ export class RebookPage implements OnInit {
   select(option: RebookOption) {
     if (!this.original || option.soldOut || option.shortBy > 0) return;
     const dep = option.dep;
+    const o = this.original;
     this.bookingService.startBooking({
       operator: dep.operator,
       from: dep.from,
@@ -346,7 +351,9 @@ export class RebookPage implements OnInit {
       seatsLeft: dep.seats,
       status: dep.status,
       departureTime: dep.time,
-    });
+    }, o?.boardStopId && o?.alightStopId
+      ? { boardStopId: o.boardStopId, alightStopId: o.alightStopId }
+      : undefined);
     this.bookingService.travelDate = this.selectedDate;
     this.bookingService.passengers = this.carriedPassengers();
     this.bookingService.pickup = this.pickupService.getActive().pickup;

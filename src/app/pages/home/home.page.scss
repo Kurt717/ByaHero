@@ -659,6 +659,11 @@ ion-content.home-content {
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
+
+          &.placeholder {
+            color: var(--text-muted);
+            font-weight: 500;
+          }
         }
 
         &:active {
@@ -1060,6 +1065,46 @@ ion-content.home-content {
   /* clears the sticky control bar so the first card is never tucked under it */
   margin-top: 8px;
 
+  /* Empty result: never a blank viewport. */
+  .no-rides {
+    background: var(--bg-white);
+    border: 1.5px dashed var(--ink);
+    border-radius: 24px;
+    padding: 28px 20px;
+    text-align: center;
+
+    ion-icon {
+      font-size: 32px;
+      color: var(--text-muted);
+    }
+    h3 {
+      margin: 10px 0 6px;
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+    p {
+      margin: 0;
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .no-rides-clear {
+      margin-top: 14px;
+      min-height: 44px;
+      padding: 8px 20px;
+      border-radius: 999px;
+      border: 1.5px solid var(--primary-navy);
+      background: transparent;
+      color: var(--primary-navy);
+      font-family: var(--font-family);
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+  }
+
   .trip-card {
     position: relative;
     background-color: var(--bg-white);
@@ -1370,6 +1415,51 @@ ion-content.home-content {
   width: 100%;
   height: 100%;
   background: #e2e8f0;
+}
+
+.map-empty {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  z-index: 900;
+  padding: 18px 16px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.97);
+  border: 1.5px dashed var(--ink);
+  box-shadow: 2px 2px 0 var(--ink);
+  text-align: center;
+
+  ion-icon {
+    font-size: 28px;
+    color: var(--text-muted);
+  }
+  h3 {
+    margin: 8px 0 6px;
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--text-main);
+  }
+  p {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+  .no-rides-clear {
+    margin-top: 12px;
+    min-height: 44px;
+    padding: 8px 20px;
+    border-radius: 999px;
+    border: 1.5px solid var(--primary-navy);
+    background: transparent;
+    color: var(--primary-navy);
+    font-family: var(--font-family);
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+  }
 }
 
 .map-error {

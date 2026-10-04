@@ -113,8 +113,8 @@ describe('SeatService (segment inventory)', () => {
         },
       ]),
     );
-    const depKey = `T-CAG-S1|${date}`;
-    const booked = svc.availabilityForSegment(depKey, full40(), 1, 3, 11).bookedSet;
+    const depKey = `T-VL-CAG-DLX-S1|${date}`;
+    const booked = svc.availabilityForSegment(depKey, full40(), 6, 8, 9).bookedSet;
     expect(booked.has('5A')).toBe(true);
 
     const tickets = TestBed.inject(TicketService);
@@ -133,10 +133,11 @@ describe('SeatService (segment inventory)', () => {
     expect(svc.seatZone('1A')).toBe('front');
     expect(svc.seatZone('5A')).toBe('middle');
     expect(svc.seatZone('9A')).toBe('back');
-    // UV van layout (5 rows × ABC): outer letters window, thirds zones.
+    // UV van layout (5 rows × ABC, no aisle): outers window, inner middle.
     const van = { rows: 5, columns: ['A', 'B', 'C'] };
     expect(svc.seatPosition('3A', van)).toBe('window');
-    expect(svc.seatPosition('3B', van)).toBe('aisle');
+    expect(svc.seatPosition('3B', van)).toBe('middle');
+    expect(svc.seatPosition('3C', van)).toBe('window');
     expect(svc.seatZone('2A', van)).toBe('front');
     expect(svc.seatZone('5A', van)).toBe('back');
   });
@@ -153,12 +154,12 @@ describe('SeatService (segment inventory)', () => {
       status: 'on-time',
     });
     expect(booking.hasNetworkSegment).toBe(true);
-    expect(booking.tripId).toBe('T-CAG-S1');
-    expect([booking.boardSeq, booking.alightSeq]).toEqual([1, 3]);
+    expect(booking.tripId).toBe('T-VL-CAG-DLX-S1');
+    expect([booking.boardSeq, booking.alightSeq]).toEqual([8, 6]);
 
-    // (e) alighting before boarding on a southbound trip is blocked.
+    // (e) alighting before boarding on a northbound trip is blocked.
     const backwards = booking.setBoardAlight('STG', 'ILA');
-    expect(backwards).toContain('southbound');
+    expect(backwards).toContain('northbound');
     // (e) same stop is blocked.
     expect(booking.setBoardAlight('ILA', 'ILA')).toContain('different stop');
     // (e) a stop the bus passed is blocked.

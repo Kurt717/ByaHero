@@ -26,11 +26,12 @@ import {
   navigateOutline,
   ticketOutline,
 } from 'ionicons/icons';
-import { TicketService, Booking } from '../ticket.service';
+import { TicketService, Booking, cancellationQuoteForBooking } from '../ticket.service';
 import { TripReminderCardComponent } from '../../../components/trip-reminder-card/trip-reminder-card.component';
 import { TripReminderService } from '../../../services/trip-reminder.service';
 import { ProfileService } from '../../profile/profile.service';
-import { SeatService } from '../../../services/seat.service';
+import { SeatService, departureKeyForTrip } from '../../../services/seat.service';
+import { VoucherService } from '../../../services/voucher.service';
 import { LuggageService } from '../luggage.service';
 import { RideIdentityService } from '../../../services/ride-identity.service';
 import {
@@ -78,6 +79,7 @@ private ticketService = inject(TicketService);
   private toastController = inject(ToastController);
   private profileService = inject(ProfileService);
   private seatService = inject(SeatService);
+  private voucherService = inject(VoucherService);
   private luggageService = inject(LuggageService);
   private reminderService = inject(TripReminderService);
   private rideIdentity = inject(RideIdentityService);
@@ -412,6 +414,11 @@ async saveTicket() {
 
 async cancelBooking() {
     if (!this.booking || this.booking.status === 'cancelled') return;
+    const quote = cancellationQuoteForBooking(this.booking, new Date());
+    if (!quote.canCancel) {
+      await this.showToast(quote.reason || 'This booking cannot be cancelled.');
+      return;
+    }
 
     const reasonAlert = await this.alertController.create({
       header: 'Why are you cancelling?',
@@ -437,24 +444,43 @@ async cancelBooking() {
   private async confirmCancel(reason: string) {
     const b = this.booking;
     if (!b) return;
-    const amount = this.fareNumber(b.fare);
+    const quote = cancellationQuoteForBooking(b, new Date());
+    if (!quote.canCancel) {
+      await this.showToast(quote.reason || 'This booking cannot be cancelled.');
+      return;
+    }
+    const refundLine = this.refundLineFor(b, quote.refundAmount);
 
     const alert = await this.alertController.create({
       header: 'Confirm cancellation',
-      message: `Voiding ${b.bookingRef}. A refund of ${this.formatCurrency(
-        amount,
-      )} goes straight back to your ByaHero Wallet and your seats are released.`,
+      message: `Voiding ${b.bookingRef}. ${quote.policyText} Refund: ${this.formatCurrency(
+        quote.refundAmount,
+      )} — ${refundLine} Your seats are released.`,
       buttons: [
         { text: 'Keep Ticket', role: 'cancel' },
         {
-          text: 'Confirm & Refund',
+          text: 'Confirm cancellation',
           role: 'destructive',
-          handler: () => this.applyRefund(reason, amount),
+          handler: () => this.applyRefund(reason, quote.refundAmount),
         },
       ],
     });
 
     await alert.present();
+  }
+
+  /** Wallet credits the wallet; cash has nothing to refund; e-wallets/cards
+   *  refund to the original method in the demo (no wallet credit). */
+  private refundLineFor(b: Booking, amount: number): string {
+    if (amount <= 0) return 'no refund due under the policy.';
+    const method = (b.paymentMethod ?? '').toLowerCase();
+    if (method === 'wallet') return 'goes straight back to your ByaHero Wallet';
+    if (method === 'cash') return 'cash on boarding has nothing to refund';
+    if (method === 'gcash' || method === 'maya' || method === 'card') {
+      return `refund to the original method (${b.paymentMethod}, demo)`;
+    }
+    // Legacy records without a method: credit the wallet (prior behavior).
+    return 'goes straight back to your ByaHero Wallet';
   }
 
   private applyRefund(reason: string, amount: number) {
@@ -475,7 +501,7 @@ async cancelBooking() {
         // Ref-scoped release: only this booking's interval is freed —
         // other riders sharing the seats keep theirs.
         this.seatService.freeSeatsByRef(
-          `${seg.tripId}|${b.date}`,
+          departureKeyForTrip(seg.tripId, b.date),
           b.bookingRef,
         );
       } else {
@@ -485,23 +511,42 @@ async cancelBooking() {
           b.to,
           b.date,
           seats,
+          b.bookingRef,
         );
       }
     }
 
-    if (amount > 0) {
+    // Return any redeemed voucher to the wallet.
+    if (b.voucherCode) {
+      try {
+        this.voucherService.release({ code: b.voucherCode } as never);
+      } catch {
+        // Voucher restore is best-effort; cancellation still stands.
+      }
+    }
+
+    const method = (b.paymentMethod ?? '').toLowerCase();
+    const shouldCreditWallet =
+      amount > 0 &&
+      (method === 'wallet' || (!method && true));
+    if (shouldCreditWallet) {
       this.profileService.refundWallet(
         amount,
         `Trip Cancelled · ${b.bookingRef}`,
-        `${b.operator} · ${b.from} → ${b.to}`,
+        `${b.operator} · ${this.ticketService.segmentPair(b)}`,
         `REF-${b.bookingRef.replace('BYH-', '')}`,
         reason,
       );
+      this.showToast(
+        `Refund of ${this.formatCurrency(amount)} added to your ByaHero Wallet.`,
+      );
+    } else if (amount > 0 && (method === 'gcash' || method === 'maya' || method === 'card')) {
+      this.showToast(
+        `Refund of ${this.formatCurrency(amount)} goes to your ${b.paymentMethod} (demo) — wallet not credited.`,
+      );
+    } else {
+      this.showToast('Booking cancelled. No refund due.');
     }
-
-    this.showToast(
-      `Refund of ${this.formatCurrency(amount)} added to your ByaHero Wallet.`,
-    );
   }
 
   private fareNumber(fare: string): number {

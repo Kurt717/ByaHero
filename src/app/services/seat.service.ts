@@ -25,6 +25,23 @@ export const SEAT_ZONE_ROWS = {
   back: [8, 10],
 } as const;
 
+/** Normalize a travel-date string to `toDateString()` form so Home, Search,
+ *  Trip Details and the seat map always build the same departure key.
+ *  Unparseable input passes through unchanged (legacy fallback). */
+export function normalizeDepartureDate(dateStr: string): string {
+  try {
+    const d = new Date(dateStr);
+    return isNaN(d.getTime()) ? dateStr : d.toDateString();
+  } catch {
+    return dateStr;
+  }
+}
+
+/** Departure key shared by every screen: `tripId|normalizedDate`. */
+export function departureKeyForTrip(tripId: string, dateStr: string): string {
+  return `${tripId}|${normalizeDepartureDate(dateStr)}`;
+}
+
 /** Half-open occupancy interval [boardSeq, alightSeq): a rider alighting at
  *  stop S frees the seat for another rider boarding at S. */
 export interface SeatInterval {
@@ -76,11 +93,11 @@ export class SeatService {
     return [operator, from, to, booking.travelDate].join('|');
   }
 
-  /** Scheduled-departure key: tripId|date. Unresolved trips fall back to a
-   *  namespaced legacy hash with full-route semantics. */
+  /** Scheduled-departure key: tripId|normalizedDate. Unresolved trips fall
+   *  back to a namespaced legacy hash with full-route semantics. */
   departureKeyFor(booking: BookingService): string {
     const seg = this.segmentForBooking(booking);
-    if (seg) return `${seg.tripId}|${booking.travelDate}`;
+    if (seg) return departureKeyForTrip(seg.tripId, booking.travelDate);
     return `legacy:${this.seedNumber(this.keyFor(booking)).toString(36)}`;
   }
 
@@ -203,7 +220,7 @@ export class SeatService {
             ? this.network.resolveTrip(parts[0], parts[1], parts[2])
             : null;
         const depKey = resolved
-          ? `${resolved.trip.tripId}|${date}`
+          ? departureKeyForTrip(resolved.trip.tripId, date)
           : `legacy:${this.seedNumber(key).toString(36)}`;
         const lastSeq = resolved ? resolved.corridor.stops.length - 1 : 1;
         const ref = byKey.get(key) ?? 'V1';
@@ -224,7 +241,7 @@ export class SeatService {
           b.to ?? '',
         );
         const depKey = resolved
-          ? `${resolved.trip.tripId}|${b.date}`
+          ? departureKeyForTrip(resolved.trip.tripId, b.date ?? '')
           : `legacy:${this.seedNumber(key).toString(36)}`;
         const lastSeq = resolved ? resolved.corridor.stops.length - 1 : 1;
         store[depKey] = store[depKey] ?? {};
@@ -252,31 +269,41 @@ export class SeatService {
   }
 
   /** Deterministic demo pre-bookings per departure: some full-route, some
-   *  partial intervals. Same departure key always renders the same map. */
-  private demoIntervals(
+   *  partial intervals. Same departure key always renders the same map.
+   *  Public for tests: every entry must reference a real seat id with
+   *  0 <= board < alight <= lastSeq. Uses unsigned `>>>` with explicit
+   *  parentheses (never signed `>>`), clamps into [0, lastSeq], and skips
+   *  when seatIds is empty so `undefined` can never enter `bookedSet`. */
+  demoIntervals(
     departureKey: string,
     seatIds: string[],
     lastSeq: number,
   ): { seatId: string; interval: SeatInterval }[] {
     const out: { seatId: string; interval: SeatInterval }[] = [];
-    if (lastSeq < 1) return out;
+    if (lastSeq < 1 || !seatIds.length) return out;
     const h = this.seedNumber(departureKey);
     const count = 3 + (h % 6);
     for (let i = 0; i < count; i++) {
-      const seatId = seatIds[(h >> 3 + i * 7) % seatIds.length];
+      const seatIdx = (h >>> ((3 + i * 7) % 32)) % seatIds.length;
+      const seatId = seatIds[seatIdx];
+      if (!seatId) continue;
       if (i % 3 === 0) {
         out.push({
           seatId,
           interval: { boardSeq: 0, alightSeq: lastSeq, bookingRef: 'DEMO' },
         });
       } else {
-        const board = (h >> (i + 2)) % lastSeq;
-        const span = 1 + ((h >> (i + 5)) % Math.max(1, lastSeq - board));
+        const rawBoard = (h >>> ((i + 2) % 32)) % lastSeq;
+        const board = Math.min(Math.max(rawBoard, 0), lastSeq - 1);
+        const window = Math.max(1, lastSeq - board);
+        const span = 1 + ((h >>> ((i + 5) % 32)) % window);
+        const alight = Math.min(lastSeq, board + span);
+        if (!(board >= 0 && alight > board && alight <= lastSeq)) continue;
         out.push({
           seatId,
           interval: {
             boardSeq: board,
-            alightSeq: Math.min(lastSeq, board + span),
+            alightSeq: alight,
             bookingRef: 'DEMO',
           },
         });
@@ -324,6 +351,8 @@ export class SeatService {
       seatIds,
       lastSeq,
     )) {
+      // Defensive: a note or chip must never read "Seat undefined".
+      if (!seatId || !seatIds.includes(seatId)) continue;
       if (SeatService.overlaps(boardSeq, alightSeq, interval)) {
         if (!bookedSet.has(seatId)) preBooked++;
         bookedSet.add(seatId);
@@ -338,21 +367,18 @@ export class SeatService {
     };
   }
 
-  /** Segment availability for a booking session (trip-details → payment). */
+  /** Segment availability for a booking session (trip-details → payment).
+   *  Off-corridor (legacy) trips use the legacy adapter with the same
+   *  composite key the payment screen files holds under — so the seat map
+   *  renders booked holds instead of showing everything available. */
   availabilityForBooking(booking: BookingService): SeatAvailability {
     const seg = this.segmentForBooking(booking);
     const seatIds = this.seatIdsForBooking(booking);
     if (!seg) {
-      return {
-        total: seatIds.length,
-        preBooked: 0,
-        purchased: 0,
-        available: seatIds.length,
-        bookedSet: new Set(),
-      };
+      return this.availabilityFor(booking.trip?.seatsLeft ?? '', this.keyFor(booking));
     }
     return this.availabilityForSegment(
-      `${seg.tripId}|${booking.travelDate}`,
+      departureKeyForTrip(seg.tripId, booking.travelDate),
       seatIds,
       Math.min(seg.boardSeq, seg.alightSeq),
       Math.max(seg.boardSeq, seg.alightSeq),
@@ -374,7 +400,7 @@ export class SeatService {
           : this.defaultSeatIds();
         const lastSeq = resolved.corridor.stops.length - 1;
         return this.availabilityForSegment(
-          `${trip.tripId}|${parts[3]}`,
+          departureKeyForTrip(trip.tripId, parts[3]),
           seatIds,
           Math.min(resolved.boardSeq, resolved.alightSeq),
           Math.max(resolved.boardSeq, resolved.alightSeq),
@@ -432,7 +458,7 @@ export class SeatService {
       const resolved = this.network.resolveTrip(parts[0], parts[1], parts[2]);
       if (resolved) {
         this.bookSegment(
-          `${resolved.trip.tripId}|${parts[3]}`,
+          departureKeyForTrip(resolved.trip.tripId, parts[3]),
           seats,
           Math.min(resolved.boardSeq, resolved.alightSeq),
           Math.max(resolved.boardSeq, resolved.alightSeq),
@@ -465,8 +491,10 @@ export class SeatService {
     this.writeStore(store);
   }
 
-  /** Legacy release (ticket cancellations without a stored ref context). */
-  freeSeats(key: string, seats: string[]) {
+  /** Legacy release (ticket cancellations without a stored ref context).
+   *  Never deletes other riders' intervals: filters by the legacy key used
+   *  as bookingRef, and optionally narrows to the booking's own segment. */
+  freeSeats(key: string, seats: string[], boardSeq?: number, alightSeq?: number) {
     const parts = key.split('|');
     const depKey =
       parts.length === 4
@@ -477,14 +505,31 @@ export class SeatService {
               parts[2],
             );
             return resolved
-              ? `${resolved.trip.tripId}|${parts[3]}`
+              ? departureKeyForTrip(resolved.trip.tripId, parts[3])
               : `legacy:${this.seedNumber(key).toString(36)}`;
           })()
         : `legacy:${this.seedNumber(key).toString(36)}`;
     const store = this.readStore();
     const tripStore = store[depKey];
     if (!tripStore) return;
-    for (const seat of seats) delete tripStore[seat];
+    const hasSegment = boardSeq != null && alightSeq != null;
+    const lo = hasSegment ? Math.min(boardSeq!, alightSeq!) : null;
+    const hi = hasSegment ? Math.max(boardSeq!, alightSeq!) : null;
+    for (const seat of seats) {
+      const list = tripStore[seat];
+      if (!list) continue;
+      // Only intervals filed under this legacy key are ours; other riders
+      // (different refs, DEMO) are never touched.
+      const kept = list.filter((s) => {
+        if (s.bookingRef !== key) return true;
+        if (lo != null && hi != null) {
+          return !(lo < s.alightSeq && s.boardSeq < hi);
+        }
+        return false;
+      });
+      if (kept.length) tripStore[seat] = kept;
+      else delete tripStore[seat];
+    }
     this.writeStore(store);
   }
 
@@ -497,17 +542,19 @@ export class SeatService {
     date: string,
     seats: string[],
     bookingRef?: string,
+    boardSeq?: number,
+    alightSeq?: number,
   ) {
     const key = [operator, from, to, date].join('|');
     const resolved = this.network.resolveTrip(operator, from, to);
     const depKey = resolved
-      ? `${resolved.trip.tripId}|${date}`
+      ? departureKeyForTrip(resolved.trip.tripId, date)
       : `legacy:${this.seedNumber(key).toString(36)}`;
     if (bookingRef) {
       this.freeSeatsByRef(depKey, bookingRef);
       return;
     }
-    this.freeSeats(key, seats);
+    this.freeSeats(key, seats, boardSeq, alightSeq);
   }
 
   /** When does a seat taken on the rider's segment free up? Returns the
@@ -556,22 +603,47 @@ export class SeatService {
 
   // --------------------------------- seat-preference geometry (layout-aware)
 
-  private layoutColumns(layout: SeatLayout | null): string[] {
-    if (layout) return layout.columns.filter((c) => c !== '|');
-    return [...SEAT_COLS];
-  }
-
-  private layoutRows(layout: SeatLayout | null): number {
-    return layout ? layout.rows : SEAT_ROWS;
-  }
-
-  /** Window (outer letters) or aisle (inner letters) for a layout. */
-  seatPosition(seatId: string, layout: SeatLayout | null = null): 'window' | 'aisle' {
-    const cols = this.layoutColumns(layout);
+  /** Seat position relative to windows and aisle gaps.
+   *  - `window`: outer-edge letter (always a window).
+   *  - `aisle`: directly adjacent to ANY `|` gap (layouts may have more
+   *    than one aisle, e.g. the 1+1+1 sleeper).
+   *  - `middle`: neither (e.g. D in a 2+3 bus, B in a UV van ABC).
+   *  Layouts without `|` (vans) have no aisle seats: outers are windows,
+   *  everything else is middle. */
+  seatPosition(
+    seatId: string,
+    layout: SeatLayout | null = null,
+  ): 'window' | 'aisle' | 'middle' {
+    // Legacy default map is 2+2 with an aisle between B and C.
+    const cols = layout ? layout.columns : ['A', 'B', '|', 'C', 'D'];
     const col = seatId.slice(-1).toUpperCase();
     const idx = cols.indexOf(col);
-    if (idx <= 0 || idx >= cols.length - 1) return 'window';
-    return 'aisle';
+    // Outer edge wins (e.g. C in 2+1 is both outer and aisle-adjacent).
+    if (idx === 0 || (idx >= 0 && idx === cols.length - 1)) return 'window';
+    if (idx < 0) return 'middle';
+    const aisleAt = new Set(
+      cols.flatMap((c, i) => (c === '|' ? [i] : [])),
+    );
+    if (aisleAt.size === 0) return 'middle';
+    if (aisleAt.has(idx - 1) || aisleAt.has(idx + 1)) return 'aisle';
+    return 'middle';
+  }
+
+  /** Positions a vehicle actually offers (drives the preference options so
+   *  we never offer "aisle" on a van with no aisle). Always includes the
+   *  full set present in the layout. */
+  availablePositionsForLayout(
+    layout: SeatLayout | null,
+  ): ('window' | 'aisle' | 'middle')[] {
+    const cols = layout ? layout.columns : ['A', 'B', '|', 'C', 'D'];
+    const hasAisle = cols.includes('|');
+    const positions = new Set<'window' | 'aisle' | 'middle'>();
+    const seatCols = cols.filter((c) => c !== '|');
+    for (const c of seatCols) {
+      positions.add(this.seatPosition(`1${c}`, layout));
+    }
+    void hasAisle;
+    return [...positions];
   }
 
   /** Front / middle / back thirds of a layout's rows. */
@@ -579,7 +651,7 @@ export class SeatService {
     seatId: string,
     layout: SeatLayout | null = null,
   ): 'front' | 'middle' | 'back' {
-    const rows = this.layoutRows(layout);
+    const rows = layout ? layout.rows : SEAT_ROWS;
     const row = Number(seatId.slice(0, -1)) || 0;
     if (row > Math.ceil((rows * 2) / 3)) return 'back';
     if (row > Math.ceil(rows / 3)) return 'middle';
@@ -602,20 +674,23 @@ export class SeatService {
     return true;
   }
 
-  /** Available seats on a booking segment matching a preference. */
+  /** Available seats on a booking segment matching a preference.
+   *  Off-corridor (legacy) trips read the same legacy adapter as the seat
+   *  map so preference highlights never offer a booked seat. */
   matchingForBooking(booking: BookingService, pref: SeatPreference): string[] {
     const seg = this.segmentForBooking(booking);
     const seatIds = this.seatIdsForBooking(booking);
     const layout = this.layoutForBooking(booking);
     const booked = seg
       ? this.availabilityForSegment(
-          `${seg.tripId}|${booking.travelDate}`,
+          departureKeyForTrip(seg.tripId, booking.travelDate),
           seatIds,
           Math.min(seg.boardSeq, seg.alightSeq),
           Math.max(seg.boardSeq, seg.alightSeq),
           seg.lastSeq,
         ).bookedSet
-      : new Set<string>();
+      : this.availabilityFor(booking.trip?.seatsLeft ?? '', this.keyFor(booking))
+          .bookedSet;
     return seatIds.filter(
       (id) => !booked.has(id) && this.matchesPreference(id, pref, layout),
     );

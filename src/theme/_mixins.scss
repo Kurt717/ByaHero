@@ -2,8 +2,9 @@
    BYAHERO shared SCSS mixins — canonical implementations of patterns
    repeated across pages (sticky bars, beacon, pills, chips, cards).
    Values preserve the approved design; pages `@include` these instead
-   of re-declaring the same rules. Component styles must `@import` this
-   file to use a mixin (Angular compiles page SCSS in isolation).
+    of re-declaring the same rules. Component styles must `@use` this
+    file (e.g. `@use ".../theme/mixins" as *;`) to use a mixin
+    (Angular compiles page SCSS in isolation).
    ===================================================================== */
 
 @mixin bh-sticky-bar($bleed: 16px, $pad-y-top: 8px, $pad-y-bottom: 12px) {

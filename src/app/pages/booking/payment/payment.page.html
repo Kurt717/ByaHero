@@ -16,7 +16,7 @@
       <div class="receipt-card">
         <div class="receipt-row heading">
           <span>{{ trip.operator }}</span>
-          <span>{{ trip.from }} → {{ trip.to }}</span>
+          <span>{{ booking.hasNetworkSegment ? booking.segmentLabel : (trip.from + ' → ' + trip.to) }}</span>
         </div>
         @if (booking.hasNetworkSegment) {
           <div class="receipt-row segment">
@@ -198,6 +198,8 @@
                   <label>Card Number</label>
                   <input
                     type="text"
+                    inputmode="numeric"
+                    autocomplete="cc-number"
                     [(ngModel)]="cardNumber"
                     placeholder="1234 5678 9012 3456"
                     maxlength="19"
@@ -208,6 +210,8 @@
                       <label>Expiry</label>
                       <input
                         type="text"
+                        inputmode="numeric"
+                        autocomplete="cc-exp"
                         [(ngModel)]="cardExpiry"
                         placeholder="MM/YY"
                         maxlength="5"
@@ -217,16 +221,15 @@
                         <label>CVV</label>
                         <input
                           type="text"
+                          inputmode="numeric"
+                          autocomplete="cc-csc"
                           [(ngModel)]="cardCvv"
                           placeholder="123"
-                          maxlength="3"
+                          maxlength="4"
                           />
                         </div>
                       </div>
-                      <p class="secure-note">
-                        <ion-icon name="lock-closed-outline"></ion-icon> Demo checkout — card
-                        details are only validated on this device and never saved.
-                      </p>
+                      
                     </div>
                   }
                   @if (paymentHint) {

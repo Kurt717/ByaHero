@@ -233,11 +233,6 @@ export class TripDetailsPage implements OnInit {
     };
   }
 
-  /** Back to Home: pickup + destination can only change there. */
-  changeOnHome() {
-    this.router.navigateByUrl('/home');
-  }
-
   togglePickupPicker() {
     this.showPickupPicker = !this.showPickupPicker;
   }
@@ -305,7 +300,21 @@ export class TripDetailsPage implements OnInit {
     this.router.navigateByUrl('/home');
   }
 
-  continue() {
+  /** Validation errors for the current session (shown before continue). */
+  get stopErrors(): string[] {
+    try {
+      return this.booking.validateStops();
+    } catch {
+      return [];
+    }
+  }
+
+  async continue() {
+    const errors = this.stopErrors;
+    if (errors.length) {
+      await this.idToast(errors[0]);
+      return;
+    }
     // Reservations pass through the seat-preference step; hailing goes
     // straight to the seat map exactly as before (no date, no preference).
     if (this.booking.hailMode) {

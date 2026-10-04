@@ -1,26 +1,80 @@
 import { Injectable } from '@angular/core';
+import {
+  OPERATORS as DATA_OPERATORS,
+  SERVICE_CLASSES as DATA_SERVICE_CLASSES,
+  SEAT_LAYOUTS,
+  VEHICLES as DATA_VEHICLES,
+  CORRIDORS as DATA_CORRIDORS,
+  SERVICES as DATA_SERVICES,
+  TRIPS as DATA_TRIPS,
+  FARE_RULES,
+  PLACES,
+  TERMINALS,
+  SERVICES,
+  DISCOUNTS,
+  FARE_BENCHMARKS,
+  DATA_META,
+  SOURCES,
+  type Confidence,
+  type Place,
+  type Terminal,
+  type Service as NetworkServiceDef,
+  type FareRule,
+  type DiscountRule,
+  type FareBenchmark,
+  type Trip as DataTrip,
+  type Vehicle as DataVehicle,
+  type CorridorStop as DataStop,
+  type Corridor as DataCorridor,
+} from './network-data';
+
+// Re-export the centralized data so the whole app reads from one place.
+export {
+  PLACES,
+  TERMINALS,
+  SERVICES,
+  DISCOUNTS,
+  FARE_BENCHMARKS,
+  DATA_META,
+  SOURCES,
+};
+export type {
+  Confidence,
+  Place,
+  Terminal,
+  FareRule,
+  DiscountRule,
+  FareBenchmark,
+};
 
 /**
  * Provincial-bus network model — single source of truth for the real
  * Philippine operating model: fixed corridors, any-stop boarding/alighting,
  * segment fares and segment seat inventory.
  *
- * ALL fares, stops and schedules here are PROTOTYPE DEMO data for UI
- * testing. They are NOT official LTFRB rates and must never be presented
- * as such (see PROTOTYPE_FARE_NOTE, shown on payment + ticket screens).
+ * Raw data lives in network-data.ts (places, operators, terminals, service
+ * classes, LTFRB fare rules, discounts, seat layouts, vehicles, corridors +
+ * stops, services, trips, fare benchmarks). This file derives everything the
+ * app needs from it: lookups, fuzzy trip resolution, LTFRB per-km segment
+ * fares and stop ETAs. Pure and deterministic: no Math.random, no Date.now
+ * inside derivations.
  *
- * Pure and deterministic: no Math.random, no Date.now inside derivations.
+ * Fare accuracy is pinned by real published fares — see FARE_BENCHMARKS and
+ * the fare-accuracy tests. Fares shown in-app remain labelled prototype
+ * demo data (see PROTOTYPE_FARE_NOTE, shown on payment + ticket screens).
  */
 
 export const PROTOTYPE_FARE_NOTE =
   'Prototype demo fares for testing only — not official LTFRB rates.';
 
-/** Average corridor speed used for stop ETAs (km/h). */
+/** Fallback corridor speed (km/h) when a corridor has no avgKmh. */
 export const CORRIDOR_KMH = 45;
 
-/** Fallback fare curve (pesos) when a pair has no explicit matrix fare. */
+/** @deprecated Legacy fallback fare-curve constants (kept for compatibility). */
 export const FARE_BASE = 80;
+/** @deprecated Legacy fallback fare-curve constants (kept for compatibility). */
 export const FARE_PER_KM = 1.1;
+/** @deprecated Legacy fallback fare-curve constants (kept for compatibility). */
 export const FARE_MIN = 60;
 
 // ------------------------------------------------------------- operators
@@ -33,22 +87,12 @@ export interface Operator {
   legacyNames: string[];
 }
 
-export const OPERATORS: Operator[] = [
-  { id: 'victory-liner', name: 'Victory Liner', shortName: 'Victory', legacyNames: ['victory liner', 'victory', 'vl'] },
-  { id: 'florida', name: 'Florida Bus Line', shortName: 'Florida', legacyNames: ['florida bus line', 'gv florida', 'fbl'] },
-  { id: 'partas', name: 'Partas', shortName: 'Partas', legacyNames: ['partas'] },
-  { id: 'baliwag', name: 'Baliwag Transit', shortName: 'Baliwag', legacyNames: ['baliwag'] },
-  { id: 'genesis', name: 'Genesis', shortName: 'Genesis', legacyNames: ['genesis joybus', 'genesis'] },
-  { id: 'five-star', name: 'Five Star', shortName: 'Five Star', legacyNames: ['five star'] },
-  { id: 'ohayami', name: 'Ohayami Trans', shortName: 'Ohayami', legacyNames: ['ohayami'] },
-  { id: 'gl-trans', name: 'GL Trans', shortName: 'GL', legacyNames: ['gl trans'] },
-  { id: 'sagada-shared', name: 'Sagada Shared Van', shortName: 'Sagada Van', legacyNames: ['sagada shared van', 'sagada'] },
-  { id: 'dagupan-shared', name: 'Dagupan Shared Van', shortName: 'Dagupan Van', legacyNames: ['dagupan shared van'] },
-  { id: 'bontoc-shared', name: 'Bontoc Shared Van', shortName: 'Bontoc Van', legacyNames: ['bontoc shared van', 'bontoc'] },
-  { id: 'tabuk-uv', name: 'Tabuk UV Express', shortName: 'Tabuk UV', legacyNames: ['tabuk uv express', 'tabuk uv', 'tabuk'] },
-  { id: 'cagayan-uv', name: 'Cagayan UV', shortName: 'Cagayan UV', legacyNames: ['cagayan uv'] },
-  { id: 'solano-uv', name: 'Solano UV', shortName: 'Solano UV', legacyNames: ['solano uv'] },
-];
+export const OPERATORS: Operator[] = DATA_OPERATORS.map((o) => ({
+  id: o.id,
+  name: o.name,
+  shortName: o.shortName,
+  legacyNames: o.legacyNames,
+}));
 
 /** Longest legacy name wins, so 'GV Florida UV Express' beats 'GV Florida'. */
 export function normalizeOperatorId(name: string | null | undefined): string | null {
@@ -71,36 +115,64 @@ export function operatorById(id: string | null | undefined): Operator | null {
   return OPERATORS.find((o) => o.id === id) ?? null;
 }
 
+export function placeById(id: string | null | undefined): Place | null {
+  return PLACES.find((p) => p.id === id) ?? null;
+}
+
+export function terminalById(id: string | null | undefined): Terminal | null {
+  return TERMINALS.find((t) => t.id === id) ?? null;
+}
+
+export function serviceById(id: string | null | undefined): NetworkServiceDef | null {
+  return DATA_SERVICES.find((s) => s.id === id) ?? null;
+}
+
 // -------------------------------------------------------- service classes
 
-export type ServiceClassId = 'ordinary' | 'aircon' | 'deluxe' | 'uv-express' | 'shared';
+export type ServiceClassId =
+  | 'ordinary'
+  | 'aircon'
+  | 'deluxe'
+  | 'super-deluxe'
+  | 'luxury'
+  | 'uv-express'
+  | 'shared';
 
 export interface ServiceClass {
   id: ServiceClassId;
   label: string;
-  /** Multiplier applied to the ordinary/base fare. */
-  fareMultiplier: number;
   amenities: string[];
 }
 
-export const SERVICE_CLASSES: ServiceClass[] = [
-  { id: 'ordinary', label: 'Ordinary', fareMultiplier: 1, amenities: ['Non-aircon', '2+3 seating'] },
-  { id: 'aircon', label: 'Aircon', fareMultiplier: 1.25, amenities: ['Aircon', '2+2 seating', 'Reclining seats'] },
-  { id: 'deluxe', label: 'Deluxe', fareMultiplier: 1.6, amenities: ['Aircon', '2+1 seating', 'Extra legroom', 'Onboard restroom'] },
-  { id: 'uv-express', label: 'UV Express', fareMultiplier: 1.1, amenities: ['Aircon van', 'Point-to-point'] },
-  { id: 'shared', label: 'Shared Van', fareMultiplier: 0.9, amenities: ['Shared van', 'Flexible pickup'] },
-];
+export const SERVICE_CLASSES: ServiceClass[] = DATA_SERVICE_CLASSES.map((c) => ({
+  id: c.id as ServiceClassId,
+  label: c.label,
+  amenities: c.amenities,
+}));
 
 export function serviceClassById(id: string | null | undefined): ServiceClass {
   return SERVICE_CLASSES.find((c) => c.id === id) ?? SERVICE_CLASSES[1];
 }
 
+/** LTFRB per-km rule for a class. Legacy van classes fall back to the
+ *  closest regulated equivalents (uv-express → aircon, shared → ordinary). */
+export function fareRuleFor(classId: string | null | undefined): FareRule {
+  const direct = FARE_RULES.find((r) => r.classId === classId);
+  if (direct) return direct;
+  if (classId === 'uv-express')
+    return FARE_RULES.find((r) => r.classId === 'aircon')!;
+  return FARE_RULES.find((r) => r.classId === 'ordinary')!;
+}
+
 // --------------------------------------------------------------- vehicles
 
 export interface SeatLayout {
+  id?: string;
   rows: number;
-  /** Seat letters left→right; '|' marks the aisle gap (no seat). */
+  /** Seat letters left→right; '|' marks an aisle gap (may appear more than once). */
   columns: string[];
+  /** Seats that exist in the grid but cannot be sold (restroom, driver bay...). */
+  blockedSeats?: string[];
 }
 
 export interface Vehicle {
@@ -109,14 +181,31 @@ export interface Vehicle {
   serviceClassId: ServiceClassId;
   plate: string;
   layout: SeatLayout;
+  /** Raw layout reference in network-data.ts. */
+  layoutId?: string;
 }
 
+export function layoutById(id: string | null | undefined): SeatLayout | null {
+  const found = SEAT_LAYOUTS.find((l) => l.id === id);
+  return found
+    ? {
+        id: found.id,
+        rows: found.rows,
+        columns: [...found.columns],
+        blockedSeats: [...found.blockedSeats],
+      }
+    : null;
+}
+
+/** Sellable seat ids for a layout (blocked seats excluded). */
 export function seatIdsForLayout(layout: SeatLayout): string[] {
   const out: string[] = [];
+  const blocked = new Set(layout.blockedSeats ?? []);
   for (let r = 1; r <= layout.rows; r++) {
     for (const c of layout.columns) {
       if (c === '|') continue;
-      out.push(`${r}${c}`);
+      const id = `${r}${c}`;
+      if (!blocked.has(id)) out.push(id);
     }
   }
   return out;
@@ -126,18 +215,14 @@ export function layoutCapacity(layout: SeatLayout): number {
   return seatIdsForLayout(layout).length;
 }
 
-export const VEHICLES: Vehicle[] = [
-  { id: 'V-AC44', operatorId: 'victory-liner', serviceClassId: 'aircon', plate: 'NBC 1932', layout: { rows: 11, columns: ['A', 'B', '|', 'C', 'D'] } },
-  { id: 'V-AC44-B', operatorId: 'florida', serviceClassId: 'aircon', plate: 'DDE 4821', layout: { rows: 11, columns: ['A', 'B', '|', 'C', 'D'] } },
-  { id: 'V-ORD50', operatorId: 'florida', serviceClassId: 'ordinary', plate: 'NEE 4108', layout: { rows: 10, columns: ['A', 'B', '|', 'C', 'D', 'E'] } },
-  { id: 'V-ORD50-B', operatorId: 'five-star', serviceClassId: 'ordinary', plate: 'CXJ 2210', layout: { rows: 10, columns: ['A', 'B', '|', 'C', 'D', 'E'] } },
-  { id: 'V-DLX30', operatorId: 'partas', serviceClassId: 'deluxe', plate: 'GDH 7205', layout: { rows: 10, columns: ['A', 'B', '|', 'C'] } },
-  { id: 'V-DLX30-B', operatorId: 'genesis', serviceClassId: 'deluxe', plate: 'ABH 5531', layout: { rows: 10, columns: ['A', 'B', '|', 'C'] } },
-  { id: 'V-UV15', operatorId: 'tabuk-uv', serviceClassId: 'uv-express', plate: 'DAV 8834', layout: { rows: 5, columns: ['A', 'B', 'C'] } },
-  { id: 'V-UV15-B', operatorId: 'cagayan-uv', serviceClassId: 'uv-express', plate: 'YBK 1190', layout: { rows: 5, columns: ['A', 'B', 'C'] } },
-  { id: 'V-SHR16', operatorId: 'sagada-shared', serviceClassId: 'shared', plate: 'KAE 4472', layout: { rows: 4, columns: ['A', 'B', 'C', 'D'] } },
-  { id: 'V-SHR16-B', operatorId: 'bontoc-shared', serviceClassId: 'shared', plate: 'WQI 9025', layout: { rows: 4, columns: ['A', 'B', 'C', 'D'] } },
-];
+export const VEHICLES: Vehicle[] = DATA_VEHICLES.map((v: DataVehicle) => ({
+  id: v.id,
+  operatorId: v.operatorId,
+  serviceClassId: v.classId,
+  plate: v.plate,
+  layout: layoutById(v.layoutId) ?? { rows: 10, columns: ['A', 'B', '|', 'C', 'D'] },
+  layoutId: v.layoutId,
+}));
 
 export function vehicleById(id: string | null | undefined): Vehicle | null {
   return VEHICLES.find((v) => v.id === id) ?? null;
@@ -150,6 +235,7 @@ export type Direction = 'forward' | 'reverse';
 
 export interface CorridorStop {
   id: string;
+  placeId?: string;
   name: string;
   kind: StopKind;
   /** 0-based order in the forward direction. */
@@ -158,49 +244,31 @@ export interface CorridorStop {
   km: number;
   lat: number;
   lng: number;
-  /** Town id whose fare this stop shares (roadside stops inherit it). */
-  fareZone: string;
 }
 
 export interface Corridor {
   id: string;
   name: string;
+  /** Average operating speed incl. stops, used for ETAs (km/h). */
+  avgKmh?: number;
   stops: CorridorStop[];
 }
 
-export const CORRIDORS: Corridor[] = [
-  {
-    id: 'CAGAYAN',
-    name: 'Cagayan Valley Corridor',
-    stops: [
-      { id: 'TUG', name: 'Tuguegarao City Terminal', kind: 'terminal', sequence: 0, km: 0, lat: 17.6132, lng: 121.727, fareZone: 'TUG' },
-      { id: 'ILA', name: 'Ilagan', kind: 'town', sequence: 1, km: 66, lat: 17.1487, lng: 121.8895, fareZone: 'ILA' },
-      { id: 'CAU', name: 'Cauayan Terminal', kind: 'terminal', sequence: 2, km: 95, lat: 16.9333, lng: 121.7667, fareZone: 'CAU' },
-      { id: 'STG', name: 'Santiago City Terminal', kind: 'terminal', sequence: 3, km: 130, lat: 16.6864, lng: 121.549, fareZone: 'STG' },
-      { id: 'BBM', name: 'Bambang Crossing', kind: 'roadside', sequence: 4, km: 172, lat: 16.39, lng: 121.11, fareZone: 'BYB' },
-      { id: 'BYB', name: 'Bayombong', kind: 'town', sequence: 5, km: 185, lat: 16.487, lng: 121.15, fareZone: 'BYB' },
-      { id: 'SOL', name: 'Solano', kind: 'town', sequence: 6, km: 200, lat: 16.5167, lng: 121.1833, fareZone: 'SOL' },
-      { id: 'ARI', name: 'Aritao Junction', kind: 'roadside', sequence: 7, km: 212, lat: 16.48, lng: 121.2, fareZone: 'SOL' },
-      { id: 'SJC', name: 'San Jose City', kind: 'town', sequence: 8, km: 245, lat: 15.79, lng: 121.0, fareZone: 'SJC' },
-      { id: 'CAB', name: 'Cabanatuan', kind: 'town', sequence: 9, km: 280, lat: 15.4864, lng: 120.9679, fareZone: 'CAB' },
-      { id: 'TAR', name: 'Tarlac City Terminal', kind: 'terminal', sequence: 10, km: 340, lat: 15.483, lng: 120.59, fareZone: 'TAR' },
-      { id: 'PITX', name: 'Manila PITX Terminal', kind: 'terminal', sequence: 11, km: 485, lat: 14.493, lng: 120.986, fareZone: 'PITX' },
-    ],
-  },
-  {
-    id: 'CORDILLERA',
-    name: 'Cordillera–Manila Corridor',
-    stops: [
-      { id: 'BAG', name: 'Baguio City Terminal', kind: 'terminal', sequence: 0, km: 0, lat: 16.412, lng: 120.596, fareZone: 'BAG' },
-      { id: 'RSJ', name: 'Rosario Junction', kind: 'roadside', sequence: 1, km: 28, lat: 16.33, lng: 120.485, fareZone: 'URD' },
-      { id: 'URD', name: 'Urdaneta', kind: 'town', sequence: 2, km: 85, lat: 15.976, lng: 120.567, fareZone: 'URD' },
-      { id: 'VIL', name: 'Villasis Crossing', kind: 'roadside', sequence: 3, km: 102, lat: 15.9, lng: 120.47, fareZone: 'URD' },
-      { id: 'TRC', name: 'Tarlac City Terminal', kind: 'terminal', sequence: 4, km: 135, lat: 15.483, lng: 120.59, fareZone: 'TRC' },
-      { id: 'DAU', name: 'Dau Terminal', kind: 'terminal', sequence: 5, km: 185, lat: 15.17, lng: 120.58, fareZone: 'DAU' },
-      { id: 'CUB', name: 'Manila Cubao Terminal', kind: 'terminal', sequence: 6, km: 255, lat: 14.6205, lng: 121.0522, fareZone: 'CUB' },
-    ],
-  },
-];
+export const CORRIDORS: Corridor[] = DATA_CORRIDORS.map((c: DataCorridor) => ({
+  id: c.id,
+  name: c.name,
+  avgKmh: c.avgKmh,
+  stops: c.stops.map((s: DataStop) => ({
+    id: s.id,
+    placeId: s.placeId,
+    name: s.name,
+    kind: s.kind,
+    sequence: s.sequence,
+    km: s.km,
+    lat: s.lat,
+    lng: s.lng,
+  })),
+}));
 
 export function corridorById(id: string | null | undefined): Corridor | null {
   return CORRIDORS.find((c) => c.id === id) ?? null;
@@ -220,18 +288,25 @@ export interface Trip {
   vehicleId: string;
   /** Daily departure, 12h clock (e.g. '6:00 AM'). */
   departureTime: string;
+  /** Raw service reference in network-data.ts. */
+  serviceId?: string;
+  /** Terminal the bus leaves from (departure time applies at this terminal). */
+  originTerminalId?: string;
 }
 
-export const TRIPS: Trip[] = [
-  { tripId: 'T-CAG-S1', corridorId: 'CAGAYAN', direction: 'forward', operatorId: 'victory-liner', vehicleId: 'V-AC44', departureTime: '6:00 AM' },
-  { tripId: 'T-CAG-S2', corridorId: 'CAGAYAN', direction: 'forward', operatorId: 'florida', vehicleId: 'V-ORD50', departureTime: '2:30 PM' },
-  { tripId: 'T-CAG-N1', corridorId: 'CAGAYAN', direction: 'reverse', operatorId: 'victory-liner', vehicleId: 'V-AC44', departureTime: '7:00 PM' },
-  { tripId: 'T-CAG-N2', corridorId: 'CAGAYAN', direction: 'reverse', operatorId: 'partas', vehicleId: 'V-DLX30', departureTime: '8:00 AM' },
-  { tripId: 'T-COR-S1', corridorId: 'CORDILLERA', direction: 'forward', operatorId: 'victory-liner', vehicleId: 'V-DLX30', departureTime: '7:30 AM' },
-  { tripId: 'T-COR-S2', corridorId: 'CORDILLERA', direction: 'forward', operatorId: 'five-star', vehicleId: 'V-ORD50-B', departureTime: '1:00 PM' },
-  { tripId: 'T-COR-N1', corridorId: 'CORDILLERA', direction: 'reverse', operatorId: 'victory-liner', vehicleId: 'V-AC44', departureTime: '6:30 PM' },
-  { tripId: 'T-COR-N2', corridorId: 'CORDILLERA', direction: 'reverse', operatorId: 'florida', vehicleId: 'V-ORD50', departureTime: '9:00 AM' },
-];
+export const TRIPS: Trip[] = DATA_TRIPS.map((t: DataTrip) => {
+  const service = serviceById(t.serviceId);
+  return {
+    tripId: t.tripId,
+    corridorId: service?.corridorId ?? '',
+    direction: t.direction,
+    operatorId: service?.operatorId ?? '',
+    vehicleId: t.vehicleId,
+    departureTime: t.departureTime,
+    serviceId: t.serviceId,
+    originTerminalId: t.originTerminalId,
+  };
+});
 
 export function tripById(tripId: string | null | undefined): Trip | null {
   return TRIPS.find((t) => t.tripId === tripId) ?? null;
@@ -239,35 +314,42 @@ export function tripById(tripId: string | null | undefined): Trip | null {
 
 // -------------------------------------------------------------- fare table
 
-/** Explicit demo pair fares: corridor → operator → class → 'STOPA>STOPB'. */
-type PairFares = Record<string, number>;
-const FARE_TABLE: Record<string, Partial<Record<string, Partial<Record<ServiceClassId, PairFares>>>>> = {
-  CAGAYAN: {
-    florida: {
-      aircon: { 'PITX>TUG': 620 },
-      ordinary: { 'PITX>TUG': 550 },
-    },
-    'victory-liner': {
-      aircon: { 'PITX>TUG': 650 },
-      ordinary: { 'PITX>TUG': 560 },
-    },
-    partas: {
-      deluxe: { 'PITX>TUG': 880 },
-    },
-  },
-  CORDILLERA: {
-    'victory-liner': {
-      deluxe: { 'BAG>CUB': 720 },
-      aircon: { 'BAG>CUB': 560 },
-    },
-    'five-star': {
-      ordinary: { 'BAG>CUB': 450 },
-    },
-  },
-};
-
 export function pairKey(a: string, b: string): string {
   return [a, b].sort().join('>');
+}
+
+/** Rider's chosen boarding/alighting stops as corridor stop ids. */
+export interface RiderPair {
+  boardStopId: string;
+  alightStopId: string;
+}
+
+/** Validate a rider pair against a resolved route span. Same corridor, same
+ *  travel direction, and the rider's stretch inside the route's span —
+ *  otherwise the booking keeps the full-route behavior. Pure. */
+export function riderPairForRoute(
+  pairCorridorId: string,
+  pairBoardSeq: number,
+  pairAlightSeq: number,
+  pairStops: CorridorStop[],
+  routeCorridorId: string,
+  routeBoardSeq: number,
+  routeAlightSeq: number,
+): RiderPair | undefined {
+  if (pairCorridorId !== routeCorridorId) return undefined;
+  if (pairBoardSeq === pairAlightSeq) return undefined;
+  const riderForward = pairAlightSeq > pairBoardSeq;
+  const routeForward = routeAlightSeq > routeBoardSeq;
+  if (riderForward !== routeForward) return undefined;
+  const riderLo = Math.min(pairBoardSeq, pairAlightSeq);
+  const riderHi = Math.max(pairBoardSeq, pairAlightSeq);
+  const routeLo = Math.min(routeBoardSeq, routeAlightSeq);
+  const routeHi = Math.max(routeBoardSeq, routeAlightSeq);
+  if (riderLo < routeLo || riderHi > routeHi) return undefined;
+  const board = pairStops[pairBoardSeq];
+  const alight = pairStops[pairAlightSeq];
+  if (!board || !alight || board.id === alight.id) return undefined;
+  return { boardStopId: board.id, alightStopId: alight.id };
 }
 
 export interface FareQuery {
@@ -278,12 +360,22 @@ export interface FareQuery {
   alightStopId: string;
 }
 
+/** LTFRB per-km segment fare in pesos, rounded to the peso:
+ *  baseFare + max(0, km − baseKm) × perKm. Verified against published
+ *  operator fares — see FARE_BENCHMARKS. */
+export function computeLTFRBFare(km: number, rule: FareRule): number {
+  const extra = Math.max(0, km - rule.baseKm);
+  return Math.round(rule.baseFare + extra * rule.perKm);
+}
+
 @Injectable({ providedIn: 'root' })
 export class NetworkService {
   corridors = CORRIDORS;
   operators = OPERATORS;
   vehicles = VEHICLES;
   trips = TRIPS;
+  places = PLACES;
+  terminals = TERMINALS;
 
   corridor(id: string | null | undefined): Corridor | null {
     return corridorById(id);
@@ -295,6 +387,14 @@ export class NetworkService {
 
   vehicle(vehicleId: string | null | undefined): Vehicle | null {
     return vehicleById(vehicleId);
+  }
+
+  place(placeId: string | null | undefined): Place | null {
+    return placeById(placeId);
+  }
+
+  terminal(terminalId: string | null | undefined): Terminal | null {
+    return terminalById(terminalId);
   }
 
   operatorName(operatorId: string | null | undefined): string {
@@ -350,37 +450,21 @@ export class NetworkService {
     return Math.abs(b.km - a.km);
   }
 
-  /** Segment fare in pesos. Roadside stops inherit their fareZone for
-   *  both matrix lookup and km measurement; otherwise the fallback curve
-   *  applies by km. */
+  /** Segment fare in pesos from the LTFRB per-km rules over stop distances. */
   fareFor(q: FareQuery): number {
     const corridor = corridorById(q.corridorId);
     if (!corridor) return 0;
     const board = stopById(corridor, q.boardStopId);
     const alight = stopById(corridor, q.alightStopId);
     if (!board || !alight || board.id === alight.id) return 0;
-    const cls = serviceClassById(q.serviceClassId);
-    // Roadside → its fare zone (inheritance, per spec).
-    const zoneStop = (s: CorridorStop) =>
-      s.kind === 'roadside'
-        ? (stopById(corridor, s.fareZone) ?? s)
-        : s;
-    const zb = zoneStop(board);
-    const za = zoneStop(alight);
-    if (zb.id === za.id) {
-      // Same zone (e.g. a roadside point and its own town): minimum fare.
-      return Math.round(FARE_MIN * cls.fareMultiplier);
-    }
-    const key = pairKey(zb.id, za.id);
-    const explicit =
-      FARE_TABLE[q.corridorId]?.[q.operatorId]?.[cls.id]?.[key];
-    if (typeof explicit === 'number') return explicit;
-    const km = Math.abs(za.km - zb.km);
-    const base = Math.max(FARE_MIN, Math.round(FARE_BASE + FARE_PER_KM * km));
-    return Math.round(base * cls.fareMultiplier);
+    const km = Math.abs(alight.km - board.km);
+    if (km <= 0) return 0;
+    return computeLTFRBFare(km, fareRuleFor(q.serviceClassId));
   }
 
-  /** ETA clock time at a stop sequence for a trip on a date string. */
+  /** ETA clock time at a stop sequence for a trip on a date string.
+   *  Measured from the trip's origin terminal (departure time applies
+   *  there), so reverse trips count down from the far end correctly. */
   stopEta(tripId: string, seq: number, dateStr: string): string {
     const trip = tripById(tripId);
     const corridor = trip ? corridorById(trip.corridorId) : null;
@@ -388,9 +472,23 @@ export class NetworkService {
     if (!trip || !stop) return '';
     const dep = stopDateTime(dateStr, trip.departureTime);
     if (!dep) return '';
-    const mins = Math.round((stop.km / CORRIDOR_KMH) * 60);
+    const originKm = this.originKmForTrip(trip, corridor!);
+    const speed = corridor!.avgKmh ?? CORRIDOR_KMH;
+    const mins = Math.round((Math.abs(stop.km - originKm) / speed) * 60);
     const at = new Date(dep.getTime() + mins * 60000);
     return at.toLocaleTimeString('en-PH', { hour: 'numeric', minute: '2-digit' });
+  }
+
+  /** Road km of the stop a trip departs from (its origin terminal's place). */
+  private originKmForTrip(trip: Trip, corridor: Corridor): number {
+    const terminal = terminalById(trip.originTerminalId);
+    if (terminal) {
+      const at = corridor.stops.find((s) => s.placeId === terminal.placeId);
+      if (at) return at.km;
+    }
+    return trip.direction === 'forward'
+      ? corridor.stops[0].km
+      : corridor.stops[corridor.stops.length - 1].km;
   }
 
   /** Resolve free-text operator/from/to (old catalog + tickets) onto a
@@ -443,7 +541,10 @@ export class NetworkService {
     return { trip, corridor: best.corridor, boardSeq, alightSeq, operatorId };
   }
 
-  /** Best stop match by shared significant tokens (city/terminal names). */
+  /** Best stop match by shared significant tokens. A stop matches on its
+   *  own name AND on its place's aliases, so hub spellings users actually
+   *  type ("Manila (PITX)", "Cubao, QC", "Santiago City") land on the
+   *  right stop. Name matches win ties over alias matches. */
   private bestStop(
     corridor: Corridor,
     text: string,
@@ -452,11 +553,16 @@ export class NetworkService {
     if (!tokens.length) return null;
     let best: { stop: CorridorStop; score: number } | null = null;
     for (const stop of corridor.stops) {
-      const stopTokens = significantTokens(stop.name);
-      let score = 0;
-      for (const tok of tokens) {
-        if (stopTokens.includes(tok)) score += tok.length;
+      const nameScore = matchScore(tokens, significantTokens(stop.name));
+      let aliasScore = 0;
+      const place = stop.placeId ? placeById(stop.placeId) : null;
+      if (place) {
+        for (const alias of place.aliases) {
+          aliasScore = Math.max(aliasScore, matchScore(tokens, significantTokens(alias)));
+        }
       }
+      // Name match, slightly preferred; otherwise the best alias match.
+      const score = nameScore > 0 ? nameScore + 1 : aliasScore;
       if (score > 0 && (!best || score > best.score)) best = { stop, score };
     }
     return best;
@@ -482,6 +588,15 @@ function significantTokens(text: string): string[] {
     .toLowerCase()
     .split(/[^a-z]+/)
     .filter((t) => t.length > 3 && !STOP_WORDS.has(t));
+}
+
+/** Sum of matched token lengths — longer (more specific) matches win. */
+function matchScore(tokens: string[], candidates: string[]): number {
+  let score = 0;
+  for (const tok of tokens) {
+    if (candidates.includes(tok)) score += tok.length;
+  }
+  return score;
 }
 
 /** 'Sat Oct 04 2026' + '6:00 AM' → Date (null when unparseable). */

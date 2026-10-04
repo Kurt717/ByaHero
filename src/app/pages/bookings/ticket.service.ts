@@ -111,12 +111,16 @@ export class TicketService {
   add(booking: Booking): Booking {
     const existing = this.findByRef(booking.bookingRef);
     if (existing) {
-      this.bookingsState = this.bookingsState.map((item) =>
-        item.bookingRef === booking.bookingRef ? { ...existing, ...booking } : item,
-      );
-    } else {
-      this.bookingsState = [booking, ...this.bookingsState];
+      // A reference collision must never silently overwrite a different
+      // booking. Identical re-adds (idempotent retry) return the stored
+      // record; anything else is an error so the caller mints a new ref.
+      if (isSameBooking(existing, booking)) {
+        this.selected = existing;
+        return existing;
+      }
+      throw new Error(`Booking reference ${booking.bookingRef} already exists.`);
     }
+    this.bookingsState = [booking, ...this.bookingsState];
     this.persist();
     this.selected = this.findByRef(booking.bookingRef);
     return this.selected ?? booking;
@@ -131,9 +135,8 @@ createFromCheckout(checkout: BookingService): Booking | null {
       from: checkout.trip.from,
       to: checkout.trip.to,
       date: checkout.travelDate,
-      // Terminal-board departures carry their exact slot time; everything
-      // else keeps the existing eta-derived behavior.
-      time: checkout.trip.departureTime ?? this.departureTimeFromEta(checkout.trip.eta),
+      // Scheduled slot from the network model; never ETA-derived.
+      time: checkout.scheduledDepartureTime ?? this.departureTimeFromEta(checkout.trip.eta),
       seat:
         checkout.selectedSeats.length === 1
           ? `Seat ${checkout.selectedSeats[0]}`
@@ -382,4 +385,104 @@ return updated;
       },
     ];
   }
+}
+
+/** Same booking content (idempotent retry) vs a true collision. */
+export function isSameBooking(a: Booking, b: Booking): boolean {
+  return (
+    a.bookingRef === b.bookingRef &&
+    a.operator === b.operator &&
+    a.from === b.from &&
+    a.to === b.to &&
+    a.date === b.date &&
+    a.time === b.time &&
+    a.seat === b.seat &&
+    (a.seatIds ?? []).join(',') === (b.seatIds ?? []).join(',')
+  );
+}
+
+/** Scheduled departure instant for a stored booking (null when unknown).
+ *  Prefers the network trip slot; falls back to parsing stored date+time. */
+export function departureDateTimeForBooking(b: Booking): Date | null {
+  try {
+    if (b.tripId) {
+      const trip = tripById(b.tripId);
+      if (trip?.departureTime && b.date) {
+        const d = new Date(`${b.date} ${trip.departureTime}`);
+        if (!isNaN(d.getTime())) return d;
+      }
+    }
+    if (b.date && b.time) {
+      const d = new Date(`${b.date} ${b.time}`);
+      return isNaN(d.getTime()) ? null : d;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+/** Prototype cancellation policy: full refund >2h before departure, 50%
+ *  inside 2h, none after departure. Only confirmed + before departure. */
+export interface CancellationQuote {
+  canCancel: boolean;
+  reason: string;
+  refundAmount: number;
+  policyText: string;
+}
+
+export function fareNumberForBooking(b: Booking): number {
+  const n = Number((b.fare ?? '').replace(/[^0-9.]/g, ''));
+  return isNaN(n) ? 0 : n;
+}
+
+export function cancellationQuoteForBooking(
+  b: Booking,
+  now: Date = new Date(),
+): CancellationQuote {
+  const policyText =
+    'Prototype policy: full refund more than 2 hours before departure, 50% within 2 hours, no refund after departure.';
+  if (b.status !== 'confirmed') {
+    const reason =
+      b.status === 'cancelled'
+        ? 'This booking is already cancelled.'
+        : b.status === 'boarding'
+          ? 'Boarding trips cannot be cancelled.'
+          : 'Completed trips cannot be cancelled.';
+    return { canCancel: false, reason, refundAmount: 0, policyText };
+  }
+  const dep = departureDateTimeForBooking(b);
+  if (!dep) {
+    return { canCancel: true, reason: '', refundAmount: fareNumberForBooking(b), policyText };
+  }
+  if (dep.getTime() <= now.getTime()) {
+    return {
+      canCancel: false,
+      reason: 'That departure already left.',
+      refundAmount: 0,
+      policyText,
+    };
+  }
+  const msLeft = dep.getTime() - now.getTime();
+  const fare = fareNumberForBooking(b);
+  if (msLeft > 2 * 3600 * 1000) {
+    return { canCancel: true, reason: '', refundAmount: fare, policyText };
+  }
+  return { canCancel: true, reason: '', refundAmount: Math.round(fare * 0.5), policyText };
+}
+
+/** Display status: confirmed past departure renders as Missed/Expired. */
+export function displayStatusForBooking(b: Booking, now: Date = new Date()): string {
+  if (b.status === 'confirmed') {
+    const dep = departureDateTimeForBooking(b);
+    if (dep && dep.getTime() <= now.getTime()) return 'Missed';
+  }
+  return b.status;
+}
+
+/** True when a confirmed booking's departure has passed. */
+export function isExpiredBooking(b: Booking, now: Date = new Date()): boolean {
+  if (b.status !== 'confirmed') return false;
+  const dep = departureDateTimeForBooking(b);
+  return !!dep && dep.getTime() <= now.getTime();
 }
