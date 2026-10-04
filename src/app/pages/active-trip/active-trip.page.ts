@@ -1,5 +1,5 @@
 import * as L from 'leaflet';
-import { Component, AfterViewInit, OnDestroy, ViewChild, ElementRef, inject } from '@angular/core';
+import { Component, AfterViewInit, OnDestroy, ViewChild, ElementRef, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonContent, IonIcon, ToastController } from '@ionic/angular';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -98,6 +98,7 @@ export class ActiveTripPage implements AfterViewInit, OnDestroy {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private toastController = inject(ToastController);
+  private cdr = inject(ChangeDetectorRef);
   private ticketService = inject(TicketService);
   private pickupService = inject(PickupService);
   private reviewService = inject(TripReviewService);
@@ -130,33 +131,18 @@ export class ActiveTripPage implements AfterViewInit, OnDestroy {
   booking: Booking | null = this.resolveBooking();
 
   /** Ride facts come from RideIdentityService (single source of truth shared
-   *  with Emergency Mode, E-ticket and Boarding Pass). */
-  trip = {
-    operator: this.booking?.operator ?? 'Victory Liner',
-    busNo: this.booking
-      ? this.rideIdentity.busNoForRef(this.booking.bookingRef)
-      : '402',
-    plate: this.booking
-      ? this.rideIdentity.plateFor(this.booking.operator)
-      : 'NBC 1932',
-    from: this.booking?.from ?? 'Baguio City',
-    to: this.booking?.to ?? 'Tuguegarao City',
-    driver: this.booking
-      ? this.rideIdentity.driverFor(this.booking.operator)
-      : 'Ramon Cruz',
-    rating: '4.8',
-  };
+   *  with Emergency Mode, E-ticket and Boarding Pass). Rebuilt by
+   *  refreshDerivedState() whenever the booking changes between entries. */
+  trip = this.buildTrip();
 
   /** Journey timeline (see `get stops()` below) derives from booking data. */
-  private readonly originCoords: [number, number] =
-    CITY_COORDS[this.trip.from] ?? [16.4023, 120.596];
-  private readonly destCoords: [number, number] =
-    CITY_COORDS[this.trip.to] ?? [17.6132, 121.727];
+  private originCoords: [number, number] = this.coordsFor(this.trip.from, true);
+  private destCoords: [number, number] = this.coordsFor(this.trip.to, false);
 
   /** Estimated full journey in minutes — taken from the route catalog
    *  entry for this origin → destination (e.g. '7h 30m' → 450) so ETA and
    *  progress share one basis; falls back to 90 when unmatched. */
-  private readonly tripMinutes = this.tripMinutesFor(this.booking);
+  private tripMinutes = this.tripMinutesFor(this.booking);
 
   private map: L.Map | null = null;
   private busMarker: L.Marker | null = null;
@@ -211,6 +197,105 @@ export class ActiveTripPage implements AfterViewInit, OnDestroy {
   constructor() {
       addIcons({arrowBackOutline,chevronForwardOutline,chevronDownOutline,chevronUpOutline,shareSocialOutline,navigateOutline,locateOutline,addOutline,removeOutline,refreshOutline,star,chatbubbleEllipsesOutline,callOutline,checkmarkCircle,ticketOutline,alertOutline});}
 
+  private buildTrip() {
+    const b = this.booking;
+    return {
+      operator: b?.operator ?? 'Victory Liner',
+      busNo: b ? this.rideIdentity.busNoForRef(b.bookingRef) : '402',
+      plate: b ? this.rideIdentity.plateFor(b.operator) : 'NBC 1932',
+      from: b?.from ?? 'Baguio City',
+      to: b?.to ?? 'Tuguegarao City',
+      driver: b ? this.rideIdentity.driverFor(b.operator) : 'Ramon Cruz',
+      rating: '4.8',
+    };
+  }
+
+  private coordsFor(place: string, origin: boolean): [number, number] {
+    return CITY_COORDS[place] ?? (origin ? [16.4023, 120.596] : [17.6132, 121.727]);
+  }
+
+  /**
+   * Ionic caches this view: construction-time state goes stale when a trip
+   * is booked (or cleared) elsewhere. Re-resolve on EVERY entry so the page
+   * never shows a previous trip, a stuck empty state, or a map painted for
+   * a pre-transition box — the map repaints automatically, no locate tap
+   * needed.
+   */
+  ionViewWillEnter() {
+    const next = this.resolveBooking();
+    const nextRef = next?.bookingRef ?? null;
+    const curRef = this.booking?.bookingRef ?? null;
+    if (nextRef !== curRef) {
+      this.teardownMap();
+      this.booking = next;
+      this.refreshDerivedState();
+      // Render the @if(booking) branch + map host before measuring it.
+      this.cdr.detectChanges();
+      if (next) {
+        this.mapLoading = true;
+        this.mapFailed = false;
+        this.mapRaf = requestAnimationFrame(() => this.initMap());
+        this.observeMapHost();
+      }
+    } else if (this.map) {
+      // Same trip: repaint at the settled size (entry transition may have
+      // left the map painted for a pre-transition box).
+      this.map.invalidateSize();
+      this.refitBounds(false);
+    } else if (next) {
+      // Map never built (first entry had no measurable host): build now.
+      this.mapRaf = requestAnimationFrame(() => this.initMap());
+    }
+    // Post-transition repaint: Ionic's enter animation can still be running
+    // on entry; repaint once it settles so tiles + vectors paint at the
+    // final box automatically.
+    if (this.entryTimer) clearTimeout(this.entryTimer);
+    this.entryTimer = setTimeout(() => {
+      if (this.map) {
+        this.map.invalidateSize();
+        this.refitBounds(false);
+      }
+    }, 450);
+  }
+
+  /** Rebuild every booking-derived field in dependency order. */
+  private refreshDerivedState() {
+    this.trip = this.buildTrip();
+    this.originCoords = this.coordsFor(this.trip.from, true);
+    this.destCoords = this.coordsFor(this.trip.to, false);
+    this.tripMinutes = this.tripMinutesFor(this.booking);
+    if (this.busInterval) {
+      clearInterval(this.busInterval);
+      this.busInterval = null;
+    }
+    this.busProgress = this.initialBusProgress();
+    this.hasArrived = this.derivedProgress() >= this.arrivalThreshold();
+  }
+
+  /** Full map teardown (entry switch or destroy). */
+  private teardownMap() {
+    if (this.busInterval) {
+      clearInterval(this.busInterval);
+      this.busInterval = null;
+    }
+    if (this.mapRaf) {
+      cancelAnimationFrame(this.mapRaf);
+      this.mapRaf = 0;
+    }
+    if (this.resizeTimer) {
+      clearTimeout(this.resizeTimer);
+      this.resizeTimer = null;
+    }
+    this.resizeObserver?.disconnect();
+    this.resizeObserver = null;
+    this.map?.remove();
+    this.map = null;
+    this.busMarker = null;
+    this.routeLine = null;
+  }
+
+  private entryTimer: any = null;
+
   ngAfterViewInit() {
     // rAF: init after the map host has a real box (no fixed-timeout guess).
     this.mapRaf = requestAnimationFrame(() => this.initMap());
@@ -228,6 +313,7 @@ export class ActiveTripPage implements AfterViewInit, OnDestroy {
     if (this.busInterval) clearInterval(this.busInterval);
     if (this.mapRaf) cancelAnimationFrame(this.mapRaf);
     if (this.resizeTimer) clearTimeout(this.resizeTimer);
+    if (this.entryTimer) clearTimeout(this.entryTimer);
     this.resizeObserver?.disconnect();
     this.resizeObserver = null;
     this.map?.remove();
@@ -481,6 +567,11 @@ export class ActiveTripPage implements AfterViewInit, OnDestroy {
 
   goBack() {
     this.router.navigateByUrl('/home');
+  }
+
+  /** Empty-state entry points (no current trip, no live tracking to show). */
+  findRoute() {
+    this.router.navigateByUrl('/search');
   }
 
   /** Slim sample-conditions indicator for the live corridor. Compact by

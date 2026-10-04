@@ -1,5 +1,6 @@
 <ion-content fullscreen class="trip-content">
   <div class="trip-wrap">
+  @if (booking) {
     <!-- COMPACT HEADER: back / route / status pill / ticket (Grab/Uber convention) -->
     <header class="trip-header">
       <button class="icon-btn" (click)="goBack()" aria-label="Back to home">
@@ -201,10 +202,40 @@
         }
       </div>
     </div>
+  } @else {
+    <!-- No current trip: no fake live progress, map, or tracking actions. -->
+    <div class="no-trip" role="status">
+      <button class="icon-btn" (click)="goBack()" aria-label="Back to home">
+        <ion-icon name="arrow-back-outline" aria-hidden="true"></ion-icon>
+      </button>
+      <div class="no-trip-icon" aria-hidden="true">
+        <ion-icon name="navigate-outline"></ion-icon>
+      </div>
+      <button
+        type="button"
+        class="live-pill empty"
+        (click)="findRoute()"
+        aria-label="No active trip right now. Tap to find a route and book one."
+      >
+        <span class="status-indicator" aria-hidden="true"></span>
+        <span>No active trip — tap to book one</span>
+        <ion-icon name="chevron-forward-outline" aria-hidden="true"></ion-icon>
+      </button>
+      <button type="button" class="no-trip-cta primary" (click)="findRoute()">
+        Find a route
+        <ion-icon name="chevron-forward-outline" aria-hidden="true"></ion-icon>
+      </button>
+      <button type="button" class="no-trip-cta" (click)="viewTicket()">
+        My bookings
+        <ion-icon name="chevron-forward-outline" aria-hidden="true"></ion-icon>
+      </button>
+    </div>
+  }
   </div>
 
-  <!-- SINGLE state-aware action bar (exactly one primary per state) -->
-  @if (isLive) {
+  <!-- SINGLE state-aware action bar (exactly one primary per state).
+       Only with a real current trip — never on the empty state. -->
+  @if (booking && isLive) {
     <div class="action-bar">
       <button class="btn-emergency" (click)="openEmergency()" aria-label="Open Emergency Mode">
         <ion-icon name="alert-outline" aria-hidden="true"></ion-icon>

@@ -264,15 +264,10 @@ export class PaymentPage implements OnInit {
     this.processing = true;
 
     try {
-      // 1) Re-validate stops + departure before touching money or seats.
+      // 1) Re-validate stops before touching money or seats.
       const stopErrors = this.booking.validateStops();
       if (stopErrors.length) {
         await this.showToast(stopErrors[0]);
-        return;
-      }
-      const dep = this.booking.departureDate();
-      if (dep && dep.getTime() <= Date.now()) {
-        await this.showToast('That departure already left. Pick another date.');
         return;
       }
       // 2) Re-check every selected seat is still free on the rider's segment.

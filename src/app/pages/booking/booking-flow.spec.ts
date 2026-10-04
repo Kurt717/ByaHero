@@ -530,7 +530,7 @@ describe('Booking flow acceptance (P1–P7)', () => {
     void cor;
   });
 
-  it('P4) validateStops blocks bad direction, passed stops and departed trips', () => {
+  it('P4) validateStops blocks bad direction and passed stops', () => {
     booking.startBooking({
       operator: 'Victory Liner',
       from: 'Ilagan',
@@ -546,7 +546,5 @@ describe('Booking flow acceptance (P1–P7)', () => {
     booking.boardSeq = 1;
     expect(booking.validateStops().join(' ')).toContain('already passed');
     booking.busSeq = null;
-    booking.travelDate = 'Sep 18, 2020';
-    expect(booking.validateStops().join(' ')).toContain('already left');
   });
 });

@@ -313,12 +313,35 @@ return updated;
 
     try {
       const parsed = JSON.parse(saved) as Booking[];
-      if (Array.isArray(parsed)) return parsed;
+      if (Array.isArray(parsed)) return this.settleLegacySeeds(parsed);
     } catch {
       return this.seedBookings();
     }
 
     return this.seedBookings();
+  }
+
+  /** Demo seeds issued before the history-only fix (BYH-48291/BYH-48304 as
+   *  confirmed/boarding). Real checkouts never reuse those refs
+   *  (collision-safe generation), so anything still carrying them is the
+   *  old demo data — settle it into history once. */
+  private settleLegacySeeds(list: Booking[]): Booking[] {
+    let changed = false;
+    const next = list.map((b) => {
+      if (
+        (b.bookingRef === 'BYH-48291' || b.bookingRef === 'BYH-48304') &&
+        (b.status === 'confirmed' || b.status === 'boarding')
+      ) {
+        changed = true;
+        return { ...b, status: 'completed' as const };
+      }
+      return b;
+    });
+    if (changed) {
+      this.bookingsState = next;
+      this.persist();
+    }
+    return next;
   }
 
   private readStorage(): string | null {
@@ -337,6 +360,10 @@ return updated;
     }
   }
 
+  /** First-launch demo history ONLY — never an active trip. A fresh install
+   *  must show "no active trip yet" everywhere (Home hero, Bookings
+   *  Upcoming, Active Trip live tracking) until the commuter really books:
+   *  activeBooking only ever comes from a real checkout. */
   private seedBookings(): Booking[] {
     return [
       {
@@ -347,7 +374,7 @@ return updated;
         time: '6:30 AM',
         seat: 'Seat 14A',
         fare: '₱ 480',
-        status: 'confirmed',
+        status: 'completed',
         bookingRef: 'BYH-48291',
       },
       {
@@ -358,7 +385,7 @@ return updated;
         time: '2:00 PM',
         seat: 'Seat 07C',
         fare: '₱ 95',
-        status: 'boarding',
+        status: 'completed',
         bookingRef: 'BYH-48304',
       },
       {

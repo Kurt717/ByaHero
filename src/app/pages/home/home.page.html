@@ -207,22 +207,20 @@
         </button>
       </div>
 
-      <!-- Secondary Info Pill (Solid Red) -->
-      <div class="pill-card secondary-info" (click)="viewLiveTrip()">
-        <div class="info-left">
-          <div class="status-indicator"></div>
-          @if (activeBooking) {
+      <!-- Secondary Info Pill (Solid Red) — only with a real active trip -->
+      @if (activeBooking) {
+        <div class="pill-card secondary-info" (click)="viewLiveTrip()">
+          <div class="info-left">
+            <div class="status-indicator"></div>
             <span class="trip-pill-main">{{ activeBooking.operator }}</span>
             <span class="trip-pill-sub">{{ activeBooking.from }} → {{ activeBooking.to }}</span>
-          } @else {
-            <span>No active trip yet — book one!</span>
-          }
+          </div>
+          <ion-icon
+            name="chevron-forward-outline"
+            class="forward-icon"
+          ></ion-icon>
         </div>
-        <ion-icon
-          name="chevron-forward-outline"
-          class="forward-icon"
-        ></ion-icon>
-      </div>
+      }
 
       <!-- TRAVEL CONDITIONS (compact sample strip — secondary, never the hero) -->
       <button

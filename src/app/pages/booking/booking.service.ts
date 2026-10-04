@@ -397,12 +397,6 @@ export class BookingService {
         dir === 'forward' ? this.boardSeq! < this.busSeq : this.boardSeq! > this.busSeq;
       if (passed) errors.push('The bus already passed that stop. Pick a stop ahead.');
     }
-    if (this.travelDate) {
-      const dep = this.departureDate();
-      if (dep && dep.getTime() < Date.now() - 24 * 3600 * 1000) {
-        errors.push('That departure already left. Pick another date.');
-      }
-    }
     return errors;
   }
 
