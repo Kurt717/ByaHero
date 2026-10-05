@@ -125,6 +125,8 @@ export class ActiveTripPage implements AfterViewInit, OnDestroy {
   private resizeObserver: ResizeObserver | null = null;
   private mapRaf = 0;
   private resizeTimer: any = null;
+  private revealTimer: any = null;
+  private settleTimers: any[] = [];
 
   /** The timeline always follows the booking opened via `?ref=` when present
    *  (multiple active bookings), otherwise the current active booking. */
@@ -217,9 +219,13 @@ export class ActiveTripPage implements AfterViewInit, OnDestroy {
   /**
    * Ionic caches this view: construction-time state goes stale when a trip
    * is booked (or cleared) elsewhere. Re-resolve on EVERY entry so the page
-   * never shows a previous trip, a stuck empty state, or a map painted for
-   * a pre-transition box — the map repaints automatically, no locate tap
-   * needed.
+   * never shows a previous trip or a stuck empty state.
+   *
+   * Map sizing deliberately happens in ionViewDidEnter (after the enter
+   * animation settles), NOT here: measuring/invalidating during the
+   * transition paints Leaflet for a mid-animation box, which leaves gray
+   * tiles + a stuck skeleton until the user taps recenter. WillEnter only
+   * swaps booking state; DidEnter builds + repaints at the final box.
    */
   ionViewWillEnter() {
     const next = this.resolveBooking();
@@ -229,33 +235,71 @@ export class ActiveTripPage implements AfterViewInit, OnDestroy {
       this.teardownMap();
       this.booking = next;
       this.refreshDerivedState();
-      // Render the @if(booking) branch + map host before measuring it.
+      // Render the @if(booking) branch + map host before DidEnter measures it.
       this.cdr.detectChanges();
       if (next) {
         this.mapLoading = true;
         this.mapFailed = false;
-        this.mapRaf = requestAnimationFrame(() => this.initMap());
-        this.observeMapHost();
+        this.tileErrors = 0;
+        this.cdr.detectChanges();
       }
-    } else if (this.map) {
-      // Same trip: repaint at the settled size (entry transition may have
-      // left the map painted for a pre-transition box).
-      this.map.invalidateSize();
-      this.refitBounds(false);
-    } else if (next) {
-      // Map never built (first entry had no measurable host): build now.
-      this.mapRaf = requestAnimationFrame(() => this.initMap());
     }
-    // Post-transition repaint: Ionic's enter animation can still be running
-    // on entry; repaint once it settles so tiles + vectors paint at the
-    // final box automatically.
-    if (this.entryTimer) clearTimeout(this.entryTimer);
-    this.entryTimer = setTimeout(() => {
-      if (this.map) {
+  }
+
+  /**
+   * Runs AFTER Ionic's enter animation: the map host is at its final size,
+   * so Leaflet paints real tiles on the first try — no recenter tap needed.
+   */
+  ionViewDidEnter() {
+    if (!this.booking) return;
+    if (!this.map) {
+      this.observeMapHost();
+      this.scheduleInit();
+    }
+    // Settle repaints at the final box (covers transition tail + late layout).
+    this.repaintAfterSettle();
+  }
+
+  /** Single rAF init request (cancels any pending retry loop first). */
+  private scheduleInit() {
+    if (this.mapRaf) cancelAnimationFrame(this.mapRaf);
+    this.mapRaf = requestAnimationFrame(() => this.initMap());
+  }
+
+  /** Invalidate + refit now and once more after layout settles. */
+  private repaintAfterSettle() {
+    this.clearSettleTimers();
+    const repaint = () => {
+      if (!this.map) return;
+      try {
         this.map.invalidateSize();
-        this.refitBounds(false);
+      } catch {
+        // Non-fatal: keep current view.
       }
-    }, 450);
+      this.refitBounds(false);
+    };
+    // Immediate (final box) + delayed (transition/layout tail).
+    repaint();
+    this.settleTimers.push(setTimeout(repaint, 150));
+    this.settleTimers.push(
+      setTimeout(() => {
+        repaint();
+        // Safety reveal: never leave the skeleton up when the map exists.
+        if (this.map && !this.mapFailed && this.mapLoading) {
+          this.mapLoading = false;
+          try {
+            this.cdr.detectChanges();
+          } catch {
+            // Non-fatal: next CD cycle picks it up.
+          }
+        }
+      }, 600),
+    );
+  }
+
+  private clearSettleTimers() {
+    for (const t of this.settleTimers) clearTimeout(t);
+    this.settleTimers = [];
   }
 
   /** Rebuild every booking-derived field in dependency order. */
@@ -286,6 +330,11 @@ export class ActiveTripPage implements AfterViewInit, OnDestroy {
       clearTimeout(this.resizeTimer);
       this.resizeTimer = null;
     }
+    if (this.revealTimer) {
+      clearTimeout(this.revealTimer);
+      this.revealTimer = null;
+    }
+    this.clearSettleTimers();
     this.resizeObserver?.disconnect();
     this.resizeObserver = null;
     this.map?.remove();
@@ -294,12 +343,11 @@ export class ActiveTripPage implements AfterViewInit, OnDestroy {
     this.routeLine = null;
   }
 
-  private entryTimer: any = null;
-
   ngAfterViewInit() {
-    // rAF: init after the map host has a real box (no fixed-timeout guess).
-    this.mapRaf = requestAnimationFrame(() => this.initMap());
+    // First creation: build at the settled box; DidEnter repaints again.
+    // scheduleInit retries via rAF until the host has a real box.
     this.observeMapHost();
+    if (this.booking) this.scheduleInit();
     this.maybeAnnounceArrival();
     // Best-effort refresh of the traveler's current location so pickup
     // distances and Alerts stay honest. Silent: keeps the old fix on failure.
@@ -313,7 +361,8 @@ export class ActiveTripPage implements AfterViewInit, OnDestroy {
     if (this.busInterval) clearInterval(this.busInterval);
     if (this.mapRaf) cancelAnimationFrame(this.mapRaf);
     if (this.resizeTimer) clearTimeout(this.resizeTimer);
-    if (this.entryTimer) clearTimeout(this.entryTimer);
+    if (this.revealTimer) clearTimeout(this.revealTimer);
+    this.clearSettleTimers();
     this.resizeObserver?.disconnect();
     this.resizeObserver = null;
     this.map?.remove();
@@ -324,6 +373,8 @@ export class ActiveTripPage implements AfterViewInit, OnDestroy {
   private observeMapHost() {
     const host = this.mapEl?.nativeElement;
     if (!host || typeof ResizeObserver === 'undefined') return;
+    // Avoid stacking observers across cached-view re-entries.
+    this.resizeObserver?.disconnect();
     this.resizeObserver = new ResizeObserver(() => {
       if (this.resizeTimer) clearTimeout(this.resizeTimer);
       this.resizeTimer = setTimeout(() => {
@@ -602,8 +653,22 @@ export class ActiveTripPage implements AfterViewInit, OnDestroy {
 
   recenter() {
     if (!this.map || !this.busMarker) return;
-    this.map.invalidateSize();
+    try {
+      this.map.invalidateSize();
+    } catch {
+      // Non-fatal: keep current view.
+    }
+    this.refitBounds(false);
     this.map.panTo(this.busMarker.getLatLng(), { animate: true });
+    // Safety: a manual recenter always reveals real tiles, never the skeleton.
+    if (this.mapLoading && !this.mapFailed) {
+      this.mapLoading = false;
+      try {
+        this.cdr.detectChanges();
+      } catch {
+        // Non-fatal: next CD cycle picks it up.
+      }
+    }
   }
 
   zoomIn() {
@@ -619,13 +684,18 @@ export class ActiveTripPage implements AfterViewInit, OnDestroy {
     this.tileErrors = 0;
     this.mapFailed = false;
     this.mapLoading = true;
+    try {
+      this.cdr.detectChanges();
+    } catch {
+      // Non-fatal.
+    }
     if (this.map) {
       this.map.remove();
       this.map = null;
     }
     this.busMarker = null;
     this.routeLine = null;
-    this.mapRaf = requestAnimationFrame(() => this.initMap());
+    this.scheduleInit();
   }
 
   async shareTrip() {
@@ -722,12 +792,27 @@ export class ActiveTripPage implements AfterViewInit, OnDestroy {
       if (this.tileErrors > 8) {
         this.mapFailed = true;
         this.mapLoading = false;
+        try {
+          this.cdr.detectChanges();
+        } catch {
+          // Non-fatal.
+        }
       }
     });
-    tiles.on('load', () => {
+    const reveal = () => {
+      if (!this.mapLoading) return;
       this.mapLoading = false;
-    });
+      try {
+        this.cdr.detectChanges();
+      } catch {
+        // Non-fatal: next CD cycle picks it up.
+      }
+    };
+    tiles.on('load', reveal);
     tiles.addTo(this.map);
+    // Also reveal when Leaflet itself reports the map ready (covers the
+    // case where no tile 'load' fires because the first size was wrong).
+    this.map.whenReady(() => reveal());
 
     // Arrival: solid completed route. Live: dashed in-progress route.
     this.routeLine = L.polyline([this.originCoords, this.destCoords], {
@@ -748,11 +833,27 @@ export class ActiveTripPage implements AfterViewInit, OnDestroy {
     this.refitBounds(false);
 
     // Settle + reveal: invalidate after paint so tiles fill the real box.
+    // The DidEnter settle repaints cover the transition tail; this is the
+    // per-build safety net. The fallback reveal ALWAYS clears the skeleton
+    // (with change detection) even if no tile/map 'load' ever fires.
     requestAnimationFrame(() => {
-      this.map?.invalidateSize();
+      try {
+        this.map?.invalidateSize();
+      } catch {
+        // Non-fatal.
+      }
       this.refitBounds(false);
-      // Fallback reveal even if the tile 'load' event never fires.
-      setTimeout(() => { this.mapLoading = false; }, 2500);
+      if (this.revealTimer) clearTimeout(this.revealTimer);
+      this.revealTimer = setTimeout(() => {
+        if (this.mapLoading && !this.mapFailed) {
+          this.mapLoading = false;
+          try {
+            this.cdr.detectChanges();
+          } catch {
+            // Non-fatal.
+          }
+        }
+      }, 2500);
     });
 
     // Live animation only; arrival parks the marker and stops the loop.
