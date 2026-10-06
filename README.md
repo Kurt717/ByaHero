@@ -1,1 +1,1 @@
-[sample](byahero-v2.vercel.app)
+(byahero-v2.vercel.app)
