@@ -1,1 +1,1 @@
-[web sample](byahero-v2.vercel.app)
+[Live Web Sample](https://byahero-v2.vercel.app)
