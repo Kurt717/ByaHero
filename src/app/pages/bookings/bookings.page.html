@@ -178,26 +178,28 @@
                           ><ion-icon name="time-outline"></ion-icon>{{ trip.time }}</span
                           >
                         </div>
-                        <button
-                          type="button"
-                          class="prep-link"
-                          (click)="trackTrip(trip)"
-                          [attr.aria-label]="'Track trip ' + trip.bookingRef + ' live'"
-                        >
-                          <ion-icon name="navigate-outline"></ion-icon>
-                          <span>Track live</span>
-                          <ion-icon name="chevron-forward-outline"></ion-icon>
-                        </button>
-                        <button
-                          type="button"
-                          class="prep-link track-link"
-                          (click)="viewTicket(trip)"
-                          [attr.aria-label]="'Open e-ticket ' + trip.bookingRef"
-                        >
-                          <ion-icon name="qr-code-outline"></ion-icon>
-                          <span>E-ticket</span>
-                          <ion-icon name="chevron-forward-outline"></ion-icon>
-                        </button>
+                        <div class="card-actions">
+                          <button
+                            type="button"
+                            class="prep-link"
+                            (click)="trackTrip(trip)"
+                            [attr.aria-label]="'Track trip ' + trip.bookingRef + ' live'"
+                          >
+                            <ion-icon name="navigate-outline"></ion-icon>
+                            <span>Track live</span>
+                            <ion-icon name="chevron-forward-outline"></ion-icon>
+                          </button>
+                          <button
+                            type="button"
+                            class="prep-link track-link"
+                            (click)="viewTicket(trip)"
+                            [attr.aria-label]="'Open e-ticket ' + trip.bookingRef"
+                          >
+                            <ion-icon name="qr-code-outline"></ion-icon>
+                            <span>E-ticket</span>
+                            <ion-icon name="chevron-forward-outline"></ion-icon>
+                          </button>
+                        </div>
                       </div>
                     </div>
                   }
@@ -275,68 +277,74 @@
                         </div>
                       }
                       @if (booking.status === 'confirmed' || booking.status === 'boarding') {
-                        <button
-                          type="button"
-                          class="prep-link"
-                          (click)="openPrep(booking)"
-                          [attr.aria-label]="'Prepare for trip ' + booking.bookingRef"
-                        >
-                          <ion-icon name="checkmark-circle"></ion-icon>
-                          <span>{{ prepCount(booking) }} ready · Prepare for trip</span>
-                          <ion-icon name="chevron-forward-outline"></ion-icon>
-                        </button>
-                        <button
-                          type="button"
-                          class="prep-link track-link"
-                          (click)="trackTrip(booking)"
-                          [attr.aria-label]="'Track trip ' + booking.bookingRef + ' live'"
-                        >
-                          <ion-icon name="navigate-outline"></ion-icon>
-                          <span>Track live</span>
-                          <ion-icon name="chevron-forward-outline"></ion-icon>
-                        </button>
-                      }
-                      @if (booking.status === 'completed') {
-                        @if (reviewFor(booking); as review) {
-                          <span
-                            class="reviewed-chip"
-                            [attr.aria-label]="'Ride reviewed: ' + review.rating + ' out of 5 stars'"
-                          >
-                            <ion-icon name="star" aria-hidden="true"></ion-icon>
-                            <span>{{ review.rating }} / 5 · Reviewed</span>
-                          </span>
-                        } @else {
+                        <div class="card-actions">
                           <button
                             type="button"
-                            class="prep-link review-link"
-                            (click)="openReview(booking)"
-                            [attr.aria-label]="'Rate ride ' + booking.bookingRef"
+                            class="prep-link"
+                            (click)="openPrep(booking)"
+                            [attr.aria-label]="'Prepare for trip ' + booking.bookingRef"
                           >
-                            <ion-icon name="star"></ion-icon>
-                            <span>Rate Ride</span>
+                            <ion-icon name="checkmark-circle"></ion-icon>
+                            <span>{{ prepCount(booking) }} ready · Prepare for trip</span>
                             <ion-icon name="chevron-forward-outline"></ion-icon>
                           </button>
-                        }
-                        <button
-                          type="button"
-                          class="report-link"
-                          (click)="openReport(booking)"
-                          [attr.aria-label]="'Report a problem on ride ' + booking.bookingRef"
-                        >
-                          <span>Report a problem</span>
-                          <ion-icon name="chevron-forward-outline"></ion-icon>
-                        </button>
+                          <button
+                            type="button"
+                            class="prep-link track-link"
+                            (click)="trackTrip(booking)"
+                            [attr.aria-label]="'Track trip ' + booking.bookingRef + ' live'"
+                          >
+                            <ion-icon name="navigate-outline"></ion-icon>
+                            <span>Track live</span>
+                            <ion-icon name="chevron-forward-outline"></ion-icon>
+                          </button>
+                        </div>
+                      }
+                      @if (booking.status === 'completed') {
+                        <div class="card-actions">
+                          @if (reviewFor(booking); as review) {
+                            <span
+                              class="reviewed-chip"
+                              [attr.aria-label]="'Ride reviewed: ' + review.rating + ' out of 5 stars'"
+                            >
+                              <ion-icon name="star" aria-hidden="true"></ion-icon>
+                              <span>{{ review.rating }} / 5 · Reviewed</span>
+                            </span>
+                          } @else {
+                            <button
+                              type="button"
+                              class="prep-link review-link"
+                              (click)="openReview(booking)"
+                              [attr.aria-label]="'Rate ride ' + booking.bookingRef"
+                            >
+                              <ion-icon name="star"></ion-icon>
+                              <span>Rate Ride</span>
+                              <ion-icon name="chevron-forward-outline"></ion-icon>
+                            </button>
+                          }
+                          <button
+                            type="button"
+                            class="report-link"
+                            (click)="openReport(booking)"
+                            [attr.aria-label]="'Report a problem on ride ' + booking.bookingRef"
+                          >
+                            <span>Report a problem</span>
+                            <ion-icon name="chevron-forward-outline"></ion-icon>
+                          </button>
+                        </div>
                       }
                       @if (booking.status === 'cancelled') {
-                        <button
-                          type="button"
-                          class="report-link"
-                          (click)="openReport(booking)"
-                          [attr.aria-label]="'Report a problem on ride ' + booking.bookingRef"
-                        >
-                          <span>Report a problem</span>
-                          <ion-icon name="chevron-forward-outline"></ion-icon>
-                        </button>
+                        <div class="card-actions">
+                          <button
+                            type="button"
+                            class="report-link"
+                            (click)="openReport(booking)"
+                            [attr.aria-label]="'Report a problem on ride ' + booking.bookingRef"
+                          >
+                            <span>Report a problem</span>
+                            <ion-icon name="chevron-forward-outline"></ion-icon>
+                          </button>
+                        </div>
                       }
                     </div>
                     <div class="ticket-stub">

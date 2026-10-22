@@ -200,6 +200,37 @@
             </div>
           </section>
         }
+
+        <!-- SINGLE state-aware action bar (exactly one primary per state).
+             Only with a real current trip — never on the empty state. -->
+        @if (booking && isLive) {
+          <div class="action-bar">
+            <button class="btn-emergency" (click)="openEmergency()" aria-label="Open Emergency Mode">
+              <ion-icon name="alert-outline" aria-hidden="true"></ion-icon>
+              Emergency
+            </button>
+            <button class="btn-primary" (click)="shareTrip()">
+              Share Live Trip
+              <ion-icon name="share-social-outline" aria-hidden="true"></ion-icon>
+            </button>
+          </div>
+        } @else if (needsConfirm) {
+          <div class="action-bar">
+            <button class="btn-emergency-icon" (click)="openEmergency()" aria-label="Open Emergency Mode">
+              <ion-icon name="alert-outline" aria-hidden="true"></ion-icon>
+            </button>
+            <button class="btn-primary" (click)="confirmArrival()" aria-label="Confirm arrival at destination">
+              Confirm Arrival
+            </button>
+          </div>
+        } @else if (isCompleted && !review) {
+          <div class="action-bar">
+            <button class="btn-primary" (click)="openReview()" aria-label="Rate your ride">
+              <ion-icon name="star" aria-hidden="true"></ion-icon>
+              Rate Your Ride
+            </button>
+          </div>
+        }
       </div>
     </div>
   } @else {
@@ -232,35 +263,4 @@
     </div>
   }
   </div>
-
-  <!-- SINGLE state-aware action bar (exactly one primary per state).
-       Only with a real current trip — never on the empty state. -->
-  @if (booking && isLive) {
-    <div class="action-bar">
-      <button class="btn-emergency" (click)="openEmergency()" aria-label="Open Emergency Mode">
-        <ion-icon name="alert-outline" aria-hidden="true"></ion-icon>
-        Emergency
-      </button>
-      <button class="btn-primary" (click)="shareTrip()">
-        Share Live Trip
-        <ion-icon name="share-social-outline" aria-hidden="true"></ion-icon>
-      </button>
-    </div>
-  } @else if (needsConfirm) {
-    <div class="action-bar">
-      <button class="btn-emergency-icon" (click)="openEmergency()" aria-label="Open Emergency Mode">
-        <ion-icon name="alert-outline" aria-hidden="true"></ion-icon>
-      </button>
-      <button class="btn-primary" (click)="confirmArrival()" aria-label="Confirm arrival at destination">
-        Confirm Arrival
-      </button>
-    </div>
-  } @else if (isCompleted && !review) {
-    <div class="action-bar">
-      <button class="btn-primary" (click)="openReview()" aria-label="Rate your ride">
-        <ion-icon name="star" aria-hidden="true"></ion-icon>
-        Rate Your Ride
-      </button>
-    </div>
-  }
 </ion-content>

@@ -442,6 +442,24 @@ ion-content.bookings-content {
     }
   }
 
+  .card-actions {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+
+    .prep-link,
+    .reviewed-chip,
+    .report-link {
+      margin-top: 0;
+    }
+
+    .prep-link.track-link {
+      margin-left: 0;
+    }
+  }
+
   .prep-link {
     margin-top: 10px;
     display: inline-flex;
@@ -516,10 +534,10 @@ ion-content.bookings-content {
     margin-top: 6px;
     display: inline-flex;
     align-items: center;
-    gap: 2px;
+    gap: 4px;
     background: none;
     border: none;
-    padding: 8px 0;
+    padding: 6px 4px;
     min-height: 32px;
     font-family: var(--font-family);
     font-size: 11.5px;
@@ -528,10 +546,20 @@ ion-content.bookings-content {
     text-decoration: underline;
     text-underline-offset: 3px;
     cursor: pointer;
+    transition: color 0.15s ease;
+    &:hover {
+      color: var(--primary-navy);
+    }
     ion-icon {
       font-size: 12px;
       text-decoration: none;
     }
+  }
+
+  /* Fallback spacing if rendered directly adjacent to a pill/chip without card-actions wrapper */
+  .prep-link + .report-link,
+  .reviewed-chip + .report-link {
+    margin-left: 12px;
   }
 
   /* --- The tear-off stub --- */
