@@ -192,8 +192,11 @@ $wide:    "(min-width: 1280px) and (min-height: 560px)";
       padding: 6px 18px 6px 6px;
       background: #fff; border: 1px solid var(--bh-line); border-radius: 18px;
       transition: background-color .2s, border-color .2s, box-shadow .2s;
-      .squircle { width: 44px; height: 44px; border-radius: 12px; border-color: transparent; background: var(--bh-tint); }
-      .cat-label { font-size: 13px; }
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+      .squircle { width: 44px; height: 44px; border-radius: 12px; border-color: transparent; background: var(--bh-tint); cursor: pointer; }
+      .cat-label { font-size: 13px; cursor: pointer; user-select: none; }
       &.active {
         background: var(--bh-navy); border-color: var(--bh-navy);
         .squircle { background: rgba(255, 255, 255, .14); }
@@ -237,14 +240,13 @@ $wide:    "(min-width: 1280px) and (min-height: 560px)";
     .map-info-card { right: auto; left: 16px; bottom: 16px; width: min(400px, calc(100% - 32px)); }
   }
 
-  /* HOME: sticky control bar spans the full content-viewport width.
-     The bar bleeds to the outlet edges; padding keeps its controls aligned
-     with the cards (they sit 16px inside the page content). */
-  html:not(#bh) app-home .sticky-controls {
-    margin-left: calc((100vw - var(--bh-nav-w) - 100%) / -2);
-    margin-right: calc((100vw - var(--bh-nav-w) - 100%) / -2);
-    padding-left: calc(16px + (100vw - var(--bh-nav-w) - 100%) / 2);
-    padding-right: calc(16px + (100vw - var(--bh-nav-w) - 100%) / 2);
+  /* HOME: sticky controls live inside unified toolbar without overflowing */
+  html:not(#bh) app-home .home-toolbar .sticky-controls {
+    margin: 0;
+    padding: 0;
+    width: auto;
+    position: static;
+    background: transparent;
     .view-toggle-wrapper { margin-bottom: 0; }
   }
   @media (hover: hover) {

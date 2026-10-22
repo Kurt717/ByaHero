@@ -1,4 +1,5 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { CommonModule, Location } from '@angular/common';
 import { IonContent, IonIcon } from '@ionic/angular';
 import { Router } from '@angular/router';
@@ -41,21 +42,33 @@ const SUGGESTED: RecipientChoice[] = [
   templateUrl: './send.page.html',
   styleUrls: ['./send.page.scss'],
 })
-export class SendMoneyPage {
+export class SendMoneyPage implements OnDestroy {
   private router = inject(Router);
   private location = inject(Location);
   private profileService = inject(ProfileService);
   private walletTx = inject(WalletTxService);
+  private cdr = inject(ChangeDetectorRef);
 
   query = '';
   recipient: RecipientChoice | null = null;
   amount = 0;
   note = '';
 
-  readonly contacts: RecipientChoice[] = [
-    ...this.trustedContacts().map((c) => ({ name: c.name, sub: c.phone })),
-    ...SUGGESTED,
-  ];
+  private walletSub: Subscription = this.profileService.wallet$.subscribe(() => {
+    this.cdr.markForCheck();
+  });
+
+  get contacts(): RecipientChoice[] {
+    const trusted = this.trustedContacts().map((c) => ({ name: c.name, sub: c.phone }));
+    const combined = [...trusted, ...SUGGESTED];
+    const seen = new Set<string>();
+    return combined.filter((c) => {
+      const key = `${c.name.trim().toLowerCase()}|${c.sub.trim().toLowerCase()}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  }
 
   constructor() {
     addIcons({
@@ -122,5 +135,13 @@ export class SendMoneyPage {
       note: this.note.trim() || undefined,
     };
     void this.router.navigateByUrl('/wallet/send/review');
+  }
+
+  ionViewWillEnter() {
+    this.cdr.markForCheck();
+  }
+
+  ngOnDestroy() {
+    this.walletSub.unsubscribe();
   }
 }

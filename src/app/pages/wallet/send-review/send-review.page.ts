@@ -1,4 +1,5 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { CommonModule, Location } from '@angular/common';
 import {
   AlertController,
@@ -31,15 +32,19 @@ addIcons({
   templateUrl: './send-review.page.html',
   styleUrls: ['./send-review.page.scss'],
 })
-export class SendReviewPage implements OnInit {
+export class SendReviewPage implements OnInit, OnDestroy {
   private router = inject(Router);
   private location = inject(Location);
   private profileService = inject(ProfileService);
   private walletTx = inject(WalletTxService);
   private toastController = inject(ToastController);
   private alertController = inject(AlertController);
+  private cdr = inject(ChangeDetectorRef);
 
   draft: SendDraft | null = null;
+  private walletSub: Subscription = this.profileService.wallet$.subscribe(() => {
+    this.cdr.markForCheck();
+  });
   sending = false;
 
   constructor() {
@@ -127,5 +132,13 @@ export class SendReviewPage implements OnInit {
       buttons: [{ text: 'OK' }],
     });
     await alert.present();
+  }
+
+  ionViewWillEnter() {
+    this.cdr.markForCheck();
+  }
+
+  ngOnDestroy() {
+    this.walletSub.unsubscribe();
   }
 }

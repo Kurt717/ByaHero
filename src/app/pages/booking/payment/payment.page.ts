@@ -1,4 +1,5 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, ChangeDetectorRef } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { Location } from '@angular/common';
 
 import { FormsModule } from '@angular/forms';
@@ -58,7 +59,7 @@ interface PaymentOption {
   templateUrl: './payment.page.html',
   styleUrls: ['./payment.page.scss'],
 })
-export class PaymentPage implements OnInit {
+export class PaymentPage implements OnInit, OnDestroy {
   booking = inject(BookingService);
   private router = inject(Router);
   private location = inject(Location);
@@ -68,6 +69,13 @@ export class PaymentPage implements OnInit {
   private seatService = inject(SeatService);
   private voucherService = inject(VoucherService);
   private pickupService = inject(PickupService);
+  private cdr = inject(ChangeDetectorRef);
+
+  private walletSub: Subscription = this.profileService.wallet$.subscribe((w) => {
+    const wm = this.methods.find((m) => m.id === 'wallet');
+    if (wm) wm.sub = `Balance ₱ ${w.balance}`;
+    this.cdr.markForCheck();
+  });
 
   agreed = false;
   idConfirm = false;
@@ -393,5 +401,15 @@ export class PaymentPage implements OnInit {
       position: 'bottom',
     });
     await toast.present();
+  }
+
+  ionViewWillEnter() {
+    const wm = this.methods.find((m) => m.id === 'wallet');
+    if (wm) wm.sub = `Balance ₱ ${this.profileService.readWallet().balance}`;
+    this.cdr.markForCheck();
+  }
+
+  ngOnDestroy() {
+    this.walletSub.unsubscribe();
   }
 }

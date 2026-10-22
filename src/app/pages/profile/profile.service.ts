@@ -125,6 +125,29 @@ export class ProfileService {
   );
   readonly user$ = this.userSubject.asObservable();
 
+  /** Centralized reactive store for wallet state: every page subscribes
+   *  to wallet$ so add, send, refund, and payment immediately update
+   *  all components across the app. */
+  private readonly walletSubject = new BehaviorSubject<WalletState>(
+    this.readWallet(),
+  );
+  readonly wallet$ = this.walletSubject.asObservable();
+
+  get currentWallet(): WalletState {
+    return this.walletSubject.value;
+  }
+
+  constructor() {
+    if (typeof window !== 'undefined') {
+      window.addEventListener('storage', (e) => {
+        if (e.key === this.storageKey) {
+          this.refreshUser();
+          this.refreshWallet();
+        }
+      });
+    }
+  }
+
   /** Current snapshot without subscribing (e.g. one-off ticket creation). */
   get currentUser(): ProfileUser {
     return this.userSubject.value;
@@ -141,6 +164,14 @@ export class ProfileService {
   refreshUser(): void {
     try {
       this.userSubject.next(this.read());
+    } catch {
+      return;
+    }
+  }
+
+  refreshWallet(): void {
+    try {
+      this.walletSubject.next(this.readWallet());
     } catch {
       return;
     }
@@ -171,14 +202,25 @@ export class ProfileService {
 
   save(profile: StoredProfile): void {
     try {
-      const merged = { ...this.readStored(), ...profile };
+      const current = this.readStored();
+      const merged: StoredProfile = {
+        ...current,
+        ...profile,
+        wallet: profile.wallet
+          ? { ...(current.wallet || DEFAULT_WALLET), ...profile.wallet }
+          : current.wallet,
+        user: profile.user
+          ? { ...(current.user || DEFAULT_PROFILE_USER), ...profile.user }
+          : current.user,
+      };
       localStorage.setItem(this.storageKey, JSON.stringify(merged));
     } catch {
       return;
     }
-    // Centralized push: any save carrying a user (or anything else)
-    // re-emits the latest snapshot so subscribers stay in sync.
+    // Centralized push: any save carrying user/wallet re-emits snapshots
+    // so subscribers stay in sync across the app immediately.
     this.refreshUser();
+    this.refreshWallet();
   }
 
   /** Reads the stored profile, merged over defaults so every page

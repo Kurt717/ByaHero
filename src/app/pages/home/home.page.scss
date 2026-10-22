@@ -905,6 +905,8 @@ ion-content.home-content {
   display: flex;
   justify-content: space-between;
   margin-bottom: 14px;
+  position: relative;
+  z-index: 2;
   opacity: 0;
   animation: revealUp 0.55s 0.16s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 
@@ -914,6 +916,8 @@ ion-content.home-content {
     align-items: center;
     gap: 8px;
     cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
 
     .squircle {
       width: 60px;
@@ -1987,6 +1991,8 @@ ion-content.home-content {
   }
 
   .categories-grid {
+    position: relative;
+    z-index: 2;
     margin-bottom: 0;
     gap: 12px;
     justify-content: flex-start;
@@ -1995,8 +2001,10 @@ ion-content.home-content {
 
   .sticky-controls {
     position: static;
+    z-index: 1;
     margin: 0;
     padding: 0;
+    width: auto;
     background: transparent;
     flex: 1;
     display: flex;

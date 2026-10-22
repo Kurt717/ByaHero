@@ -1,4 +1,5 @@
-import { Component, OnDestroy, inject } from '@angular/core';
+import { Component, OnDestroy, inject, ChangeDetectorRef } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { CommonModule, Location } from '@angular/common';
 import {
   AlertController,
@@ -83,8 +84,18 @@ export class WalletPage implements OnDestroy {
   private toastController = inject(ToastController);
   private profileService = inject(ProfileService);
   private walletTx = inject(WalletTxService);
+  private cdr = inject(ChangeDetectorRef);
   private profileSub = this.profileService.user$.subscribe((profile) => {
     this.holder = profile.name.toUpperCase();
+    this.cdr.markForCheck();
+  });
+  private walletSub = this.profileService.wallet$.subscribe((wallet) => {
+    this.wallet = {
+      balance: wallet.balance ?? this.wallet.balance,
+      last4: wallet.last4 ?? this.wallet.last4,
+    };
+    this.recent = this.walletTx.all().slice(0, 4);
+    this.cdr.markForCheck();
   });
 
   wallet = { balance: '850.00', last4: '4821' };
@@ -128,6 +139,7 @@ export class WalletPage implements OnDestroy {
 
   ngOnDestroy() {
     this.profileSub.unsubscribe();
+    this.walletSub.unsubscribe();
   }
 
   get balanceLabel(): string {
@@ -250,6 +262,7 @@ export class WalletPage implements OnDestroy {
     };
     this.holder = this.profileService.read().name.toUpperCase();
     this.recent = this.walletTx.all().slice(0, 4);
+    this.cdr.markForCheck();
   }
 
   /** Present an alert — dismissal relies solely on the action buttons below. */

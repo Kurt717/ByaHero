@@ -1,4 +1,5 @@
-import { Component, OnDestroy, inject } from '@angular/core';
+import { Component, OnDestroy, inject, ChangeDetectorRef } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { CommonModule, Location } from '@angular/common';
 import {
   AlertController,
@@ -118,9 +119,19 @@ export class ProfilePage implements OnDestroy {
   private authService = inject(AuthService);
   private ticketService = inject(TicketService);
   private voucherService = inject(VoucherService);
+  private cdr = inject(ChangeDetectorRef);
   private profileSub = this.profileService.user$.subscribe((profile) => {
     this.user = { ...DEFAULT_PROFILE_USER, ...profile };
     this.syncMenuValues();
+    this.cdr.markForCheck();
+  });
+  private walletSub: Subscription = this.profileService.wallet$.subscribe((wallet) => {
+    this.wallet = {
+      balance: wallet.balance ?? this.wallet.balance,
+      last4: wallet.last4 ?? this.wallet.last4,
+    };
+    this.syncMenuValues();
+    this.cdr.markForCheck();
   });
 
   private readonly preferencesStorageKey = 'byahero.profile-preferences.v1';
@@ -157,10 +168,12 @@ export class ProfilePage implements OnDestroy {
   ionViewWillEnter() {
     this.loadProfile();
     this.syncMenuValues();
+    this.cdr.markForCheck();
   }
 
   ngOnDestroy() {
     this.profileSub.unsubscribe();
+    this.walletSub.unsubscribe();
   }
 
   user = { ...DEFAULT_PROFILE_USER };
