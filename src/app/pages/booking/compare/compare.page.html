@@ -50,10 +50,10 @@
               class="option-ticket"
               role="listitem"
               [class.soldout]="option.soldOut"
-              [attr.aria-label]="option.dep.time + ' ' + option.dep.operator + ' ' + (option.segmentFare != null ? formatFare(option.segmentFare) : option.dep.fare) + (option.soldOut ? ', sold out' : '')"
+              [attr.aria-label]="option.dep.time + ' ' + option.dep.operator + ' ' + (option.segmentFare !== undefined ? formatFare(option.segmentFare) : option.dep.fare) + (option.soldOut ? ', sold out' : '')"
             >
               <div class="option-fare-band">
-                @if (option.segmentFare != null) {
+                @if (option.segmentFare !== undefined) {
                   <p class="fare">{{ formatFare(option.segmentFare) }}</p>
                   <p class="fare-sub">your stretch / seat</p>
                 } @else {

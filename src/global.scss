@@ -116,22 +116,26 @@ $wide:    "(min-width: 1280px) and (min-height: 560px)";
     }
 
     .glass-nav {
-      flex-direction: column; align-items: center; gap: 8px;
+      flex-direction: column; align-items: center; justify-content: flex-start;
+      align-content: flex-start;
       padding: 0; background: transparent; border: 0; box-shadow: none; border-radius: 0;
       width: 100%;
+      min-height: 0;
 
       /* pill corner bolts only belong to the floating pill, not the rail */
       &::before, &::after { display: none; }
 
       .nav-item {
+        flex: none; max-width: none;
         width: 100%; padding: 6px 0; border-radius: 16px; gap: 4px;
         justify-content: center;
         transition: background-color .2s ease, transform .15s cubic-bezier(.34, 1.56, .64, 1);
         &.active { background: var(--bh-tint); }
+        .icon-bg { flex: none; }
         .nav-label { font-size: 10.5px; }
         &.center-fab {
           order: -1; margin-bottom: 12px;
-          .fab-inner { margin-top: 0; width: 52px; height: 52px; }
+          .fab-inner { flex: none; margin-top: 0; width: 52px; height: 52px; }
           .fab-label { margin-top: 2px; }
         }
       }
@@ -658,10 +662,11 @@ $wide:    "(min-width: 1280px) and (min-height: 560px)";
       &::before { display: none; }
 
       .nav-item {
+        flex: none; max-width: none; width: 100%;
         flex-direction: row; justify-content: flex-start; align-items: center;
         gap: 14px; height: 54px; padding: 0 14px 0 8px; border-radius: 18px;
         .nav-label { font-size: 14px; font-weight: 700; color: var(--bh-muted); }
-        .icon-bg { width: 40px; height: 40px; }
+        .icon-bg { flex: none; width: 40px; height: 40px; }
         &.active .nav-label { color: var(--bh-navy); }
 
         &.center-fab {
@@ -669,7 +674,9 @@ $wide:    "(min-width: 1280px) and (min-height: 560px)";
           background: var(--bh-red); border-radius: 20px;
           box-shadow: 0 10px 24px rgba(211, 47, 47, .28);
           .fab-inner {
+            flex: none;
             width: 40px; height: 40px; margin: 0; border: 0; background: rgba(255, 255, 255, .18);
+            box-shadow: none;
             &::before { display: none; }
           }
           .fab-label { color: #fff; font-size: 14.5px; margin: 0; }
@@ -705,10 +712,10 @@ $wide:    "(min-width: 1280px) and (min-height: 560px)";
    it genuinely fits, while keeping one primary task visible vertically.
    ===================================================================== */
 @media (orientation: landscape) and (max-height: 540px) {
-  /* ---------- SHELL: compact bottom rail (save vertical space) ---------- */
+  /* ---------- SHELL: compact docked bottom bar (save vertical space) ---------- */
   html:not(#bh) app-tabs {
-    .floating-nav-container { bottom: calc(8px + env(safe-area-inset-bottom, 0px)); }
-    .glass-nav { padding: 7px 14px 6px; gap: 10px; border-radius: 24px; }
+    .floating-nav-container { bottom: 0; }
+    .glass-nav { padding: 7px 8px calc(6px + env(safe-area-inset-bottom, 0px)); gap: 4px; border-radius: 16px 16px 0 0; }
     .nav-item .icon-bg { width: 36px; height: 36px; }
     .nav-item .icon-bg ion-icon { font-size: 19px; }
     .nav-item .nav-label { font-size: 9px; }
