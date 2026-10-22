@@ -310,6 +310,14 @@ ion-content.trip-content {
     overflow: hidden;
     text-overflow: ellipsis;
 
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.1s ease;
+
+    &:active {
+      transform: scale(0.97);
+    }
+
     &.active {
       background: var(--primary-navy);
       color: #ffffff;

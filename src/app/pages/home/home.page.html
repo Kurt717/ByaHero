@@ -312,6 +312,9 @@
 
     <!-- 5A. LIST VIEW -->
     @if (selectedView === 'list') {
+      <!-- Keyed on the active category: every switch (any combination)
+           rebuilds the list, so cards replay the same app-wide reveal. -->
+      @for (listKey of [activeCategory]; track listKey) {
       <div class="content-viewport list-viewport">
         @for (route of displayRoutes; track route.id; let i = $index) {
           <div class="trip-card">
@@ -398,6 +401,7 @@
           </div>
         }
       </div>
+      }
     }
 
     <!-- 5B. MAP VIEW (Leaflet + OpenStreetMap). Live bus nodes shuttle

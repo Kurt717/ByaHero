@@ -20,6 +20,12 @@
   /* Above the tab bar (z-1000), hail sheet, map controls and toasts. */
   z-index: 3000;
   background: rgba(6, 10, 40, 0.55);
+  animation: ppFadeIn 0.28s ease both;
+}
+
+@keyframes ppFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .pp-sheet {
@@ -251,5 +257,5 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .pp-sheet { animation: none; }
+  .pp-sheet, .pp-backdrop { animation: none; }
 }

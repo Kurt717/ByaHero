@@ -930,13 +930,13 @@ ion-content.home-content {
       justify-content: center;
       color: var(--primary-navy);
       transition:
-        background-color 0.25s ease,
-        border-color 0.25s ease,
-        color 0.25s ease,
+        background-color 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+        border-color 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+        color 0.3s ease,
+        box-shadow 0.3s ease,
         transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
       ion-icon {
         font-size: 24px;
-        transition: transform 0.2s ease;
       }
     }
 
@@ -944,7 +944,7 @@ ion-content.home-content {
       font-size: 12px;
       font-weight: 600;
       color: var(--text-muted);
-      transition: color 0.25s ease;
+      transition: color 0.3s ease;
     }
 
     &:active .squircle {
@@ -1128,12 +1128,18 @@ ion-content.home-content {
     border: 1.5px solid var(--primary-navy);
     box-shadow: 0 10px 30px rgba(6, 10, 40, 0.08);
     padding: 16px;
+    /* App-wide list reveal (same as Bookings / Alerts / Favorites). */
     opacity: 0;
-    animation: revealCard 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: revealUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     transition:
       transform 0.15s cubic-bezier(0.16, 1, 0.3, 1),
       border-color 0.2s ease,
       box-shadow 0.2s ease;
+
+    &:nth-child(1) { animation-delay: 0.06s; }
+    &:nth-child(2) { animation-delay: 0.12s; }
+    &:nth-child(3) { animation-delay: 0.18s; }
+    &:nth-child(n + 4) { animation-delay: 0.24s; }
 
     /* Ticket-stub notches, matching the route-selector pill above */
     &::before,
@@ -1177,21 +1183,6 @@ ion-content.home-content {
       }
     }
 
-    &:nth-child(1) {
-      animation-delay: 0.3s;
-    }
-    &:nth-child(2) {
-      animation-delay: 0.37s;
-    }
-    &:nth-child(3) {
-      animation-delay: 0.44s;
-    }
-    &:nth-child(4) {
-      animation-delay: 0.51s;
-    }
-    &:nth-child(n + 5) {
-      animation-delay: 0.58s;
-    }
 
     .card-top {
       display: flex;

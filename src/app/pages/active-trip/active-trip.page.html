@@ -20,9 +20,9 @@
 
     <!-- NON-INTERACTIVE PROGRESS STEPPER (signifier: list, not tabs) -->
     <ol class="stage-stepper" aria-label="Trip progress">
-      <li [class.active]="stage === 'boarding'" [attr.aria-current]="stage === 'boarding' ? 'step' : null">Boarding</li>
-      <li [class.active]="stage === 'enroute'" [attr.aria-current]="stage === 'enroute' ? 'step' : null">En Route</li>
-      <li [class.active]="stage === 'arriving' || arrived" [attr.aria-current]="stage === 'arriving' || arrived ? 'step' : null">Arriving</li>
+      <li [class.active]="stage === 'boarding'" (click)="jumpToStage('boarding')" [attr.aria-current]="stage === 'boarding' ? 'step' : null" role="button" tabindex="0">Boarding</li>
+      <li [class.active]="stage === 'enroute'" (click)="jumpToStage('enroute')" [attr.aria-current]="stage === 'enroute' ? 'step' : null" role="button" tabindex="0">En Route</li>
+      <li [class.active]="stage === 'arriving' || arrived" (click)="jumpToStage('arriving')" [attr.aria-current]="stage === 'arriving' || arrived ? 'step' : null" role="button" tabindex="0">Arriving</li>
     </ol>
 
     <div class="tracking-layout">

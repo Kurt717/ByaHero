@@ -886,11 +886,37 @@ export class ActiveTripPage implements AfterViewInit, OnDestroy {
       ? this.destCoords
       : this.interpolate(this.originCoords, this.destCoords, this.busProgress);
     this.busMarker?.setLatLng(pos);
-    if (reachedEnd && this.routeLine) {
-      // Freeze on arrival: solid line, no more motion.
-      this.routeLine.setStyle({ opacity: 1, dashArray: [] });
-      if (this.busInterval) clearInterval(this.busInterval);
+    if (reachedEnd) {
+      this.hasArrived = true;
+      if (this.routeLine) {
+        // Freeze on arrival: solid line, no more motion.
+        this.routeLine.setStyle({ opacity: 1, dashArray: [] });
+      }
+      if (this.busInterval) {
+        clearInterval(this.busInterval);
+        this.busInterval = null;
+      }
     }
+    this.cdr.markForCheck();
+  }
+
+  jumpToStage(stage: TripStage) {
+    if (stage === 'boarding') {
+      this.hasArrived = false;
+      this.busProgress = 0.05;
+    } else if (stage === 'enroute') {
+      this.hasArrived = false;
+      this.busProgress = 0.50;
+    } else if (stage === 'arriving') {
+      this.hasArrived = false;
+      this.busProgress = 0.88;
+    }
+    const pos = this.interpolate(this.originCoords, this.destCoords, this.busProgress);
+    this.busMarker?.setLatLng(pos);
+    if (!this.hasArrived && this.routeLine) {
+      this.routeLine.setStyle({ opacity: 0.55, dashArray: '1, 10' });
+    }
+    this.cdr.markForCheck();
   }
 
   private interpolate(
