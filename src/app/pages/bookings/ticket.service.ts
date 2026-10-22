@@ -498,18 +498,22 @@ export function cancellationQuoteForBooking(
   return { canCancel: true, reason: '', refundAmount: Math.round(fare * 0.5), policyText };
 }
 
-/** Display status: confirmed past departure renders as Missed/Expired. */
+/** Display status: confirmed past departure renders as Missed only when truly expired. */
 export function displayStatusForBooking(b: Booking, now: Date = new Date()): string {
   if (b.status === 'confirmed') {
-    const dep = departureDateTimeForBooking(b);
-    if (dep && dep.getTime() <= now.getTime()) return 'Missed';
+    if (isExpiredBooking(b, now)) return 'Missed';
   }
   return b.status;
 }
 
-/** True when a confirmed booking's departure has passed. */
+/** True when a confirmed booking's departure date has fully passed and the trip is no longer in progress.
+ *  Trips departing today or underway within 18 hours are NEVER expired. */
 export function isExpiredBooking(b: Booking, now: Date = new Date()): boolean {
   if (b.status !== 'confirmed') return false;
   const dep = departureDateTimeForBooking(b);
-  return !!dep && dep.getTime() <= now.getTime();
+  if (!dep) return false;
+  // A trip is only considered past/expired if more than 18 hours have elapsed since departure
+  // and the passenger has not completed it.
+  const tripDurationWindow = 18 * 60 * 60 * 1000;
+  return now.getTime() > dep.getTime() + tripDurationWindow;
 }

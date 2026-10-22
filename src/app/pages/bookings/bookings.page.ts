@@ -29,6 +29,7 @@ import {
   BookingStatus,
   isExpiredBooking,
   displayStatusForBooking,
+  departureDateTimeForBooking,
 } from './ticket.service';
 import { TripReviewService, TripReview } from './trip-review.service';
 import { BookingService, TripSummary, parseFareText } from '../booking/booking.service';
@@ -102,10 +103,21 @@ export class BookingsPage {
     return this.ticketService.bookings;
   }
 
+  /** A trip is active if it's boarding or currently underway (departed within 18h and not yet completed/cancelled). */
+  isTripActive(b: Booking, now: Date = new Date()): boolean {
+    if (b.status === 'boarding') return true;
+    if (b.status !== 'confirmed') return false;
+    const dep = departureDateTimeForBooking(b);
+    if (!dep) return false;
+    const elapsed = now.getTime() - dep.getTime();
+    // Departed and still within an 18-hour travel window: trip is actively in progress
+    return elapsed >= 0 && elapsed <= 18 * 60 * 60 * 1000;
+  }
+
   get upcomingBookings(): Booking[] {
     const now = new Date();
     return this.bookings.filter(
-      (b) => b.status === 'confirmed' && !isExpiredBooking(b, now),
+      (b) => b.status === 'confirmed' && !isExpiredBooking(b, now) && !this.isTripActive(b, now),
     );
   }
 
@@ -120,7 +132,7 @@ export class BookingsPage {
       (b) =>
         b.status === 'completed' ||
         b.status === 'cancelled' ||
-        (b.status === 'confirmed' && isExpiredBooking(b, now)),
+        (b.status === 'confirmed' && isExpiredBooking(b, now) && !this.isTripActive(b, now)),
     );
   }
 
@@ -154,9 +166,10 @@ export class BookingsPage {
     return this.hailService.active;
   }
 
-  /** In-progress reservation (boarding only — confirmed lives in Upcoming). */
+  /** In-progress reservation (boarding or currently underway). */
   get activeTripBooking(): Booking | null {
-    return this.bookings.find((b) => b.status === 'boarding') ?? null;
+    const now = new Date();
+    return this.bookings.find((b) => this.isTripActive(b, now)) ?? null;
   }
 
   /** Rider's own stretch (boarding → alighting) for every card. */
