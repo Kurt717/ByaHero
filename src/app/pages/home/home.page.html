@@ -294,16 +294,18 @@
             </button>
           </div>
 
-          <div class="filter-row">
-            @for (option of sortOptions; track option) {
-              <span
-                class="filter-pill"
-                [class.active]="sortBy === option"
-                (click)="setSort(option)"
-                >{{ option }}</span
-                >
-            }
-          </div>
+          @if (selectedView === 'list') {
+            <div class="filter-row">
+              @for (option of sortOptions; track option) {
+                <span
+                  class="filter-pill"
+                  [class.active]="sortBy === option"
+                  (click)="setSort(option)"
+                  >{{ option }}</span
+                  >
+              }
+            </div>
+          }
         </div>
       </div>
     </div>

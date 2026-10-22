@@ -107,12 +107,38 @@ $wide:    "(min-width: 1280px) and (min-height: 560px)";
       border-right: 1px solid var(--bh-line);
       animation: bh-side-in .5s .1s cubic-bezier(.16, 1, .3, 1) forwards;
 
-      &::before {
-        content: ""; display: block; flex: none;
-        width: 44px; height: 52px; margin-bottom: 22px;
+      &::before { display: none; }
+      &::after { display: none; }
+    }
+
+    .brand-link {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 22px;
+      text-decoration: none;
+      cursor: pointer;
+      pointer-events: auto;
+      transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.15s ease;
+
+      &:hover {
+        opacity: 0.88;
+        transform: scale(1.04);
+      }
+      &:active {
+        transform: scale(0.96);
+      }
+
+      .brand-glyph {
+        display: block;
+        width: 44px;
+        height: 52px;
         background: var(--bh-glyph) center / contain no-repeat;
       }
-      &::after { display: none; }
+      .brand-text {
+        display: none;
+      }
     }
 
     .glass-nav {
@@ -639,18 +665,51 @@ $wide:    "(min-width: 1280px) and (min-height: 560px)";
       align-items: center; align-content: start;
       padding: 26px 18px 20px;
 
-      &::before {
-        grid-column: 1; width: auto; height: 52px; margin: 0 0 0 6px; padding-left: 48px;
-        background: var(--bh-glyph) left center / 38px 52px no-repeat;
-        content: "bya"; display: flex; align-items: center;
-        font: 800 26px/1 "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
-        letter-spacing: -.03em; color: var(--bh-navy);
+      &::before { display: none; }
+      &::after { display: none; }
+    }
+
+    .brand-link {
+      grid-column: 1 / 3;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      height: 52px;
+      margin: 0 0 0 6px;
+      text-decoration: none;
+      cursor: pointer;
+      pointer-events: auto;
+      transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.15s ease;
+
+      &:hover {
+        opacity: 0.88;
+        transform: translateY(-1px);
       }
-      &::after {
-        display: flex; grid-column: 2; align-items: center; height: 52px;
-        content: "Hero";
+      &:active {
+        transform: scale(0.98);
+      }
+
+      .brand-glyph {
+        display: block;
+        width: 38px;
+        height: 52px;
+        margin-right: 10px;
+        background: var(--bh-glyph) center / contain no-repeat;
+        flex-shrink: 0;
+      }
+
+      .brand-text {
+        display: flex;
+        align-items: center;
         font: 800 26px/1 "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
-        letter-spacing: -.03em; color: #dc2626;
+        letter-spacing: -0.03em;
+
+        .brand-bya {
+          color: var(--bh-navy);
+        }
+        .brand-hero {
+          color: #dc2626;
+        }
       }
     }
 
