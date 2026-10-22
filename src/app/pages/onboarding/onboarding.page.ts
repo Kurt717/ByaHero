@@ -80,7 +80,7 @@ export class OnboardingPage {
     if (this.isLastSlide) {
       this.auth.setOnboarded();
       this.router.navigateByUrl(
-        this.auth.isAuthenticated() ? '/home' : '/signup',
+        '/home',
       );
     } else {
       this.direction = 'next';
@@ -90,6 +90,6 @@ export class OnboardingPage {
 
   skip() {
     this.auth.setOnboarded();
-    this.router.navigateByUrl('/login');
+    this.router.navigateByUrl('/home');
   }
 }

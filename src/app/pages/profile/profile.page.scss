@@ -541,6 +541,8 @@ ion-content.profile-content {
       min-width: 0;
       .w-label {
         font-size: 10.5px;
+        line-height: 1.4;
+        padding-bottom: 2px;
         font-weight: 700;
         color: rgba(255, 255, 255, 0.8);
         white-space: nowrap;
@@ -662,6 +664,8 @@ ion-content.profile-content {
     .group-title {
       margin: 0;
       font-size: 10.5px;
+      line-height: 1.4;
+      padding-bottom: 2px;
       font-weight: 800;
       color: var(--text-muted);
       text-transform: uppercase;
@@ -734,6 +738,8 @@ ion-content.profile-content {
       flex: 1;
       min-width: 0;
       font-size: 13.5px;
+      line-height: 1.5;
+      padding: 2px 0 3px 0;
       font-weight: 600;
       color: var(--text-main);
       white-space: nowrap;
@@ -754,6 +760,8 @@ ion-content.profile-content {
 
     .menu-value {
       font-size: 12px;
+      line-height: 1.5;
+      padding: 2px 0 3px 0;
       font-weight: 700;
       color: var(--text-muted);
       white-space: nowrap;
